@@ -1,0 +1,1527 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.36.0-rc1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning_Hazard_Type_General" author="a662829">
+        <sql stripComments="true" dbms="postgresql">
+            <!-- insert new general category -->
+            INSERT INTO warning_hazard_type_general (enum_name, translation, international_translation, bulletin, s124_code) VALUES ('RIG_LIST', 'Liste d''unités de forage', 'Rig List', false, 20) ON CONFLICT (enum_name) DO NOTHING;
+
+            <!-- update all other categories -->
+            UPDATE warning_hazard_type_general SET "translation"='Dangers à la dérive', international_translation='Drifting Hazards', bulletin=false, s124_code=3 WHERE enum_name='DRIFTING_HAZARDS';
+            UPDATE warning_hazard_type_general SET "translation"='Dangers nouvellement découverts', international_translation='Newly Discovered Dangers', bulletin=false, s124_code=10 WHERE enum_name='NEWLY_DISCOVERED_DANGERS';
+            UPDATE warning_hazard_type_general SET "translation"='Instruments scientifiques, modification', international_translation='Scientific Instruments Change', bulletin=false, s124_code=15 WHERE enum_name='SCIENTIFIC_INSTRUMENTS';
+            UPDATE warning_hazard_type_general SET "translation"='Modification du trafic', international_translation='Routeing Change', bulletin=false, s124_code=14 WHERE enum_name='ROUTING_INFORMATION';
+            UPDATE warning_hazard_type_general SET "translation"='Travaux', international_translation='Works', bulletin=false, s124_code=19 WHERE enum_name='WORKS';
+            UPDATE warning_hazard_type_general SET "translation"='Opérations spéciales', international_translation='Special Operations', bulletin=false, s124_code=17 WHERE enum_name='SPECIAL_OPERATIONS';
+            UPDATE warning_hazard_type_general SET "translation"='Opérations de remorquage', international_translation='Towing Operations', bulletin=false, s124_code=18 WHERE enum_name='TOWING_OPERATIONS';
+            UPDATE warning_hazard_type_general SET "translation"='Danger, autres', international_translation='Other Hazards', bulletin=false, s124_code=5 WHERE enum_name='HAZARD_OTHER';
+            UPDATE warning_hazard_type_general SET "translation"='Piraterie ou vol', international_translation='Piracy or Robbery', bulletin=false, s124_code=12 WHERE enum_name='PIRACY';
+            UPDATE warning_hazard_type_general SET "translation"='Installations d''aquaculture et de pêche', international_translation='Aquaculture and Fishing Installations', bulletin=false, s124_code=2 WHERE enum_name='AQUACULTURE_AND_FISHING_INSTALLATIONS';
+            UPDATE warning_hazard_type_general SET "translation"='Infrastructure offshore', international_translation='Offshore Infrastructure', bulletin=false, s124_code=11 WHERE enum_name='OFFSHORE_STRUCTURES';
+            UPDATE warning_hazard_type_general SET "translation"='Modifications d''aides à la navigation', international_translation='Aids to Navigation Changes', bulletin=false, s124_code=1 WHERE enum_name='AIDS_TO_NAVIGATION';
+            UPDATE warning_hazard_type_general SET "translation"='Modification de service de communication ou de radiodiffusion', international_translation='Communication or Broadcast Service Change', bulletin=false, s124_code=13 WHERE enum_name='RADIO_SERVICES';
+            UPDATE warning_hazard_type_general SET "translation"='Phénomènes naturels dangereux', international_translation='Dangerous Natural Phenomena', bulletin=false, s124_code=9 WHERE enum_name='NATURAL_PHENOMENA';
+            UPDATE warning_hazard_type_general SET "translation"='Information sur les glaces', international_translation='Ice Information', bulletin=false, s124_code=7 WHERE enum_name='ICE';
+            UPDATE warning_hazard_type_general SET "translation"='Avis sanitaires', international_translation='Health Advisories', bulletin=false, s124_code=6 WHERE enum_name='HEALTH_ADVISORY';
+            UPDATE warning_hazard_type_general SET "translation"='Modification de mesure de sûreté', international_translation='Security Requirement Change', bulletin=false, s124_code=16 WHERE enum_name='SECURITY';
+            UPDATE warning_hazard_type_general SET "translation"='Anomalies de fonctionnement d''ECDIS, y compris les problèmes de données officielles', international_translation='ECDIS Operating Anomalies including Official Data Issues', bulletin=false, s124_code=4 WHERE enum_name='ECDIS_OPERATING_ANOMALIES_INCLUDING_OFFICIAL_DATA_ISSUES';
+            UPDATE warning_hazard_type_general SET "translation"='Bulletin en vigueur', international_translation='In-Force Bulletin', bulletin=true, s124_code=8 WHERE enum_name='IN_FORCE_BULLETIN';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning_Hazard_Type_Details" author="a662829">
+        <sql stripComments="true" dbms="postgresql">
+
+            <!-- DRIFTING_HAZARDS - Dangers à la dérive -->
+            UPDATE warning_hazard_type_details SET translation = 'Conteneur à la dérive', international_translation = 'Container Adrift', s124_code=72 WHERE enum_name='CONTAINER_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée scientifique à la dérive', international_translation = 'Scientific Buoy Adrift', s124_code=241 WHERE enum_name='SCIENTIFIC_BUOY_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Navire à la dérive', international_translation = 'Vessel Adrift', s124_code=291 WHERE enum_name='VESSEL_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Navire abandonné à la dérive', international_translation = 'Derelict Vessel Adrift', s124_code=76 WHERE enum_name='DERELICT_VESSEL_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Baleine morte à la dérive', international_translation = 'Dead Whale Adrift', s124_code=74 WHERE enum_name='DEAD_WHALE_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Bille de bois à la dérive', international_translation = 'Log Adrift', s124_code=179 WHERE enum_name='LOG_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Bille de bois verticale à la dérive', international_translation = 'Deadhead Adrift', s124_code=75 WHERE enum_name='DEAD_HEAD_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Train de bois à la dérive', international_translation = 'Log Boom Adrift', s124_code=180 WHERE enum_name='LOG_BOOM_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Dock flottant à la dérive', international_translation = 'Dock Adrift', s124_code=88 WHERE enum_name='DOCK_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Filet de pêche à la dérive', international_translation = 'Fishing Net Adrift', s124_code=122 WHERE enum_name='FISH_NET_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Débris flottants', international_translation = 'Floating Debris', s124_code=123 WHERE enum_name='FLOATING_DEBRIS';
+            UPDATE warning_hazard_type_details SET translation = 'Objet à la dérive', international_translation = 'Object Adrift', s124_code=197 WHERE enum_name='OBJECT_ADRIFT';
+
+
+            <!-- NEWLY_DISCOVERED_DANGERS - Dangers nouvellement découverts -->
+            UPDATE warning_hazard_type_details SET translation = 'Evolution d''une langue de sable ou d''un banc de sable', international_translation = 'Sandspit or Sandbar Change', s124_code=238 WHERE enum_name='SANDSPIT';
+            UPDATE warning_hazard_type_details SET translation = 'Faible profondeur signalée', international_translation = 'Shallow Depth Reported', s124_code=256 WHERE enum_name='SHALLOW_DEPTH_REPORTED';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SHALLOW_DEPTH_CONFIRMED','Faible profondeur confirmée','Shallow Depth Confirmed', 255) ON CONFLICT (enum_name) DO NOTHING;
+
+            UPDATE warning_hazard_type_details SET translation = 'Présence d''un filet de pêche immergé', international_translation = 'Presence of Submerged Fishing Net', s124_code=207 WHERE enum_name='SUBMERGED_FISH_NET';
+            UPDATE warning_hazard_type_details SET translation = 'Roche non portée sur les cartes', international_translation = 'Uncharted Rock', s124_code=277 WHERE enum_name='UNCHARTED_ROCK';
+            UPDATE warning_hazard_type_details SET translation = 'Epave dangereuse', international_translation = 'Dangerous Wreck', s124_code=73 WHERE enum_name='DANGEROUS_WRECK';
+            UPDATE warning_hazard_type_details SET translation = 'Mouillage immergé', international_translation = 'Subsurface Mooring', s124_code=271 WHERE enum_name='SUBSURFACE_MOORING';
+            UPDATE warning_hazard_type_details SET translation = 'Objet immergé', international_translation = 'Submerged Object', s124_code=270 WHERE enum_name='SUBMERGED_OBJECT';
+
+
+            <!-- SCIENTIFIC_INSTRUMENTS - Instruments scientifiques, modifications -->
+            UPDATE warning_hazard_type_details SET translation = 'Enregistreur acoustique', international_translation = 'Acoustic Recorder', s124_code=1 WHERE enum_name='ACOUSTIC_RECORDER';
+            UPDATE warning_hazard_type_details SET translation = 'Présence d''équipements scientifiques', international_translation = 'Presence of Scientific Equipment', s124_code=208 WHERE enum_name='SCIENTIFIC_BUOY_APPARATUS';
+            UPDATE warning_hazard_type_details SET translation = 'Mouillages scientifiques', international_translation = 'Scientific Moorings', s124_code=242 WHERE enum_name='SCIENTIFIC_MOORING';
+            UPDATE warning_hazard_type_details SET translation = 'Marégraphe', international_translation = 'Tide Gauge Change', s124_code=274 WHERE enum_name='TIDE_GAUGE';
+
+
+            <!-- ROUTING_INFORMATION - Modification du trafic -->
+            UPDATE warning_hazard_type_details SET translation = 'Ouverture ou fermeture des eaux', international_translation = 'Opening or Closing of Waters', s124_code=201 WHERE enum_name='OPEN_CLOSE_WATERWAY';
+            UPDATE warning_hazard_type_details SET translation = 'Voie maritime recommandée/non recommandée', international_translation = 'Waterway Recommended or Not Recommended For Shipping', s124_code=296 WHERE enum_name='WATERWAY_RECOMMENDED_NOT_RECOMMENDED_FOR_SHIPPING';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de STM', international_translation = 'VTS Change', s124_code=295 WHERE enum_name='VTS_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de service de système de surveillance radar', international_translation = 'Radar Surveillance System Service Change', s124_code=218 WHERE enum_name='RADAR_SURVEILLANCE_SYSTEM';
+            UPDATE warning_hazard_type_details SET translation = 'Réglementation nouvelle ou modifiée', international_translation = 'New or Amended Regulation', s124_code=195 WHERE enum_name='REGULATION';
+            UPDATE warning_hazard_type_details SET translation = 'Modifications de zone de restriction', international_translation = 'Restricted Area Changes', s124_code=237 WHERE enum_name='RESTRICTED_AREA';
+            UPDATE warning_hazard_type_details SET translation = 'Zone d''exclusion', international_translation = 'Exclusion Zone', s124_code=111 WHERE enum_name='EXCLUSION_ZONES';
+            UPDATE warning_hazard_type_details SET translation = 'Régate ou course', international_translation = 'Regatta or Race', s124_code=235 WHERE enum_name='REGATTA_RACE';
+            UPDATE warning_hazard_type_details SET translation = 'Nageurs', international_translation = 'Swimmers', s124_code=272 WHERE enum_name='SWIMMERS';
+            UPDATE warning_hazard_type_details SET translation = 'Présence de mammifères marins', international_translation = 'Presence of Marine Mammals', s124_code=205 WHERE enum_name='MARINE_MAMMALS';
+            UPDATE warning_hazard_type_details SET translation = 'Feux d''artifice', international_translation = 'Fireworks', s124_code=119 WHERE enum_name='FIREWORKS';
+            UPDATE warning_hazard_type_details SET translation = 'Regroupement de navires de pêche', international_translation = 'Cluster of Fishing Vessels', s124_code=71 WHERE enum_name='CLUSTER_OF_FISHING_VESSELS';
+            UPDATE warning_hazard_type_details SET translation = 'Congestion du trafic', international_translation = 'Traffic Congestion', s124_code=275 WHERE enum_name='TRAFFIC_CONGESTION';
+            UPDATE warning_hazard_type_details SET translation = 'Navire en panne', international_translation = 'Vessel Disabled', s124_code=292 WHERE enum_name='VESSEL_DISABLED';
+            UPDATE warning_hazard_type_details SET translation = 'Ouverture ou fermeture de port', international_translation = 'Opening or Closing of Harbour', s124_code=199 WHERE enum_name='OPEN_CLOSE_HARBOUR';
+            UPDATE warning_hazard_type_details SET translation = 'Ouverture ou fermeture de pont tournant', international_translation = 'Opening or Closing of Swing Bridge', s124_code=200 WHERE enum_name='OPEN_CLOSE_SWING_BRIDGE';
+            UPDATE warning_hazard_type_details SET translation = 'Hauteur libre réduite', international_translation = 'Vertical Clearance Reduced', s124_code=290 WHERE enum_name='VERTICAL_CLEARANCE_REDUCED';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('BRIDGE_HORIZ_CLEAR_CHG','Modification de largeur libre de pont','Bridge Horizontal Clearance Change', 37) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('BRIDGE_UNABLE_CLOSE','Pont impossible à fermer','Bridge Unable To Close', 38) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('BRIDGE_UNABLE_OPEN','Pont impossible à ouvrir','Bridge Unable To Open', 39) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('BRIDGE_VERT_CLEAR_CHG','Modification de hauteur libre de pont','Bridge Vertical Clearance Change', 40) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LOCK_CLOSED','Ecluse fermée','Lock Closed', 178) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('HORIZ_CLEAR_REDUCED','Largeur libre réduite','Horizontal Clearance Reduced', 145) ON CONFLICT (enum_name) DO NOTHING;
+
+
+            <!-- WORKS - Travaux -->
+            UPDATE warning_hazard_type_details SET translation = 'Opération de dragage', international_translation = 'Dredging Operation', s124_code=89 WHERE enum_name='DREDGING_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Brise-lames en construction', international_translation = 'Breakwater Construction', s124_code=36 WHERE enum_name='BREAKWATER_CONSTRUCTION';
+            UPDATE warning_hazard_type_details SET translation = 'Quai en construction', international_translation = 'Wharf Construction', s124_code=297 WHERE enum_name='WHARF_CONSTRUCTION';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de plongée', international_translation = 'Diving Operation', s124_code=87 WHERE enum_name='DIVING_OPERATIONS';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de pose de câble', international_translation = 'Cable Laying Operation', s124_code=64 WHERE enum_name='CABLE_LAYING_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Opérations sur cable', international_translation = 'Cable Operations', s124_code=65 WHERE enum_name='OPERATION_ON_CABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de pose de conduite', international_translation = 'Pipe Laying Operation', s124_code=202 WHERE enum_name='PIPE_LAYING_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Opérations sur conduite', international_translation = 'Pipe Operations', s124_code=203 WHERE enum_name='OPERATION_ON_PIPE';
+            UPDATE warning_hazard_type_details SET translation = 'Travaux en cours', international_translation = 'Works in Progress', s124_code=298 WHERE enum_name='WORKS_IN_PROGRESS';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('UNDERWATER_OPERATIONS','Opérations sous-marines','Underwater Operations', 278) ON CONFLICT (enum_name) DO NOTHING;
+
+
+            <!-- SPECIAL_OPERATIONS - Opérations spéciales -->
+            UPDATE warning_hazard_type_details SET translation = 'Essais en mer', international_translation = 'Sea Trials', s124_code=244 WHERE enum_name='SEA_TRIALS';
+            UPDATE warning_hazard_type_details SET translation = 'Hydravion en opérations', international_translation = 'Seaplane Operations', s124_code=245 WHERE enum_name='SEAPLANE_OPERATIONS';
+            UPDATE warning_hazard_type_details SET translation = 'Exercice militaire', international_translation = 'Military Exercise', s124_code=190 WHERE enum_name='MILITARY_EXERCISE';
+            UPDATE warning_hazard_type_details SET translation = 'Exercice de tir', international_translation = 'Firing Exercise', s124_code=120 WHERE enum_name='FIRING_EXERCISE';
+            UPDATE warning_hazard_type_details SET translation = 'Exercice de brouillage', international_translation = 'Jamming Exercise', s124_code=150 WHERE enum_name='JAMMING_EXERCISE';
+            UPDATE warning_hazard_type_details SET translation = 'Opération militaire', international_translation = 'Military Operation', s124_code=191 WHERE enum_name='MILITARY_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de pétardement', international_translation = 'Blasting Operation', s124_code=35 WHERE enum_name='BLASTING_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Exercice anti-pollution', international_translation = 'Anti Pollution Exercise', s124_code=10 WHERE enum_name='ANTI_POLLUTION_EXERCISE';
+            UPDATE warning_hazard_type_details SET translation = 'Opération anti-pollution', international_translation = 'Anti Pollution Operation', s124_code=11 WHERE enum_name='ANTI_POLLUTION_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Exercice de recherche et de sauvetage', international_translation = 'SAR Exercise', s124_code=239 WHERE enum_name='SAR_EXERCISE';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de recherche et de sauvetage', international_translation = 'SAR Operation', s124_code=240 WHERE enum_name='SAR_OPERATION';
+            UPDATE warning_hazard_type_details SET translation = 'Activité de levé hydrographique', international_translation = 'Hydrographic Survey Activity', s124_code=146 WHERE enum_name='HYDROGRAPHIC_SURVEY';
+            UPDATE warning_hazard_type_details SET translation = 'Levé scientifique', international_translation = 'Scientific Survey', s124_code=243 WHERE enum_name='SCIENTIFIC_SURVEY';
+            UPDATE warning_hazard_type_details SET translation = 'Opération de levé sismique', international_translation = 'Seismic Survey Operation', s124_code=254 WHERE enum_name='SEISMIC_SURVEY';
+
+
+            <!-- TOWING_OPERATIONS - Opérations de remorquage -->
+            UPDATE warning_hazard_type_details SET translation = 'Remorquage de foreuse', international_translation = 'Drill Rig Under Tow', s124_code=90 WHERE enum_name='DRILL_RIG_UNDER_TOW';
+            UPDATE warning_hazard_type_details SET translation = 'Remorquage peu manoeuvrant', international_translation = 'Unwieldy Tow', s124_code=280 WHERE enum_name='UNWIELDY_TOW';
+
+
+            <!-- HAZARD_OTHER - Danger, autres -->
+            UPDATE warning_hazard_type_details SET translation = 'Présence de mines navales', international_translation = 'Presence of Naval Mines', s124_code=206 WHERE enum_name='MINES';
+            UPDATE warning_hazard_type_details SET translation = 'Engin explosif', international_translation = 'Explosive Device', s124_code=112 WHERE enum_name='EXPLOSIVE_DEVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Danger de retombées', international_translation = 'Fallout Hazard', s124_code=118 WHERE enum_name='FALLOUT_HAZARD';
+            UPDATE warning_hazard_type_details SET translation = 'Zone dangereuse', international_translation = 'Hazardous Area', s124_code=142 WHERE enum_name='HAZARDOUS_AREA';
+
+
+            <!-- AQUACULTURE_AND_FISHING_INSTALLATIONS - Installations d'aquaculture et de pêche -->
+            UPDATE warning_hazard_type_details SET translation = 'Site d''aquaculture', international_translation = 'Aquaculture Site', s124_code=12 WHERE enum_name='AQUACULTURE_SITE';
+            UPDATE warning_hazard_type_details SET translation = 'Dispositif de concentration de poissons', international_translation = 'Fish Aggregating Device', s124_code=121 WHERE enum_name='FISH_AGGREGATING_DEVICE_FAD';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LONG_FISHING_GEAR','Présence d''engin de pêche long','Presence of Long Fishing Gear', 204) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('NUMEROUS_FISHING_VESSELS','Nombreux navires de pêche','Numerous Fishing Vessels', 196) ON CONFLICT (enum_name) DO NOTHING;
+
+
+            <!-- OFFSHORE_STRUCTURES - Infrastructure offshore -->
+            UPDATE warning_hazard_type_details SET translation = 'Opérations sur site de forage', international_translation = 'Drilling Site Operations', s124_code=91 WHERE enum_name='DRILLING_SITE_OPERATIONS';
+            UPDATE warning_hazard_type_details SET translation = 'Ferme ou dispositif d''énergie renouvelable, changement', international_translation = 'Renewable Energy Device or Farm Change', s124_code=236 WHERE enum_name='RENEWABLE_ENERGY_DEVICE_FARM';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('OFFSHORE_RIGS_PLATFORM_CHG','Unités de forage ou plates-formes offshore, changements','Offshore Rigs or Platform Changes', 198) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SUBMARINE_CABLE_CHG','Cable sous-marin, changements','Submarine Cable Changes', 268) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SUBMARINE_PIPELINE_CHG','Conduite sous-marine, changements','Submarine Pipeline Changes', 269) ON CONFLICT (enum_name) DO NOTHING;
+
+
+            <!-- AIDS_TO_NAVIGATION - Modifications d'aides à la navigation -->
+            <!-- Incident/Bouée -->
+            UPDATE warning_hazard_type_details SET translation = 'Bouée lumineuse, feu éteint', international_translation = 'Light Buoy - Light Unlit', s124_code=153 WHERE enum_name='LIGHT_BUOY_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée lumineuse, feu incertain', international_translation = 'Light Buoy - Light Unreliable', s124_code=154 WHERE enum_name='LIGHT_BUOY_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée lumineuse, feu non synchronisé', international_translation = 'Light Buoy - Light Not Synchronized', s124_code=152 WHERE enum_name='LIGHT_BUOY_LIGHT_NOT_SYNCHRONIZED';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée lumineuse, feu endommagé', international_translation = 'Light Buoy - Light Damaged', s124_code=151 WHERE enum_name='LIGHT_BUOY_LIGHT_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée manquante', international_translation = 'Buoy Missing', s124_code=49 WHERE enum_name='BUOY_MISSING';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée déradée', international_translation = 'Buoy off Position', s124_code=51 WHERE enum_name='BUOY_OFF_POSITION';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée à la dérive', international_translation = 'Buoy Adrift', s124_code=41 WHERE enum_name='BUOY_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée endommagée', international_translation = 'Buoy Damaged', s124_code=44 WHERE enum_name='BUOY_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée détruite', international_translation = 'Buoy Destroyed', s124_code=47 WHERE enum_name='BUOY_DESTROYED';
+            UPDATE warning_hazard_type_details SET translation = 'Voyant de bouée manquant', international_translation = 'Buoy Topmark Missing', s124_code=60 WHERE enum_name='BUOY_TOPMARK_MISSING';
+            UPDATE warning_hazard_type_details SET translation = 'Voyant de bouée endommagé', international_translation = 'Buoy Topmark Damaged', s124_code=59 WHERE enum_name='BUOY_TOPMARK_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Marque de jour de bouée incertaine', international_translation = 'Buoy Daymark Unreliable', s124_code=45 WHERE enum_name='BUOY_DAYMARK_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée rétablie', international_translation = 'Buoy Re-established', s124_code=52 WHERE enum_name='BUOY_RE_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée revenue à la normale', international_translation = 'Buoy Restored to Normal', s124_code=55 WHERE enum_name='BUOY_RESTORED_TO_NORMAL';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LIGHT_SPAR_BUOY_LIGHT_UNLIT','Bouée à espar lumineuse, feu éteint','Light Spar Buoy - Light Unlit', 165) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LIGHT_SPAR_BUOY_LIGHT_UNRELIABLE','Bouée à espar lumineuse, feu incertain','Light Spar Buoy - Light Unreliable', 166) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LIGHT_SPAR_BUOY_LIGHT_NOT_SYNCHRONIZED','Bouée à espar lumineuse, feu non synchronisé','Light Spar Buoy - Light Not Synchronized', 164) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('LIGHT_SPAR_BUOY_LIGHT_DAMAGED','Bouée à espar lumineuse, feu endommagé','Light Spar Buoy - Light Damaged', 163) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_MISSING','Bouée à espar manquante','Spar Buoy Missing', 260) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_OFF_POSITION','Bouée à espar déradée','Spar Buoy off Position', 262) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_ADRIFT','Bouée à espar à la dérive','Spar Buoy Adrift', 257) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_DAMAGED','Bouée à espar endommagée','Spar Buoy Damaged', 258) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_DESTROYED','Bouée à espar détruite','Spar Buoy Destroyed', 259) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_TOPMARK_MISSING','Voyant de Bouée à espar manquant','Spar Buoy Topmark Missing', 265) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_RE_ESTABLISHMENT','Bouée à espar rétablie','Spar Buoy Re-established', 263) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_RESTORED_TO_NORMAL','Bouée à espar revenue à la normale','Spar Buoy Restored to Normal', 264) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('FAIRWAY_MARKER_LIGHT_UNLIT','Jalon de chenal, feu éteint','Fairway Marker - Light Unlit', 114) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('FAIRWAY_MARKER_LIGHT_UNRELIABLE','Jalon de chenal, feu incertain','Fairway Marker - Light Unreliable', 115) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('FAIRWAY_MARKER_LIGHT_NOT_SYNCHRONIZED','Jalon de chenal, feu non synchronisé','Fairway Marker - Light Not Synchronized', 113) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('FAIRWAY_MARKER_DAMAGED','Jalon de chenal endommagé','Fairway Marker Damaged', 116) ON CONFLICT (enum_name) DO NOTHING;
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('FAIRWAY_MARKER_DESTROYED','Jalon de chenal détruit','Fairway Marker Destroyed', 117) ON CONFLICT (enum_name) DO NOTHING;
+
+            <!-- Incident/Feu -->
+            UPDATE warning_hazard_type_details SET translation = 'Feu éteint', international_translation = 'Light Unlit', s124_code=170 WHERE enum_name='LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Feu incertain', international_translation = 'Light Unreliable', s124_code=171 WHERE enum_name='LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Portée de feu réduite', international_translation = 'Light Range Reduced', s124_code=160 WHERE enum_name='LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'Feu sans rythme', international_translation = 'Light Without Rhythm', s124_code=172 WHERE enum_name='LIGHT_WITHOUT_RHYTHM';
+            UPDATE warning_hazard_type_details SET translation = 'Feu non synchronisé', international_translation = 'Light Out Of Synchronization', s124_code=159 WHERE enum_name='LIGHT_OUT_OF_SYNCHRONIZATION';
+            UPDATE warning_hazard_type_details SET translation = 'Marque de jour de feu incertaine', international_translation = 'Light Daymark Unreliable', s124_code=156 WHERE enum_name='LIGHT_DAYMARK_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Secteur de feu, secteur obscurci', international_translation = 'Sector Light - Sector Obscured', s124_code=250 WHERE enum_name='SECTOR_LIGHT_SECTOR_OBSCURED';
+            UPDATE warning_hazard_type_details SET translation = 'Feu opérationnel', international_translation = 'Light Operating Properly', s124_code=158 WHERE enum_name='LIGHT_OPERATING_PROPERLY';
+
+            <!-- Incident/Balise -->
+            UPDATE warning_hazard_type_details SET translation = 'Balise manquante', international_translation = 'Beacon Missing', s124_code=27 WHERE enum_name='BEACON_MISSING';
+            UPDATE warning_hazard_type_details SET translation = 'Balise endommagée', international_translation = 'Beacon Damaged', s124_code=24 WHERE enum_name='BEACON_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Balise lumineuse, feu éteint', international_translation = 'Lighted Beacon - Light Unlit', s124_code=175 WHERE enum_name='LIGHTED_BEACON_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Balise lumineuse, feu incertain', international_translation = 'Lighted Beacon - Light Unreliable', s124_code=176 WHERE enum_name='LIGHTED_BEACON_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Balise lumineuse, feu non synchronisé', international_translation = 'Lighted Beacon - Light Not Synchronized', s124_code=174 WHERE enum_name='LIGHTED_BEACON_LIGHT_NOT_SYNCHRONIZED';
+            UPDATE warning_hazard_type_details SET translation = 'Balise lumineuse, feu endommagé', international_translation = 'Lighted Beacon - Light Damaged', s124_code=173 WHERE enum_name='LIGHTED_BEACON_LIGHT_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Voyant de balise manquant', international_translation = 'Beacon Topmark Missing', s124_code=34 WHERE enum_name='BEACON_TOPMARK_MISSING';
+            UPDATE warning_hazard_type_details SET translation = 'Voyant de balise endommagé', international_translation = 'Beacon Topmark Damaged', s124_code=33 WHERE enum_name='BEACON_TOPMARK_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'Marque de jour de balise incertaine', international_translation = 'Beacon Daymark Unreliable', s124_code=25 WHERE enum_name='BEACON_DAYMARK_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Balise éclairée, éteint', international_translation = 'Floodlit Beacon - Unlit', s124_code=124 WHERE enum_name='FLOODLIT_BEACON_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Balise revenue à la normale', international_translation = 'Beacon Restored To Normal', s124_code=29 WHERE enum_name='BEACON_RESTORED_TO_NORMAL';
+
+            <!-- Incident/Feu ou balise d'alignement -->
+            UPDATE warning_hazard_type_details SET translation = 'Feu antérieur éteint', international_translation = 'Front Light Unlit', s124_code=138 WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Feu postérieur éteint', international_translation = 'Rear Light Unlit', s124_code=232 WHERE enum_name='REAR_LEADING_RANGE_LIGHT_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'Feu antérieur incertain', international_translation = 'Front Light Unreliable', s124_code=139 WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Feu postérieur incertain', international_translation = 'Rear Light Unreliable', s124_code=233 WHERE enum_name='REAR_LEADING_RANGE_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Feu antérieur, portée réduite', international_translation = 'Front Light Range Reduced', s124_code=137 WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'Feu postérieur, portée réduite', international_translation = 'Rear Light Range Reduced', s124_code=231 WHERE enum_name='REAR_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'Feu antérieur sans rythme', international_translation = 'Front Light Without Rhythm', s124_code=140 WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM';
+            UPDATE warning_hazard_type_details SET translation = 'Feu postérieur sans rythme', international_translation = 'Rear Light Without Rhythm', s124_code=234 WHERE enum_name='REAR_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM';
+            UPDATE warning_hazard_type_details SET translation = 'Feux antérieurs et postérieurs désynchronisés', international_translation = 'Front and Rear Lights out of Synchronization', s124_code=133 WHERE enum_name='LEADING_RANGE_LIGHTS_OUT_OF_SYNCHRONIZATION';
+            UPDATE warning_hazard_type_details SET translation = 'Balise antérieure incertaine', international_translation = 'Front Beacon Unreliable', s124_code=135 WHERE enum_name='FRONT_LEADING_RANGE_BEACON_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Balise postérieure incertaine', international_translation = 'Rear Beacon Unreliable', s124_code=229 WHERE enum_name='REAR_LEADING_RANGE_BEACON_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Feu antérieur opérationnel', international_translation = 'Front Light is Operating Properly', s124_code=136 WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'Feu postérieur opérationnel', international_translation = 'Rear Light is Operating Properly', s124_code=230 WHERE enum_name='REAR_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'Balise antérieure revenue à la normale', international_translation = 'Front Beacon Restored to Normal', s124_code=134 WHERE enum_name='FRONT_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL';
+            UPDATE warning_hazard_type_details SET translation = 'Balise postérieure revenue à la normale', international_translation = 'Rear Beacon Restored to Normal', s124_code=228 WHERE enum_name='REAR_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL';
+
+            <!-- Incident/Signal sonore -->
+            UPDATE warning_hazard_type_details SET translation = 'Signal de brume hors service', international_translation = 'Fog Signal Out Of Service', s124_code=128 WHERE enum_name='FOG_SIGNAL_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Signal de brume opérationnel', international_translation = 'Fog Signal Operating Properly', s124_code=127 WHERE enum_name='FOG_SIGNAL_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'Signal sonore hors service', international_translation = 'Audible Signal Out Of Service', s124_code=17 WHERE enum_name='AUDIBLE_SIGNAL_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Signal sonore opérationnel', international_translation = 'Audible Signal Operating Properly', s124_code=16 WHERE enum_name='AUDIBLE_SIGNAL_OPERATING_PROPERLY';
+
+            <!-- Incident/Aide radio -->
+            UPDATE warning_hazard_type_details SET translation = 'Emetteur AIS hors service', international_translation = 'AIS Transmitter Out Of Service', s124_code=5 WHERE enum_name='AIS_TRANSMITTER_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Emetteur AIS incertain', international_translation = 'AIS Transmitter Unreliable', s124_code=8 WHERE enum_name='AIS_TRANSMITTER_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Emetteur AIS opérationnel', international_translation = 'AIS Transmitter Operating Properly', s124_code=4 WHERE enum_name='AIS_TRANSMITTER_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS hors service', international_translation = 'V-AIS Out Of Service', s124_code=284 WHERE enum_name='V_AIS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS incertain', international_translation = 'V-AIS Unreliable', s124_code=289 WHERE enum_name='V_AIS_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS opérationnel', international_translation = 'V-AIS Operating Properly', s124_code=283 WHERE enum_name='V_AIS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'RACON hors service', international_translation = 'RACON Out Of Service', s124_code=212 WHERE enum_name='RACON_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'RACON incertain', international_translation = 'RACON Unreliable', s124_code=217 WHERE enum_name='RACON_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'RACON opérationnel', international_translation = 'RACON Operating Properly', s124_code=211 WHERE enum_name='RACON_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK hors service', international_translation = 'RAMARK Out Of Service', s124_code=222 WHERE enum_name='RAMARK_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK incertain', international_translation = 'RAMARK Unreliable', s124_code=227 WHERE enum_name='RAMARK_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK opérationnel', international_translation = 'RAMARK Operating Properly', s124_code=221 WHERE enum_name='RAMARK_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'Dégradation GNSS', international_translation = 'GNSS Degradation', s124_code=141 WHERE enum_name='GNSS_DEGRADATION';
+            UPDATE warning_hazard_type_details SET translation = 'DGPS hors service', international_translation = 'DGPS Out Of Service', s124_code=82 WHERE enum_name='DGPS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'DGPS incertain', international_translation = 'DGPS Unreliable', s124_code=86 WHERE enum_name='DGPS_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'DGPS opérationnel', international_translation = 'DGPS Operating Properly', s124_code=81 WHERE enum_name='DGPS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'LORAN C hors service', international_translation = 'LORAN C - Out Of Service', s124_code=182 WHERE enum_name='LORAN_C_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'LORAN C incertain', international_translation = 'LORAN C - Unreliable', s124_code=183 WHERE enum_name='LORAN_C_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'LORAN C opérationnel', international_translation = 'LORAN C - Operating Properly', s124_code=181 WHERE enum_name='LORAN_C_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'ELORAN hors service', international_translation = 'ELORAN Out Of Service', s124_code=106 WHERE enum_name='ELORAN_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'ELORAN incertain', international_translation = 'ELORAN Unreliable', s124_code=110 WHERE enum_name='ELORAN_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'ELORAN opérationnel', international_translation = 'ELORAN Operating Properly', s124_code=105 WHERE enum_name='ELORAN_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'DGLONASS hors service', international_translation = 'DGLONASS Out Of Service', s124_code=78 WHERE enum_name='DGLONASS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'DGLONASS incertain', international_translation = 'DGLONASS Unreliable', s124_code=80 WHERE enum_name='DGLONASS_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'DGLONASS opérationnel', international_translation = 'DGLONASS Operating Properly', s124_code=77 WHERE enum_name='DGLONASS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'Chayka hors service', international_translation = 'Chayka Out Of Service', s124_code=67 WHERE enum_name='CHAYKA_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Chayka incertain', international_translation = 'Chayka Unreliable', s124_code=70 WHERE enum_name='CHAYKA_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'Chayka opérationnel', international_translation = 'Chayka Operating Properly', s124_code=66 WHERE enum_name='CHAYKA_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'E-Chayka hors service', international_translation = 'E-Chayka Out Of Service', s124_code=93 WHERE enum_name='E_CHAYKA_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'E-Chayka incertain', international_translation = 'E-Chayka Unreliable', s124_code=97 WHERE enum_name='E_CHAYKA_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'E-Chayka opérationnel', international_translation = 'E-Chayka Operating Properly', s124_code=92 WHERE enum_name='E_CHAYKA_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS hors service', international_translation = 'EGNOS Out Of Service', s124_code=100 WHERE enum_name='EGNOS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS incertain', international_translation = 'EGNOS Unreliable', s124_code=104 WHERE enum_name='EGNOS_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS opérationnel', international_translation = 'EGNOS Operating Properly', s124_code=99 WHERE enum_name='EGNOS_OPERATING_PROPERLY';
+
+            <!-- Incident/Général -->
+            UPDATE warning_hazard_type_details SET translation = 'Aides marines  à la navigation non fiables', international_translation = 'Marine Aids to Navigation Unreliable', s124_code=187 WHERE enum_name='MARINE_AIDS_TO_NAVIGATION_UNRELIABLE';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('ALL_AIDS_TO_NAVIGATION_NOT_RELIABLE','Toutes les aides à la navigation non fiables','All Aids To Navigation Unreliable', 9) ON CONFLICT (enum_name) DO NOTHING;
+
+            <!-- Fin d'incident -->
+            UPDATE warning_hazard_type_details SET translation = 'Aide à la navigation opérationnelle', international_translation = 'AtoN Operating Properly', s124_code=13 WHERE enum_name='ATON_OPERATING_PROPERLY';
+
+            <!-- Mise en place -->
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place saisonnière en cours', international_translation = 'Seasonal Commissioning in Progress', s124_code=247 WHERE enum_name='SEASONAL_RECOMMISSIONING_IN_PROGRESS';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place saisonnière achevée', international_translation = 'Seasonal Commissioning Complete', s124_code=246 WHERE enum_name='SEASONAL_RECOMMISSIONING_COMPLETE';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée mise en place pour la saison de navigation', international_translation = 'Buoy Commissioned for Navigation Season', s124_code=43 WHERE enum_name='BUOY_RECOMMISSIONED_FOR_NAVIGATION_SEASON';
+            UPDATE warning_hazard_type_details SET translation = 'Balisage temporaire', international_translation = 'Temporary Buoyage', s124_code=273 WHERE enum_name='TEMPORARY_BUOY_BUOYS';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de bouée', international_translation = 'Buoy Establishment', s124_code=48 WHERE enum_name='BUOY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de bouée', international_translation = 'Buoy Temporary Establishment', s124_code=57 WHERE enum_name='BUOY_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de feu', international_translation = 'Light Establishment', s124_code=157 WHERE enum_name='LIGHT_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Rétablissement de feu', international_translation = 'Light Re-Establishment', s124_code=161 WHERE enum_name='LIGHT_RE_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de feu', international_translation = 'Light Temporary Establishment', s124_code=168 WHERE enum_name='LIGHT_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de balise', international_translation = 'Beacon Establishment', s124_code=26 WHERE enum_name='BEACON_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de balise', international_translation = 'Beacon Temporary Establishment', s124_code=31 WHERE enum_name='BEACON_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de signal de brume', international_translation = 'Fog Signal Establishment', s124_code=126 WHERE enum_name='FOG_SIGNAL_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de signal de brume', international_translation = 'Fog Signal Temporary Establishment', s124_code=131 WHERE enum_name='FOG_SIGNAL_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de signal sonore', international_translation = 'Audible Signal Establishment', s124_code=15 WHERE enum_name='AUDIBLE_SIGNAL_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de signal sonore', international_translation = 'Audible Signal Temporary Establishment', s124_code=20 WHERE enum_name='AUDIBLE_SIGNAL_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place d''émetteur AIS', international_translation = 'AIS Transmitter Establishment', s124_code=3 WHERE enum_name='AIS_TRASMITTER_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire d''AIS', international_translation = 'AIS Temporary Establishment', s124_code=2 WHERE enum_name='AIS_TRASMITTER_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de V-AIS', international_translation = 'V-AIS Establishment', s124_code=282 WHERE enum_name='V_AIS_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de V-AIS', international_translation = 'V-AIS Temporary Establishment', s124_code=287 WHERE enum_name='V_AIS_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de RACON', international_translation = 'RACON Establishment', s124_code=210 WHERE enum_name='RACON_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de RACON', international_translation = 'RACON Temporary Establishment', s124_code=215 WHERE enum_name='RACON_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de RAMARK', international_translation = 'RAMARK Establishment', s124_code=220 WHERE enum_name='RAMARK_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place temporaire de RAMARK', international_translation = 'RAMARK Temporary Establishment', s124_code=225 WHERE enum_name='RAMARK_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de station DGPS', international_translation = 'DGPS Station Establishment', s124_code=83 WHERE enum_name='DGPS_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de station ELORAN', international_translation = 'ELORAN Station Establishment', s124_code=107 WHERE enum_name='ELORAN_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de station DGLONASS', international_translation = 'DGLONASS Station Establishment', s124_code=79 WHERE enum_name='DGLONASS_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de station e-Chayka', international_translation = 'E-Chayka Station Establishment', s124_code=94 WHERE enum_name='E_CHAYKA_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'Mise en place de station EGNOS', international_translation = 'EGNOS Station Establishment', s124_code=101 WHERE enum_name='EGNOS_STATION_ESTABLISHMENT';
+
+            <!-- Suppression ou retrait -->
+            UPDATE warning_hazard_type_details SET translation = 'Bouée amenée à être retirée', international_translation = 'Buoy Will Be Withdrawn', s124_code=61 WHERE enum_name='BUOY_WILL_BE_WITHDRAWN';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée retirée', international_translation = 'Buoy Withdrawn', s124_code=62 WHERE enum_name='BUOY_WITHDRAWN';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de bouée', international_translation = 'Buoy Removal', s124_code=53 WHERE enum_name='BUOY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de bouée', international_translation = 'Buoy Temporary Removal', s124_code=58 WHERE enum_name='BUOY_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Retrait saisonnier en cours', international_translation = 'Seasonal Decommissioning in Progress', s124_code=249 WHERE enum_name='SEASONAL_DECOMMISSIONING_IN_PROGRESS';
+            UPDATE warning_hazard_type_details SET translation = 'Retrait saisonnier achevé', international_translation = 'Seasonal Decommissioning Complete', s124_code=248 WHERE enum_name='SEASONAL_DECOMMISSIONING_COMPLETE';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée retirée pour l''hiver', international_translation = 'Buoy Withdrawn for Winter', s124_code=63 WHERE enum_name='BUOY_LIFTED_FOR_WINTER';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée remplacée par un espar d''hiver', international_translation = 'Buoy Replaced by Winter Spar', s124_code=54 WHERE enum_name='BUOY_REPLACED_BY_WINTER_SPAR';
+            UPDATE warning_hazard_type_details SET translation = 'Bouée mise hors service pour l''hiver', international_translation = 'Buoy Decommissioned for Winter', s124_code=46 WHERE enum_name='BUOY_DECOMMISSIONED_FOR_WINTER';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de feu', international_translation = 'Light Removal', s124_code=162 WHERE enum_name='LIGHT_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de feu', international_translation = 'Light Temporary Removal', s124_code=169 WHERE enum_name='LIGHT_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de balise', international_translation = 'Beacon Removal', s124_code=28 WHERE enum_name='BEACON_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de balise', international_translation = 'Beacon Temporary Removal', s124_code=32 WHERE enum_name='BEACON_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de signal de brume', international_translation = 'Fog Signal Removal', s124_code=129 WHERE enum_name='FOG_SIGNAL_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de signal de brume', international_translation = 'Fog Signal Temporary Removal', s124_code=132 WHERE enum_name='FOG_SIGNAL_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de signal sonore', international_translation = 'Audible Signal Removal', s124_code=18 WHERE enum_name='AUDIBLE_SIGNAL_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de signal sonore', international_translation = 'Audible Signal Temporary Removal', s124_code=21 WHERE enum_name='AUDIBLE_SIGNAL_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression d''emetteur AIS', international_translation = 'AIS Transmitter Removal', s124_code=6 WHERE enum_name='AIS_TRANSMITTER_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire d''émetteur AIS', international_translation = 'AIS Transmitter Temporary Removal', s124_code=7 WHERE enum_name='AIS_TRANSMITTER_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de V-AIS', international_translation = 'V-AIS Removal', s124_code=285 WHERE enum_name='V_AIS_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire V-AIS', international_translation = 'V-AIS Temporary Removal', s124_code=288 WHERE enum_name='V_AIS_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de RACON', international_translation = 'RACON Removal', s124_code=213 WHERE enum_name='RACON_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de RACON', international_translation = 'RACON Temporary Removal', s124_code=216 WHERE enum_name='RACON_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de RAMARK', international_translation = 'RAMARK removal', s124_code=223 WHERE enum_name='RAMARKREMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de RAMARK', international_translation = 'RAMARK Temporary Removal', s124_code=226 WHERE enum_name='RAMARK_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station DGPS', international_translation = 'DGPS Station Removal', s124_code=84 WHERE enum_name='DGPS_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station DGPS', international_translation = 'DGPS Station Temporary Removal', s124_code=85 WHERE enum_name='DGPS_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station LORAN C', international_translation = 'LORAN C Station Removal', s124_code=184 WHERE enum_name='LORAN_C_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station LORAN C', international_translation = 'LORAN C Station Temporary Removal', s124_code=185 WHERE enum_name='LORAN_C_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station ELORAN', international_translation = 'ELORAN Station Removal', s124_code=108 WHERE enum_name='ELORAN_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station ELORAN', international_translation = 'ELORAN Station Temporary Removal', s124_code=109 WHERE enum_name='ELORAN_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station Chayka', international_translation = 'Chayka Station Removal', s124_code=68 WHERE enum_name='CHAYKA_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station Chayka', international_translation = 'Chayka Station Temporary Removal', s124_code=69 WHERE enum_name='CHAYKA_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station E-Chayka', international_translation = 'E-Chayka Station Removal', s124_code=95 WHERE enum_name='E_CHAYKA_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station E-Chayka', international_translation = 'E-Chayka Station Temporary Removal', s124_code=96 WHERE enum_name='E_CHAYKA_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression de station EGNOS', international_translation = 'EGNOS Station Removal', s124_code=102 WHERE enum_name='EGNOS_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'Suppression temporaire de station EGNOS', international_translation = 'EGNOS Station Temporary Removal', s124_code=103 WHERE enum_name='EGNOS_STATION_TEMPORARY_REMOVAL';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_WITHDRAWN','Bouée à espar retirée','Spar Buoy Withdrawn', 266) ON CONFLICT (enum_name) DO NOTHING;
+
+            <!-- Modification -->
+            UPDATE warning_hazard_type_details SET translation = 'Déplacement de bouée', international_translation = 'Buoy Move', s124_code=50 WHERE enum_name='BUOY_MOVE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de bouée', international_translation = 'Buoy Change', s124_code=42 WHERE enum_name='BUOY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de bouée', international_translation = 'Buoy Temporary Change', s124_code=56 WHERE enum_name='BUOY_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de feu', international_translation = 'Light Change', s124_code=155 WHERE enum_name='LIGHT_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de feu', international_translation = 'Light Temporary Change', s124_code=167 WHERE enum_name='LIGHT_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de secteur de feu', international_translation = 'Sector Light Change', s124_code=251 WHERE enum_name='SECTOR_LIGHT_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de secteur de feu', international_translation = 'Sector Light Temporary Change', s124_code=252 WHERE enum_name='SECTOR_LIGHT_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de balise', international_translation = 'Beacon Change', s124_code=23 WHERE enum_name='BEACON_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de balise', international_translation = 'Beacon Temporary Change', s124_code=30 WHERE enum_name='BEACON_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de signal de brume', international_translation = 'Fog Signal Change', s124_code=125 WHERE enum_name='FOG_SIGNAL_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de signal de brume', international_translation = 'Fog Signal Temporary Change', s124_code=130 WHERE enum_name='FOG_SIGNAL_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de signal sonore', international_translation = 'Audible Signal Change', s124_code=14 WHERE enum_name='AUDIBLE_SIGNAL_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de signal sonore', international_translation = 'Audible Signal Temporary Change', s124_code=19 WHERE enum_name='AUDIBLE_SIGNAL_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de V-AIS', international_translation = 'V-AIS Change', s124_code=281 WHERE enum_name='V_AIS_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de V-AIS', international_translation = 'V-AIS Temporary Change', s124_code=286 WHERE enum_name='V_AIS_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de RACON', international_translation = 'RACON Change', s124_code=209 WHERE enum_name='RACON_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de RACON', international_translation = 'RACON Temporary Change', s124_code=214 WHERE enum_name='RACON_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de RAMARK', international_translation = 'RAMARK Change', s124_code=219 WHERE enum_name='RAMARK_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification temporaire de RAMARK', international_translation = 'RAMARK Temporary Change', s124_code=224 WHERE enum_name='RAMARK_TEMPORARY_CHANGE';
+
+            INSERT INTO warning_hazard_type_details (enum_name, translation, international_translation, s124_code) VALUES ('SPAR_BUOY_MOVE','Déplacement de bouée à espar','Spar Buoy Move', 261) ON CONFLICT (enum_name) DO NOTHING;
+
+
+            <!-- RADIO_SERVICES - Modification de service de communication ou de radiodiffusion -->
+            UPDATE warning_hazard_type_details SET translation = 'Modification de service VHF', international_translation = 'VHF Service Change', s124_code=293 WHERE enum_name='VHF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Service HF', international_translation = 'HF Service', s124_code=143 WHERE enum_name='HF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Service MF', international_translation = 'MF Service', s124_code=189 WHERE enum_name='MF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Service RSM AGA', international_translation = 'EGC MSI Service', s124_code=98 WHERE enum_name='EGC_MSI_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de service NAVTEX', international_translation = 'NAVTEX Service Change', s124_code=194 WHERE enum_name='NAVTEX';
+            UPDATE warning_hazard_type_details SET translation = 'Services RSM', international_translation = 'MSI Services', s124_code=192 WHERE enum_name='MSI_SERVICES';
+
+
+            <!-- NATURAL_PHENOMENA - Phénomènes naturels dangereux -->
+            UPDATE warning_hazard_type_details SET translation = 'Alerte au tsunami', international_translation = 'Tsunami Warning', s124_code=276 WHERE enum_name='TSUNAMI_WARNING';
+            UPDATE warning_hazard_type_details SET translation = 'Activité volcanique', international_translation = 'Volcano Activity', s124_code=294 WHERE enum_name='VOLCANO_ACTIVITY';
+            UPDATE warning_hazard_type_details SET translation = 'Hauteur d''eau faible', international_translation = 'Low Water Level', s124_code=186 WHERE enum_name='LOW_WATER_LEVEL';
+            UPDATE warning_hazard_type_details SET translation = 'Hauteur d''eau élevée', international_translation = 'High Water Level', s124_code=144 WHERE enum_name='HIGH_WATER_LEVEL';
+            UPDATE warning_hazard_type_details SET translation = 'Onde de tempête', international_translation = 'Storm Surge', s124_code=267 WHERE enum_name='STORM_SURGE';
+
+
+            <!-- ICE - Information sur les glaces -->
+            UPDATE warning_hazard_type_details SET translation = 'Estacade à glace - Installation ou suppression', international_translation = 'Ice Boom - Installation or Removal', s124_code=147 WHERE enum_name='ICE_BOOM';
+            UPDATE warning_hazard_type_details SET translation = 'Zone de contrôle des glaces active ou déactivée', international_translation = 'Ice Control Zone In-Force or Deactivated', s124_code=148 WHERE enum_name='ICE_CONTROL_ZONE';
+            UPDATE warning_hazard_type_details SET translation = 'Iceberg au-delà de la limite annoncée', international_translation = 'Iceberg Outside Advertised Limits', s124_code=149 WHERE enum_name='ICEBERG_OUTSIDE_OF_ADVERTISED_LIMIT';
+            UPDATE warning_hazard_type_details SET translation = 'Cible radar non identifiée - Iceberg possible', international_translation = 'Unidentified Radar Target - Possible Iceberg', s124_code=279 WHERE enum_name='UNIDENTIFIED_RADAR_TARGET_POSSIBLE_ICEBERG';
+            UPDATE warning_hazard_type_details SET translation = 'Information officielle de routage dans les glaces', international_translation = 'Authorized Ice Routeing Information', s124_code=22 WHERE enum_name='AUTHORIZED_ICE_ROUTING_INFORMATION';
+
+
+            <!-- HEALTH_ADVISORY - Avis sanitaires -->
+            UPDATE warning_hazard_type_details SET translation = 'Avis de l''autorité sanitaire nationale', international_translation = 'National Health Authority Notice', s124_code=193 WHERE enum_name='NATIONAL_HEALTH_AUTHORITY_NOTICE';
+            UPDATE warning_hazard_type_details SET translation = 'Avis de l''organisation mondiale de la santé', international_translation = 'World Health Organization Notice', s124_code=299 WHERE enum_name='WORLD_HEALTH_ORGANIZATION_NOTICE';
+            UPDATE warning_hazard_type_details SET translation = 'Avis de l''autorité sanitaire locale', international_translation = 'Local Health Authority Notice', s124_code=177 WHERE enum_name='LOCAL_HEALTH_AUTHORITY_NOTICE';
+
+
+            <!-- SECURITY - Modification de mesure de sûreté -->
+            UPDATE warning_hazard_type_details SET translation = 'Modifications du niveau de sûreté maritime', international_translation = 'Maritime Security Level Changes', s124_code=188 WHERE enum_name='MARITIME_SECURITY_LEVEL_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'Modification de la réglementation relative à la sûreté', international_translation = 'Security Regulation Change', s124_code=253 WHERE enum_name='SECURITY_REGULATION_CHANGE';
+
+
+            <!-- lines removed -->
+            DELETE FROM warning_hazard_type_details WHERE enum_name IN ('SHOAL', 'SUBSURFACE_PIPELINE', 'DRILLING_RIG_SHIP_ON_LOCATION', 'MUSSEL_FARM', 'NEW_ROUTEING_MEASURES', 'OIL_GAS_PRODUCTION_PLATFORM');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning" author="a662829">
+        <sql stripComments="true" dbms="postgresql">
+            <!-- Update warnings with replaced type details -->
+            <!-- details change -->
+            UPDATE warning_feature_part_warning_hazard_type_details SET warning_hazard_type_detail='SANDSPIT' WHERE warning_hazard_type_detail='SHOAL';
+            UPDATE warning_feature_part_warning_hazard_type_details SET warning_hazard_type_detail='SUBMARINE_PIPELINE_CHG' WHERE warning_hazard_type_detail='SUBSURFACE_PIPELINE';
+            UPDATE warning_feature_part_warning_hazard_type_details SET warning_hazard_type_detail='AQUACULTURE_SITE' WHERE warning_hazard_type_detail='MUSSEL_FARM';
+            UPDATE warning_feature_part_warning_hazard_type_details SET warning_hazard_type_detail='REGULATION' WHERE warning_hazard_type_detail='NEW_ROUTEING_MEASURES';
+            UPDATE warning_feature_part_warning_hazard_type_details SET warning_hazard_type_detail='OFFSHORE_RIGS_PLATFORM_CHG' WHERE warning_hazard_type_detail='OIL_GAS_PRODUCTION_PLATFORM';
+
+            <!-- details removed and replaced by general type -->
+            -- (1) update warning.warning_hazard_type_general with 'RIG_LIST' where a part has warning_hazard_type_detail='DRILLING_RIG_SHIP_ON_LOCATION'
+            UPDATE warning SET warning_hazard_type_general = 'RIG_LIST' WHERE id IN (
+                SELECT w.id FROM warning w
+                INNER JOIN warning_feature_part wfp ON wfp.warning_id = w.id
+                INNER JOIN warning_feature_part_warning_hazard_type_details wfpwhtd ON wfp.id = wfpwhtd.feature_part_id
+                WHERE wfpwhtd.warning_hazard_type_detail = 'DRILLING_RIG_SHIP_ON_LOCATION'
+            );
+            -- (2) remove from warning_feature_part_warning_hazard_type_details where warning_hazard_type_detail='DRILLING_RIG_SHIP_ON_LOCATION'
+            DELETE FROM warning_feature_part_warning_hazard_type_details WHERE warning_hazard_type_detail='DRILLING_RIG_SHIP_ON_LOCATION';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Update_sub_area" author="w116610">
+
+        <!-- SUBSCRIPTION -->
+        <sql stripComments="true" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION update_subscription_sub_area(
+                old_sub_area_name TEXT,
+                new_sub_area_name TEXT
+            ) RETURNS VOID AS $$
+
+            BEGIN
+
+                DELETE FROM subscription_sub_area ssa
+                WHERE sub_area_id = (
+                    SELECT sa.id
+                    FROM sub_area sa
+                    INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                    INNER JOIN serie s ON s.id = ssa.serie_id
+                    WHERE sa.name = old_sub_area_name
+                    AND s.name = 'AVINAV BREST')
+                AND EXISTS (
+                    SELECT subscription_id FROM subscription_sub_area ssa2
+                    WHERE ssa2.subscription_id = ssa.subscription_id
+                    AND ssa2.sub_area_id = (
+                        SELECT sa.id
+                        FROM sub_area sa
+                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                        INNER JOIN serie s ON s.id = ssa.serie_id
+                        WHERE sa.name = new_sub_area_name
+                        AND s.name = 'AVINAV BREST'));
+
+                UPDATE subscription_sub_area
+                SET sub_area_id = (
+                    SELECT sa.id
+                    FROM sub_area sa
+                    INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                    INNER JOIN serie s ON s.id = ssa.serie_id
+                    WHERE sa.name = new_sub_area_name
+                    AND s.name = 'AVINAV BREST')
+                WHERE sub_area_id = (
+                    SELECT sa.id
+                    FROM sub_area sa
+                    INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                    INNER JOIN serie s ON s.id = ssa.serie_id
+                    WHERE sa.name = old_sub_area_name
+                    AND s.name = 'AVINAV BREST');
+
+            END $$
+            LANGUAGE plpgsql;
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            SELECT update_subscription_sub_area('ILLE-ET-VILAINE', 'CASQUETS');
+            SELECT update_subscription_sub_area('COTES D ARMOR', 'CASQUETS');
+            SELECT update_subscription_sub_area('FINISTERE', 'IROISE');
+            SELECT update_subscription_sub_area('MORBIHAN', 'IROISE');
+            SELECT update_subscription_sub_area('LOIRE-ATLANTIQUE', 'YEU');
+            SELECT update_subscription_sub_area('VENDEE', 'YEU');
+            SELECT update_subscription_sub_area('CHARENTE MARITIME', 'ROCHEBONNE');
+            SELECT update_subscription_sub_area('GIRONDE', 'ROCHEBONNE');
+            SELECT update_subscription_sub_area('LANDES', 'CANTABRICO');
+            SELECT update_subscription_sub_area('PYRENEES-ATLANTIQUE', 'CANTABRICO');
+        </sql>
+
+
+        <!-- GENERAL AREA -->
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV Brest'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV Brest'),
+                    name = 'CASQUETS'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ILLE-ET-VILAINE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV Brest'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV Brest'),
+                    name = 'CASQUETS'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'COTES D ARMOR'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 335 AND year = 2021)
+                                                                   OR (warning_number = 241 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV Brest'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV Brest'),
+                    name = 'OUESSANT'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'COTES D ARMOR'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 335 AND year = 2021)
+                                                               OR (warning_number = 241 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV Brest'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV Brest'),
+                    name = 'IROISE'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 229 AND year = 2023)
+                                                                   OR (warning_number = 247 AND year = 2023)
+                                                                   OR (warning_number = 31 AND year = 2022)
+                                                                   OR (warning_number = 137 AND year = 2023)
+                                                                   OR (warning_number = 245 AND year = 2023)
+                                                                   OR (warning_number = 64 AND year = 2023)
+                                                                   OR (warning_number = 353 AND year = 2022)
+                                                                   OR (warning_number = 354 AND year = 2021)
+                                                                   OR (warning_number = 237 AND year = 2021)
+                                                                   OR (warning_number = 77 AND year = 2023)
+                                                                   OR (warning_number = 310 AND year = 2022)
+                                                                   OR (warning_number = 164 AND year = 2023)
+                                                                   OR (warning_number = 195 AND year = 2023)
+                                                                   OR (warning_number = 23 AND year = 2021)
+                                                                   OR (warning_number = 172 AND year = 2020)
+                                                                   OR (warning_number = 71 AND year = 2023)
+                                                                   OR (warning_number = 137 AND year = 2021)
+                                                                   OR (warning_number = 215 AND year = 2023)
+                                                                   OR (warning_number = 26 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'OUESSANT'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 229 AND year = 2023)
+                                                               OR (warning_number = 247 AND year = 2023)
+                                                               OR (warning_number = 31 AND year = 2022)
+                                                               OR (warning_number = 137 AND year = 2023)
+                                                               OR (warning_number = 245 AND year = 2023)
+                                                               OR (warning_number = 64 AND year = 2023)
+                                                               OR (warning_number = 353 AND year = 2022)
+                                                               OR (warning_number = 354 AND year = 2021)
+                                                               OR (warning_number = 237 AND year = 2021)
+                                                               OR (warning_number = 77 AND year = 2023)
+                                                               OR (warning_number = 310 AND year = 2022)
+                                                               OR (warning_number = 164 AND year = 2023)
+                                                               OR (warning_number = 195 AND year = 2023)
+                                                               OR (warning_number = 23 AND year = 2021)
+                                                               OR (warning_number = 172 AND year = 2020)
+                                                               OR (warning_number = 71 AND year = 2023)
+                                                               OR (warning_number = 137 AND year = 2021));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PAZENN'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PAZENN'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PAZENN'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'PAZENN'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 215 AND year = 2023)
+                                                               OR (warning_number = 26 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'IROISE'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'MORBIHAN'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 24 AND year = 2023)
+                                                                   OR (warning_number = 47 AND year = 2023)
+                                                                   OR (warning_number = 365 AND year = 2023)
+                                                                   OR (warning_number = 359 AND year = 2021)
+                                                                   OR (warning_number = 372 AND year = 2021)
+                                                                   OR (warning_number = 18 AND year = 2018)
+                                                                   OR (warning_number = 161 AND year = 2023)
+                                                                   OR (warning_number = 152 AND year = 2021)
+                                                                   OR (warning_number = 104 AND year = 2021)
+                                                                   OR (warning_number = 231 AND year = 2023)
+                                                                   OR (warning_number = 65 AND year = 2023)
+                                                                   OR (warning_number = 241 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'YEU'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'MORBIHAN'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 24 AND year = 2023)
+                                                               OR (warning_number = 47 AND year = 2023)
+                                                               OR (warning_number = 365 AND year = 2023)
+                                                               OR (warning_number = 359 AND year = 2021)
+                                                               OR (warning_number = 372 AND year = 2021)
+                                                               OR (warning_number = 18 AND year = 2018)
+                                                               OR (warning_number = 161 AND year = 2023)
+                                                               OR (warning_number = 152 AND year = 2021)
+                                                               OR (warning_number = 104 AND year = 2021)
+                                                               OR (warning_number = 231 AND year = 2023)
+                                                               OR (warning_number = 65 AND year = 2023)
+                                                               OR (warning_number = 241 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'YEU'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'LOIRE-ATLANTIQUE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'YEU'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'VENDEE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 106 AND year = 2021)
+                                                                   OR (warning_number = 126 AND year = 2022)
+                                                                   OR (warning_number = 209 AND year = 2023));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'ROCHEBONNE'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'VENDEE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 106 AND year = 2021)
+                                                               OR (warning_number = 126 AND year = 2022)
+                                                               OR (warning_number = 209 AND year = 2023));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'ROCHEBONNE'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CHARENTE MARITIME'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'ROCHEBONNE'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'GIRONDE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 213 AND year = 2022)
+                                                                   OR (warning_number = 371 AND year = 2021)
+                                                                   OR (warning_number = 320 AND year = 2021)
+                                                                   OR (warning_number = 279 AND year = 2020)
+                                                                   OR (warning_number = 318 AND year = 2022)
+                                                                   OR (warning_number = 12 AND year = 2019)
+                                                                   OR (warning_number = 74 AND year = 2023)
+                                                                   OR (warning_number = 262 AND year = 2020)
+                                                                   OR (warning_number = 358 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'CANTABRICO'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'GIRONDE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 213 AND year = 2022)
+                                                               OR (warning_number = 371 AND year = 2021)
+                                                               OR (warning_number = 320 AND year = 2021)
+                                                               OR (warning_number = 279 AND year = 2020)
+                                                               OR (warning_number = 318 AND year = 2022)
+                                                               OR (warning_number = 12 AND year = 2019)
+                                                               OR (warning_number = 74 AND year = 2023)
+                                                               OR (warning_number = 262 AND year = 2020)
+                                                               OR (warning_number = 358 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'CANTABRICO'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'LANDES'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_general_area
+            SET     sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    urn = (SELECT sa.urn
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    international_name = (SELECT sa.international_name
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST'),
+                    name = 'CANTABRICO'
+            WHERE   sub_area_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PYRENEES-ATLANTIQUE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+
+        <!-- REMOVE DUPLICATES -->
+        <sql stripComments="true" dbms="postgresql">
+            WITH duplicates AS (
+                SELECT
+                    id,
+                    ROW_NUMBER() OVER (PARTITION BY warning_id, sub_area_id ORDER BY id) AS row_num
+                FROM warning_general_area
+            )
+            DELETE FROM warning_general_area
+            WHERE id IN (
+                SELECT id FROM duplicates WHERE row_num > 1
+            );
+        </sql>
+
+        <!-- LOCALITY NAMES -->
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ILLE-ET-VILAINE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CASQUETS'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'COTES D ARMOR'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 335 AND year = 2021)
+                                                                   OR (warning_number = 241 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'COTES D ARMOR'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 335 AND year = 2021)
+                                                               OR (warning_number = 241 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 229 AND year = 2023)
+                                                                   OR (warning_number = 247 AND year = 2023)
+                                                                   OR (warning_number = 31 AND year = 2022)
+                                                                   OR (warning_number = 137 AND year = 2023)
+                                                                   OR (warning_number = 245 AND year = 2023)
+                                                                   OR (warning_number = 64 AND year = 2023)
+                                                                   OR (warning_number = 353 AND year = 2022)
+                                                                   OR (warning_number = 354 AND year = 2021)
+                                                                   OR (warning_number = 237 AND year = 2021)
+                                                                   OR (warning_number = 77 AND year = 2023)
+                                                                   OR (warning_number = 310 AND year = 2022)
+                                                                   OR (warning_number = 164 AND year = 2023)
+                                                                   OR (warning_number = 195 AND year = 2023)
+                                                                   OR (warning_number = 23 AND year = 2021)
+                                                                   OR (warning_number = 172 AND year = 2020)
+                                                                   OR (warning_number = 71 AND year = 2023)
+                                                                   OR (warning_number = 137 AND year = 2021)
+                                                                   OR (warning_number = 215 AND year = 2023)
+                                                                   OR (warning_number = 26 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'OUESSANT'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 229 AND year = 2023)
+                                                               OR (warning_number = 247 AND year = 2023)
+                                                               OR (warning_number = 31 AND year = 2022)
+                                                               OR (warning_number = 137 AND year = 2023)
+                                                               OR (warning_number = 245 AND year = 2023)
+                                                               OR (warning_number = 64 AND year = 2023)
+                                                               OR (warning_number = 353 AND year = 2022)
+                                                               OR (warning_number = 354 AND year = 2021)
+                                                               OR (warning_number = 237 AND year = 2021)
+                                                               OR (warning_number = 77 AND year = 2023)
+                                                               OR (warning_number = 310 AND year = 2022)
+                                                               OR (warning_number = 164 AND year = 2023)
+                                                               OR (warning_number = 195 AND year = 2023)
+                                                               OR (warning_number = 23 AND year = 2021)
+                                                               OR (warning_number = 172 AND year = 2020)
+                                                               OR (warning_number = 71 AND year = 2023)
+                                                               OR (warning_number = 137 AND year = 2021));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PAZENN'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'FINISTERE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 215 AND year = 2023)
+                                                               OR (warning_number = 26 AND year = 2022));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'IROISE'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'MORBIHAN'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 24 AND year = 2023)
+                                                                   OR (warning_number = 47 AND year = 2023)
+                                                                   OR (warning_number = 365 AND year = 2023)
+                                                                   OR (warning_number = 359 AND year = 2021)
+                                                                   OR (warning_number = 372 AND year = 2021)
+                                                                   OR (warning_number = 18 AND year = 2018)
+                                                                   OR (warning_number = 161 AND year = 2023)
+                                                                   OR (warning_number = 152 AND year = 2021)
+                                                                   OR (warning_number = 104 AND year = 2021)
+                                                                   OR (warning_number = 231 AND year = 2023)
+                                                                   OR (warning_number = 65 AND year = 2023)
+                                                                   OR (warning_number = 241 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'MORBIHAN'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 24 AND year = 2023)
+                                                               OR (warning_number = 47 AND year = 2023)
+                                                               OR (warning_number = 365 AND year = 2023)
+                                                               OR (warning_number = 359 AND year = 2021)
+                                                               OR (warning_number = 372 AND year = 2021)
+                                                               OR (warning_number = 18 AND year = 2018)
+                                                               OR (warning_number = 161 AND year = 2023)
+                                                               OR (warning_number = 152 AND year = 2021)
+                                                               OR (warning_number = 104 AND year = 2021)
+                                                               OR (warning_number = 231 AND year = 2023)
+                                                               OR (warning_number = 65 AND year = 2023)
+                                                               OR (warning_number = 241 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'LOIRE-ATLANTIQUE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'YEU'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'VENDEE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 106 AND year = 2021)
+                                                                   OR (warning_number = 126 AND year = 2022)
+                                                                   OR (warning_number = 209 AND year = 2023));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'VENDEE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 106 AND year = 2021)
+                                                               OR (warning_number = 126 AND year = 2022)
+                                                               OR (warning_number = 209 AND year = 2023));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CHARENTE MARITIME'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'ROCHEBONNE'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'GIRONDE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id NOT IN (SELECT id FROM warning WHERE (warning_number = 213 AND year = 2022)
+                                                                   OR (warning_number = 371 AND year = 2021)
+                                                                   OR (warning_number = 320 AND year = 2021)
+                                                                   OR (warning_number = 279 AND year = 2020)
+                                                                   OR (warning_number = 318 AND year = 2022)
+                                                                   OR (warning_number = 12 AND year = 2019)
+                                                                   OR (warning_number = 74 AND year = 2023)
+                                                                   OR (warning_number = 262 AND year = 2020)
+                                                                   OR (warning_number = 358 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'GIRONDE'
+                                AND s.name = 'AVINAV BREST')
+              AND     warning_id IN (SELECT id FROM warning WHERE (warning_number = 213 AND year = 2022)
+                                                               OR (warning_number = 371 AND year = 2021)
+                                                               OR (warning_number = 320 AND year = 2021)
+                                                               OR (warning_number = 279 AND year = 2020)
+                                                               OR (warning_number = 318 AND year = 2022)
+                                                               OR (warning_number = 12 AND year = 2019)
+                                                               OR (warning_number = 74 AND year = 2023)
+                                                               OR (warning_number = 262 AND year = 2020)
+                                                               OR (warning_number = 358 AND year = 2020));
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'LANDES'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE  warning_locality_names
+            SET     parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'CANTABRICO'
+                                AND s.name = 'AVINAV BREST')
+            WHERE   parent_id = (SELECT sa.id
+                                FROM sub_area sa
+                                INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                INNER JOIN serie s ON s.id = ssa.serie_id
+                                WHERE sa.name = 'PYRENEES-ATLANTIQUE'
+                                AND s.name = 'AVINAV BREST');
+        </sql>
+
+        <!-- SERIE SUB AREA -->
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'ILLE-ET-VILAINE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'COTES D ARMOR'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'FINISTERE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'MORBIHAN'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'LOIRE-ATLANTIQUE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'VENDEE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'CHARENTE MARITIME'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'GIRONDE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'LANDES'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+        <sql stripComments="true" dbms="postgresql">
+            DELETE FROM serie_sub_area
+            WHERE       serie_id = (SELECT id FROM serie WHERE name = 'AVINAV BREST')
+              AND         sub_area_id = (SELECT sa.id
+                                        FROM sub_area sa
+                                        INNER JOIN serie_sub_area ssa ON ssa.sub_area_id = sa.id
+                                        INNER JOIN serie s ON s.id = ssa.serie_id
+                                        WHERE sa.name = 'PYRENEES-ATLANTIQUE'
+                                        AND s.name = 'AVINAV BREST');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning_Type" author="a662829">
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE warning_type SET international_translation = 'Local Navigational Warning' WHERE enum_name='LOCAL_NAVIGATIONAL_WARNING';
+            UPDATE warning_type SET international_translation = 'Coastal Navigational Warning' WHERE enum_name='COASTAL_NAVIGATIONAL_WARNING';
+            UPDATE warning_type SET international_translation = 'Sub-Area Navigational Warning' WHERE enum_name='SUB_AREA_NAVIGATIONAL_WARNING';
+            UPDATE warning_type SET international_translation = 'NAVAREA Navigational Warning' WHERE enum_name='NAVAREA_NAVIGATIONAL_WARNING';
+            UPDATE warning_type SET international_translation = 'NAVAREA In-Force Bulletin' WHERE enum_name='NAVAREA_IN_FORCE_BULLETIN';
+            UPDATE warning_type SET international_translation = 'Sub-Area In-Force Bulletin' WHERE enum_name='SUB_AREA_IN_FORCE_BULLETIN';
+            UPDATE warning_type SET international_translation = 'Coastal In-Force Bulletin' WHERE enum_name='COASTAL_IN_FORCE_BULLETIN';
+            UPDATE warning_type SET international_translation = 'Local In-Force Bulletin' WHERE enum_name='LOCAL_IN_FORCE_BULLETIN';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning_Hazard_Type_Details_fix" author="w117851">
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE warning_hazard_type_details SET translation = 'Zone de contrôle des glaces active ou désactivée', international_translation = 'Ice Control Zone In-Force or Deactivated', s124_code=148 WHERE enum_name='ICE_CONTROL_ZONE';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.Warning_Hazard_Type_Details_fix_BUOY_DECOMMISSIONED_FOR_WINTER_FR_TRADUCTION" author="w117851">
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE warning_hazard_type_details SET translation = 'Bouée relevée pour l''hiver' WHERE enum_name='BUOY_DECOMMISSIONED_FOR_WINTER';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.36.0-rc1.MaritimeService-Add-OLD_USERS-service" author="w117851">
+        <sql stripComments="true">
+            INSERT INTO maritime_service (id, urn, name, international_name, production_agency, information, localized_information, country, service_network, ping_partner, maritime_notice_producer, type, sissy_id, folder_manager, authority_code, shom_service, survey_owner, ohi_producer_code, s124_data_producer)
+            VALUES ('55a6e22d-4b15-41e6-a65a-dc119f8e7d36', null, 'Anciens Utilisateurs', 'Old Users', null, null, null, null, 'PRIVATE_SERVICE', false, false, 'OLD_USERS', null, false, null, false, false, null, false);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

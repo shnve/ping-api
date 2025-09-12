@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.29.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.29.0-WarningType" author="w130085">
+        <createTable tableName="warning_type">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}"/>
+            <column name="international_translation" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.29.0-WarningReferenceCategory" author="w130085">
+        <createTable tableName="warning_reference_category">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}"/>
+            <column name="international_translation" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.29.0-GeoregulationTypes" author="w130085">
+        <createTable tableName="georegulation_types">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}"/>
+            <column name="international_translation" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.29.0-GeoregulationActivities" author="w130085">
+        <createTable tableName="georegulation_activities">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}"/>
+            <column name="international_translation" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

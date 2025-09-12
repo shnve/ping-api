@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.11.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.11.0-Warning" author="a662829">
+        <addColumn tableName="warning">
+            <column name="navtex" type="${clob.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.11.0-Serie" author="a662829">
+        <addColumn tableName="serie">
+            <column name="navtex_source" type="${varchar2.255.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.11.0-WarningNavtexConfig" author="a662829">
+        <createTable tableName="warning_navtex_config">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="emergency_level" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="communication_type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_day" type="${smallint.type}"/>
+            <column name="end_hour" type="${smallint.type}"/>
+            <column name="niton_number" type="${smallint.type}"/>
+            <column name="cancel_niton_number" type="${smallint.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.11.0-Static_Page" author="a662829">
+        <createTable tableName="static_page">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="locked" type="${boolean.type}" defaultValue="false"/>
+            <column name="content" type="${blob.type}"/>
+            <column name="international_content" type="${blob.type}"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="static_page"
+                             columnNames="path"
+                             constraintName="static_page_path_unique_constraint"/>
+
+    </changeSet>
+
+</databaseChangeLog>

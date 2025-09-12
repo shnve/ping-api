@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.15.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.15.0-Infosource" author="a662829">
+        <addUniqueConstraint tableName="infosource"
+                             columnNames="number"
+                             constraintName="infosource_number_unique_constraint"/>
+
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-InfosourcePart.RemoveMarkupType" author="a138386">
+        <dropColumn tableName="infosource_feature_part" columnName="markup_type" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-Area" author="w117851">
+        <modifyDataType tableName="area" columnName="geom" newDataType="${geometry.type}"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-Area.Geom" author="a138386" context="!test">
+        <sql stripComments="true">
+            UPDATE area
+            SET geom=p.polygon FROM (SELECT id, (ST_DUMP(geom)).geom::geometry(Polygon,3857) AS polygon FROM area WHERE st_geometrytype(geom) = 'ST_MultiPolygon') p
+            WHERE area.id=p.id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-MaritimeEntity" author="w117851">
+        <modifyDataType tableName="maritime_entity" columnName="geom" newDataType="${geometry.type}"/>
+        <addColumn tableName="maritime_entity">
+            <column name="maritime_service_id" type="${id.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-MaritimeEntity.Geom" author="a138386" context="!test">
+        <sql stripComments="true">
+            UPDATE maritime_entity
+            SET geom=p.polygon FROM (SELECT id, (ST_DUMP(geom)).geom::geometry(Polygon,3857) AS polygon FROM maritime_entity WHERE st_geometrytype(geom) = 'ST_MultiPolygon') p
+            WHERE maritime_entity.id=p.id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-MaritimeService" author="a662829">
+        <addColumn tableName="maritime_service">
+            <column name="type" type="${varchar2.255.type}" />
+        </addColumn>
+        <sql stripComments="true">
+            <!-- NATIONAL_DELEGATED_COORDINATOR -->
+            UPDATE maritime_service SET type = 'NATIONAL_DELEGATED_COORDINATOR' WHERE type_id = 'c88322e0-7148-461e-829c-36df83571840';
+            <!-- NAVAREA_COORDINATOR -->
+            UPDATE maritime_service SET type = 'NAVAREA_COORDINATOR' WHERE type_id = 'bd3bec49-3611-416e-bd2a-45fa07ecb862';
+            <!-- SHOM_GEOGRAPHIC_AREA -->
+            UPDATE maritime_service SET type = 'SHOM_GEOGRAPHIC_AREA' WHERE type_id = 'dfb69c41-135e-4e59-81c0-5770ba4ba655';
+        </sql>
+        <addNotNullConstraint tableName="maritime_service" columnName="type" />
+        <dropColumn tableName="maritime_service" columnName="type_id" />
+        <sql stripComments="true">
+            DELETE FROM localized_text WHERE parent_id IN (
+              'c88322e0-7148-461e-829c-36df83571840',
+              'bd3bec49-3611-416e-bd2a-45fa07ecb862',
+              'dfb69c41-135e-4e59-81c0-5770ba4ba655'
+            );
+        </sql>
+        <dropTable tableName="maritime_service_type" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-Serie" author="w117851">
+        <modifyDataType tableName="sub_area" columnName="geom" newDataType="${geometry.type}"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-Serie.Geom" author="a138386" context="!test">
+        <sql stripComments="true">
+            UPDATE sub_area
+            SET geom=p.polygon FROM (SELECT id, (ST_DUMP(geom)).geom::geometry(Polygon,3857) AS polygon FROM sub_area WHERE st_geometrytype(geom) = 'ST_MultiPolygon') p
+            WHERE sub_area.id=p.id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.15.0-WarningNavtexConfig" author="w117851">
+        <dropNotNullConstraint tableName="warning_navtex_config" columnName="communication_type"/>
+        <dropNotNullConstraint tableName="warning_navtex_config" columnName="emergency_level"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.31.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.31.0-Static_File" author="a662829">
+        <createTable tableName="static_file">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="path" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="locked" type="${boolean.type}" defaultValue="false"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="static_file"
+                             columnNames="path"
+                             constraintName="static_file_path_unique_constraint"/>
+
+        <addForeignKeyConstraint
+            baseTableName="static_file"
+            baseColumnNames="attachment_id"
+            constraintName="static_file_attachment_id_fkc"
+            referencedTableName="attachment"
+            referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+</databaseChangeLog>

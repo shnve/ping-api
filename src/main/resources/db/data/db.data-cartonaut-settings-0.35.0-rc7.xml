@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-cartonaut-settings-0.35.0-rc7.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-add-bathy" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+            (gen_random_uuid(), 'infosource-bathy-new-report', 'Accueil > Mes contributions > Signaler une profondeur dangereuse', '/infosource/report-bathy-danger', 'Signaler une profondeur dangereuse');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ <p><em>Voici les explications pour signaler une profondeur dangereuse</em></p> ]]></column>
+            <column name="international_content"><![CDATA[ <p><em>Here are explanations to report dangerous depth</em></p> ]]></column>
+            <where>section_key = 'infosource-bathy-new-report'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.29.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.29.0.WarningType" author="w130085">
+        <sql stripComments="true" dbms="postgresql">
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('COASTAL_IN_FORCE_BULLETIN','Avertissements de navigation côtiers','Coastal navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('COASTAL_NAVIGATIONAL_WARNING','Avertissements de navigation côtiers','Coastal navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('LOCAL_IN_FORCE_BULLETIN','Avertissements de navigation locaux','Local navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('LOCAL_NAVIGATIONAL_WARNING','Avertissements de navigation locaux','Local navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('LOCAL_NOTICE_TO_MARINER','Avis aux navigateurs locaux','Local notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('LOCAL_NOTICE_TO_MARINER_IN_FORCE_BULLETIN','Avis aux navigateurs locaux','Local notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('NAVAREA_IN_FORCE_BULLETIN','Avertissements de navigation NAVAREA','NAVAREA navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('NAVAREA_NAVIGATIONAL_WARNING','Avertissements de navigation NAVAREA','NAVAREA navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('PORT_NOTICE_TO_MARINER','Avis aux navigateurs portuaires','Port notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('PORT_NOTICE_TO_MARINER_IN_FORCE_BULLETIN','Avis aux navigateurs portuaires','Port notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('PRELIMINARY_NOTICE_TO_MARINER','Avis aux navigateurs préliminaires','Preliminary notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('SUB_AREA_NAVIGATIONAL_WARNING','Avertissements de navigation de sous-zone','Sub-area navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('SUB_AREA_IN_FORCE_BULLETIN','Avertissements de navigation de sous-zone','Sub-area navigational warnings');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER','Avis aux navigateurs temporaires et préliminaires','Temporary &amp; preliminary notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER_IN_FORCE_BULLETIN','Avis aux navigateurs temporaires et préliminaires','Temporary &amp; preliminary notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('TEMPORARY_NOTICE_TO_MARINER','Avis aux navigateurs temporaires','Temporary notices to mariners');
+        INSERT INTO warning_type (enum_name, translation, international_translation) VALUES ('TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER','Avis aux navigateurs temporaires et préliminaires','Temporary &amp; preliminary notices to mariners');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.29.0.WarningReferenceCategory" author="w130085">
+        <sql stripComments="true" dbms="postgresql">
+        INSERT INTO warning_reference_category (enum_name, translation, international_translation) VALUES ('CANCELLATION','annulation','cancellation');
+        INSERT INTO warning_reference_category (enum_name, translation, international_translation) VALUES ('SOURCE_REFERENCE','référence de la source','source reference');
+        INSERT INTO warning_reference_category (enum_name, translation, international_translation) VALUES ('IN_FORCE','en vigueur','in force');
+        INSERT INTO warning_reference_category (enum_name, translation, international_translation) VALUES ('REPLACEMENT','remplacement','replacement');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.29.0.GeoregulationTypes" author="w130085">
+        <sql stripComments="true" dbms="postgresql">
+        INSERT INTO georegulation_types (enum_name, translation, international_translation) VALUES ('NAVIGATION','navigation','shipping');
+        INSERT INTO georegulation_types (enum_name, translation, international_translation) VALUES ('MARITIME_PUBLIC_DOMAIN_OCCUPANCY','occupation DPM','MPD occupancy');
+        INSERT INTO georegulation_types (enum_name, translation, international_translation) VALUES ('OTHERS','autres','others');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.29.0.GeoregulationActivities" author="w130085">
+        <sql stripComments="true" dbms="postgresql">
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('NAVIGATION','navigation','shipping');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('NAVIGATION','Navigation','Navigation');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('ANCHORING','Mouillage','Anchoring');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('FISHING','Pêche','Fishing');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('DIVING','Plongée sous-marine','Diving');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('WATER_SPORTS_AND_SEASIDE_ACTIVITIES','Activités nautiques et balnéaires','Water sports and seaside activities');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('PILOTAGE','Pilotage','Pilotage');
+        INSERT INTO georegulation_activities (enum_name, translation, international_translation) VALUES ('OTHER_ACTIVITIES','Autres activités','Other activities');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

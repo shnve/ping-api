@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.0.1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.8.0.Area" author="a662829">
+        <sql stripComments="true">
+            UPDATE area SET disclaimer = 'disclaimer', international_disclaimer = 'international disclaimer';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

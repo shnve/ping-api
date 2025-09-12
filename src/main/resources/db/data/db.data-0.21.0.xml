@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.21.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.21.0.Warning_Hazard_Type_Details" author="a662829">
+        <sql stripComments="true">
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de station e-Chayka', international_translation = 'e-Chayka station temporary removal' WHERE enum_name='E_CHAYKA_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de station eLORAN', international_translation = 'eLORAN station temporary removal' WHERE enum_name='ELORAN_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'marque de jour de feu incertaine', international_translation = 'light daymark unreliable' WHERE enum_name='LIGHT_DAYMARK_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'balise lumineuse, feu endommagé', international_translation = 'lighted beacon, light damaged' WHERE enum_name='LIGHTED_BEACON_LIGHT_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'balise lumineuse, feu non synchronisé', international_translation = 'lighted beacon, light not synchronized' WHERE enum_name='LIGHTED_BEACON_LIGHT_NOT_SYNCHRONIZED';
+            UPDATE warning_hazard_type_details SET translation = 'balise lumineuse, feu éteint', international_translation = 'lighted beacon, light unlit' WHERE enum_name='LIGHTED_BEACON_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'balise lumineuse, feu incertain', international_translation = 'lighted beacon, light unreliable' WHERE enum_name='LIGHTED_BEACON_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'balise postérieure d''alignement revenue à la normale', international_translation = 'rear leading/range beacon restored to normal' WHERE enum_name='REAR_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL';
+            UPDATE warning_hazard_type_details SET translation = 'remise en place saisonnière en cours', international_translation = 'seasonal recommissioning in progress' WHERE enum_name='SEASONAL_RECOMMISSIONING_IN_PROGRESS';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de V-AIS', international_translation = 'V-AIS removal' WHERE enum_name='V_AIS_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS incertain', international_translation = 'V-AIS unrealiable' WHERE enum_name='V_AIS_UNREALIABLE';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.21.0.GeoregulationPartType" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO georegulation_part_type_i18n(enum_name, translation, international_translation) VALUES
+            ('NAVIGATION_PROHIBITED', 'Navigation interdite', 'Navigation prohibited'),
+            ('NAVIGATION_RESTRICTED', 'Navigation réglementée', 'Navigation restricted'),
+            ('ENTRY_PROHIBITED', 'Accès interdit', 'Entry prohibited'),
+            ('ENTRY_RESTRICTED', 'Accès réglementé', 'Entry restricted'),
+            ('ANCHORING_PROHIBITED', 'Mouillage interdit', 'Anchoring prohibited'),
+            ('ANCHORING_RESTRICTED', 'Mouillage réglementé', 'Anchoring restricted'),
+            ('FISHING_PROHIBITED', 'Pêche interdite', 'Fishing prohibited'),
+            ('FISHING_RESTRICTED', 'Pêche réglementée', 'Fishing restricted'),
+            ('FISHING_USING_TOWED_GEAR_PROHIBITED', 'Pêche aux arts traînants interdite', 'Fishing using towed gear prohibited'),
+            ('FISHING_USING_TOWED_GEAR_RESTRICTED', 'Pêche aux arts traînants réglementée', 'Fishing using towed gear restricted'),
+            ('FISHING_USING_PASSIVE_GEAR_PROHIBITED', 'Pêche aux arts dormants interdite', 'Fishing using passive gear prohibited'),
+            ('FISHING_USING_PASSIVE_GEAR_RESTRICTED', 'Pêche aux arts dormants réglementée', 'Fishing using passive gear restricted'),
+            ('TRAWLING_PROHIBITED', 'Chalutage interdit', 'Trawling prohibited'),
+            ('TRAWLING_RESTRICTED', 'Chalutage réglementé', 'Trawling restricted'),
+            ('DREDGING_PROHIBITED', 'Dragage interdit', 'Dredging prohibited'),
+            ('DREDGING_RESTRICTED', 'Dragage réglementé', 'Dredging restricted'),
+            ('DIVING_PROHIBITED', 'Plongée sous-marine interdite', 'Diving prohibited'),
+            ('DIVING_RESTRICTED', 'Plongée sous-marine réglementée', 'Diving restricted'),
+            ('SPEED_RESTRICTED ', 'Vitesse limitée', 'Speed restricted'),
+            ('BATHING_PROHIBITED', 'Baignade interdite', 'Bathing prohibited');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

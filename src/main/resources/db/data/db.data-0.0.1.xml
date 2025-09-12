@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.0.1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.0.1.Area" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO area(id, name, geom) VALUES
+            ('476380f3-8546-4504-b9b1-d9ab48bab841', 'Atlantique', 'SRID=3857;MULTIPOLYGON(((-171492.864187369 6217458.33102425,-14458.0080132995 5645630.90294659,-129051.01116735 5367083.64299218,-1007597.36868174 5402175.57107174,-1003353.18337974 6353482.15777061,-600155.579689559 6452008.18813134,-171492.864187369 6217458.33102425)))'),
+            ('cd5ee35d-5c1e-42b3-b238-383b62da8a90', 'Manche-Mer du Nord', 'SRID=3857;MULTIPOLYGON(((-604399.764991561 6458618.14173507,108623.365744757 6830587.13280599,329321.001448856 6618860.59342539,-163004.493583366 6211035.22672881,-604399.764991561 6458618.14173507)))'),
+            ('1f40779a-33e5-4ba7-a6a2-e83f84a46cfd', 'Méditerrannée', 'SRID=3857;MULTIPOLYGON(((346297.742656863 5303090.32621223,333565.186750858 5378766.20176415,834379.05238708 5449172.94943688,1076297.61460119 5408037.17485917,1169669.69124523 4701940.96638389,409960.522186892 4701940.96638389,346297.742656863 5303090.32621223)))'),
+            ('aa02864f-d9ea-4dd3-ac34-81d4e248fcc5', 'St Pierre et Miquelon', 'SRID=3857;MULTIPOLYGON(((-6410445.25813015 6026834.45716739,-6117596.47229202 6039411.99301505,-6100619.73108402 5797367.13173827,-6410445.25813015 5797367.13173827,-6410445.25813015 6026834.45716739)))'),
+            ('60cdd2ea-ecb6-491b-8025-88fe395a401a', 'Antilles', 'SRID=3857;MULTIPOLYGON(((-7076782.35054445 2145771.04608067,-6393468.51692215 2150258.20110605,-6355270.84920413 1522221.06253355,-7085270.72114845 1500401.5970043,-7076782.35054445 2145771.04608067)))'),
+            ('99ca9377-c38d-4c3e-9a20-921b4588ce2f', 'Guyane', 'SRID=3857;MULTIPOLYGON(((-6011491.83974198 634715.467403751,-6011491.83974198 886922.001691738,-5548875.64182377 724350.402833076,-5739863.98041386 455802.132353119,-6011491.83974198 634715.467403751)))'),
+            ('93a20c17-7815-491a-8c42-786a6ec8216b', 'Nouvelle Calédonie', 'SRID=3857;MULTIPOLYGON(((17475829.6215365 -1811512.14923214,19194724.6688473 -1813720.5157984,19196846.7614983 -2892046.02835471,17482195.8994895 -2887358.74571762,17475829.6215365 -1811512.14923214)))'),
+            ('5640729e-534f-4b81-8ea5-85e69230cc77', 'Réunion', 'SRID=3857;MULTIPOLYGON(((5910424.67358133 -2232978.6708232,6428215.28042556 -2235232.28290188,6434581.55837857 -2551236.95152914,5912546.76623234 -2548942.97493654,5910424.67358133 -2232978.6708232)))'),
+            ('8ea7197d-6a6b-4597-bc11-ddd9f3106204', 'Polynésie', 'SRID=3857;MULTIPOLYGON(((-17480161.0761199 -614823.708294185,-13776606.7104491 -614823.708294185,-13776606.7104491 -3493558.18310588,-17471800.9082515 -3503207.76697215,-17480161.0761199 -614823.708294185)))'),
+            ('9b2f2562-d02e-4717-8d6d-10655847d5fe', 'NAVAREA II', 'SRID=3857;MULTIPOLYGON(((-560075.633984723 6195939.69803166,-3367294.37144647 6195939.14867918,-3367294.37144647 545602.045347587,-1191026.15631067 545602.045347587,-1191026.04622991 -758375.06964821,1373331.859993 -758374.711870594,1056023.12150448 416916.40903926,-98481.7537148233 6013329.87196673,-560075.633984723 6195939.69803166)))');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.0.1.MaritimeEntity" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO maritime_entity(id, name, type, geom) VALUES
+            ('3625939b-5dd7-4282-8388-313b6871f2a7', 'Zone de service du CND Brest', 'SERVICE_AREA', 'SRID=3857;MULTIPOLYGON(((-171492.864187369 6217458.33102425,-14458.0080132995 5645630.90294659,-129051.01116735 5367083.64299218,-1007597.36868174 5402175.57107174,-1003353.18337974 6353482.15777061,-600155.579689559 6452008.18813134,-171492.864187369 6217458.33102425)))');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.0.1.MaritimeServiceType" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO maritime_service_type(id) VALUES
+            ('c88322e0-7148-461e-829c-36df83571840'),
+            ('bd3bec49-3611-416e-bd2a-45fa07ecb862'),
+            ('dfb69c41-135e-4e59-81c0-5770ba4ba655');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.0.1.MaritimeService" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO maritime_service(id, name, type_id, service_network, production_agency, ping_partner, maritime_notice_producer) VALUES
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', 'CND BREST', 'c88322e0-7148-461e-829c-36df83571840', 'GOVERNMENT_SERVICE', 'CECLANT', true, true);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.0.1.LocalizedText" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO localized_text(parent_id, language, text) VALUES
+            ('c88322e0-7148-461e-829c-36df83571840', 'fr', 'Coordonnateur national délégué'),
+            ('c88322e0-7148-461e-829c-36df83571840', 'en', 'National delegated coordinator'),
+            ('bd3bec49-3611-416e-bd2a-45fa07ecb862', 'fr', 'Coordonnateur NAVAREA'),
+            ('bd3bec49-3611-416e-bd2a-45fa07ecb862', 'en', 'NAVAREA coordinator'),
+            ('dfb69c41-135e-4e59-81c0-5770ba4ba655', 'fr', 'Secteur géographique du Shom'),
+            ('dfb69c41-135e-4e59-81c0-5770ba4ba655', 'en', 'SHOM geographic area');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.0.1.Serie" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 'AVURNAV Local BREST', 'LOCAL_NAVIGATIONAL_WARNING', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 1001, 1999),
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 3001, 3999),
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 5001, 5999);
+
+            INSERT INTO sub_area(id, name, international_name, geom) VALUES
+            ('f08af189-ee71-47f6-af03-cded6a1f238f', 'Finistère', 'Finistère', 'SRID=3857;MULTIPOLYGON(((-559114.552365383 6199189.65370721,-390341.593911714 6267982.97916386,-337752.918451511 6162805.62824346,-407769.236360735 6039283.39053463,-539852.421237519 6098598.52448392,-559114.552365383 6199189.65370721)))'),
+            ('13e937e1-a383-4d65-83d7-cb43cafa0f5e', 'Ouessant', 'Ushant', 'SRID=3857;MULTIPOLYGON(((-575051.67276284 6183367.18885217,-564981.09428627 6189692.35294277,-558770.585738099 6184112.44987796,-569108.693813668 6178112.14315757,-575051.67276284 6183367.18885217)))'),
+            ('30874a81-a888-4868-9a3c-6619db97346b', 'Gironde', 'Gironde', 'SRID=3857;MULTIPOLYGON(((-130133.865006056 5718737.83152301,-144198.278210528 5540486.68156198,-29236.9876696241 5527033.76458379,-3554.14616580426 5632516.86361733,-130133.865006056 5718737.83152301)))');
+
+            INSERT INTO serie_sub_area(serie_id, sub_area_id) VALUES
+            ('7bb1f490-9c5b-4ee9-b4e9-d0de15b74ab0', 'f08af189-ee71-47f6-af03-cded6a1f238f');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

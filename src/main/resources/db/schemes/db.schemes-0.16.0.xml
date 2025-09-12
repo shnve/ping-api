@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.16.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.16.0-PublicUser-addColumn-identifier" author="a662829">
+        <addColumn tableName="public_user">
+            <column name="identifier" type="${varchar2.255.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-PublicUser-update-identifier" author="a662829" context="!test">
+        <sql stripComments="true">
+            UPDATE public_user pu
+            SET identifier = (SELECT replace((SELECT substring(email, 0, (SELECT length(email) - position('.' in reverse(email)) + 1))), '@', '_'))
+            WHERE pu.identifier IS NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-PublicUser-addConstraint-identifier" author="a662829">
+        <addNotNullConstraint tableName="public_user" columnName="identifier" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-ProUser-addColumn-identifier" author="a662829">
+        <addColumn tableName="pro_user">
+            <column name="identifier" type="${varchar2.255.type}" />
+        </addColumn>
+     </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-ProUser-update-identifier" author="a662829" context="!test">
+        <sql stripComments="true">
+            UPDATE pro_user pu
+            SET identifier = (SELECT replace((SELECT substring(email, 0, (SELECT length(email) - position('.' in reverse(email)) + 1))), '@', '_'))
+            WHERE pu.identifier IS NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-ProUser-addConstraint-identifier" author="a662829">
+        <addNotNullConstraint tableName="pro_user" columnName="identifier" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.16.0-InfosourceRecipient" author="a138386">
+        <createTable tableName="infosource_recipient">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transferred_by_id" type="${id.type}"/>
+            <column name="date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="infosource_id, service_id"
+            constraintName="infosource_recipient_unique_constraint"
+            tableName="infosource_recipient"
+        />
+    </changeSet>
+</databaseChangeLog>

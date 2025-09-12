@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-cartonaut-settings.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.cartonaut.Static_Section" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+           (gen_random_uuid(), 'survey-bathy-data', 'Accueil > Contribuer > Transmettre un levé au Shom', '/survey/deposit', 'Vos données bathymétriques'),
+           (gen_random_uuid(), 'survey-technical-metadata', 'Accueil > Contribuer > Transmettre un levé au Shom', '/survey/deposit', 'Métadonnées / informations techniques'),
+           (gen_random_uuid(), 'survey-other-documents', 'Accueil > Contribuer > Transmettre un levé au Shom', '/survey/deposit', 'Autres documents du levé'),
+           (gen_random_uuid(), 'survey-analysis-result-alert', '', '', '');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Déposez ici les fichiers bathymétriques les plus à jour et les plus résolus, en particulier pour l'assistance à la détection de l'information nautique bathymétrique. Formats acceptés : extensions de type ascii éventuellement compressées. Volumétrie : 10 Go maximum. ]]></column>
+            <column name="international_content"><![CDATA[ Drop here the most up-to-date and resolved bathymetric files, especially for assistance in detecting bathymetric nautical information. Accepted formats: ascii type extensions possibly compressed. Volume: 10 GB maximum. ]]></column>
+            <where>section_key = 'survey-bathy-data'</where>
+        </update>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Métadonnées techniques (fichier PDF max 10 Go) ]]></column>
+            <column name="international_content"><![CDATA[ Technical metadata (PDF max 10 GB file) ]]></column>
+            <where>section_key = 'survey-technical-metadata'</where>
+        </update>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Déposer ici tout autre document ou fichier de données complétant la transmission du levé au Shom (e.g. plans réalisés, fichiers bathymétriques ne servant pas à l'analyse de l'information nautique, autres types de mesure). Formats acceptés : extensions de type ascii, éventuellement compressées. Volumétrie : 10 Go maximum. ]]></column>
+            <column name="international_content"><![CDATA[ Submit here any other document or data file completing the transmission of the survey to Shom (e.g. plans made, bathymetric files not used for the analysis of nautical information, other types of measurement). Accepted formats: ascii type extensions, possibly compressed. Volume: 10 GB maximum. ]]></column>
+            <where>section_key = 'survey-other-documents'</where>
+        </update>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ L'analyse a détecté des sondes moindres. ]]></column>
+            <column name="international_content"><![CDATA[ Analysis detected lesser probes. ]]></column>
+            <where>section_key = 'survey-analysis-result-alert'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="DB.Data.cartonaut.Static_Page" author="w117851">
+        <sql stripComments="true">
+            INSERT INTO static_page (id, title, international_title, "path", "locked") VALUES
+           (gen_random_uuid(), 'Légende de sondes détectées et des géométries-bathymétries avec signification des écritures', 'Legend of detected probes and geometries-bathymetry with meaning of writings', 'survey-map-legend', true);
+        </sql>
+
+        <update tableName="static_page">
+            <column name="content"><![CDATA[ <p>L'outil d'assistance à la détection de l'information nautique bathymétrique constitue une aide à la décision pour le signalement des informations critiques pour la navigation.</p><p><br></p><p>L'outil détecte les sondes du levé qui sont inférieures à celles indiquées sur les cartes électroniques de navigation (ENC) du Shom (écart très important, important ou avéré)*.</p><p><br></p><p>L'outil propose également une information synthétique sur l’existence de ces sondes détectées, soit par des sondes significatives des écarts, soit par des zones de fonds moindres avec indication de l'écart maximal. Ces éléments sont de couleur bleue. Ils pourront vous servir de base pour réaliser un signalement synthétique vers les autorités en charge de l'information nautique (avertissements de navigation, avis aux navigateurs). Le bouton&nbsp;<strong>Signaler profondeurs dangereuses</strong>&nbsp;vous conduira à la rédaction du signalement sur la base de l'information synthétique proposée par l'outil.</p><p><br></p><p>&nbsp;(*)&nbsp;: l'outil est basé sur les critères mathématiques du chapitre B-620 de la norme S-4 de l'Organisation Hydrographique Internationale appliqué à la comparaison entre les résultats du levé bathymétrique et des ENC officielles du Shom correspondantes.</p><p><br></p><p>Un écart est détecté lorsque la nouvelle sonde est inférieure à celles existantes sur l'ENC d'au-moins&nbsp;:</p><ul><li>0,5m pour les profondeurs de 0 à 10m;</li><li>1m pour les profondeurs de 10 à 31m;</li><li>5% de la profondeur jusqu’à 200m;</li><li>10% de la profondeur jusqu'à 800 m.</li></ul><p><br></p><p>Ces écarts représentent possiblement un danger pour la navigation.</p><p><br></p><p>Bien que l'outil apporte une assistance, il est rappelé qu'il est de la responsabilité du contributeur d'identifier les informations nautiques pertinentes à porter à la connaissance de des autorités&nbsp;chargées de traiter et diffuser l'information nautique. En aucun cas les détections proposées ne pourront être considérés comme exhaustives de tout danger révélé par un levé.</p><p><br></p><p>En cas de difficulté, contacter&nbsp;<a href="mailto:bri@shom.fr" target="_blank" style="color:rgb( 0 , 82 , 204 )" rel="noopener noreferrer nofollow">bri@shom.fr</a></p> ]]></column>
+            <column name="international_content"><![CDATA[ <p>The bathymetric nautical information detection assistance tool provides decision support for reporting critical information for navigation.</p><p><br></p><p>The tool detects survey soundings that are lower than those indicated on the Shom electronic navigation charts (ENC) (very significant, significant or proven deviation)*.</p><p><br></p><p>The tool also offers summary information on the existence of these probes detected, either by probes significant of the deviations, or by areas of smaller depths with indication of the maximum deviation. These elements are blue in color. They can serve as a basis for making a summary report to the authorities responsible for nautical information (navigation warnings, notices to navigators). The Report dangerous depths button will take you to drafting the report based on the summary information offered by the tool.</p><p><br></p><p>&nbsp;(*): the tool is based on the mathematical criteria of chapter B-620 of standard S-4 of the International Hydrographic Organization applied to the comparison between the results of the bathymetric survey and the corresponding official Shom ENCs.</p><p><br></p><p>A deviation is detected when the new probe is lower than the existing ones on the ENC by at least:</p><p><br></p><ul><li>0.5m for depths of 0 to 10m;</li><li>1m for depths of 10 to 31m;</li><li>5% of depth up to 200m;</li><li>10% of depth up to 800 m.</li></ul><p><br></p><p>These deviations possibly represent a danger to navigation.</p><p><br></p><p>Although the tool provides assistance, it is recalled that it is the responsibility of the contributor to identify relevant nautical information to bring to the attention of the authorities responsible for processing and disseminating nautical information. Under no circumstances can the proposed detections be considered exhaustive of any danger revealed by a survey.</p><p><br></p><p>In case of difficulty, contact <a href="mailto:bri@shom.fr" target="_blank" style="color:rgb( 0 , 82 , 204 )" rel="noopener noreferrer nofollow">bri@shom.fr</a></p> ]]></column>
+            <where>path = 'survey-map-legend'</where>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>

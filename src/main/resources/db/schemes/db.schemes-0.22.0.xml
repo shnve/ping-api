@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.22.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.22.0-MaritimeService" author="w124229">
+        <addColumn tableName="maritime_service">
+            <column name="shom_service" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-GeoregulationSeasonalPeriod" author="a138386">
+        <createTable tableName="georegulation_seasonal_period">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_start" type="${integer.type}"/>
+            <column name="month_start" type="${integer.type}"/>
+            <column name="day_end" type="${integer.type}"/>
+            <column name="month_end" type="${integer.type}"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="georegulation_seasonal_period"
+                                 baseColumnNames="georegulation_id"
+                                 constraintName="georegulation_seasonal_period_georegulation_id_fk_constraint"
+                                 referencedTableName="georegulation"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-GeoregulationPartSeasonalPeriod" author="a138386">
+        <createTable tableName="georegulation_part_seasonal_period">
+            <column name="part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_start" type="${integer.type}"/>
+            <column name="month_start" type="${integer.type}"/>
+            <column name="day_end" type="${integer.type}"/>
+            <column name="month_end" type="${integer.type}"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="georegulation_part_seasonal_period"
+                                 baseColumnNames="part_id"
+                                 constraintName="georegulation_part_seasonal_period_part_id_fk_constraint"
+                                 referencedTableName="georegulation_part"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-Subscription" author="w118853">
+        <createTable tableName="subscription">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="area_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sending_mail" type="${boolean.type}" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="service_id" type="${id.type}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="public_user_id" type="${id.type}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="lang" type="${varchar2.255.type}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="subscription"
+            baseColumnNames="area_id"
+            constraintName="subscription_area_id_fk_constraint"
+            referencedTableName="area"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription"
+            baseColumnNames="service_id"
+            constraintName="subscription_service_id_fk_constraint"
+            referencedTableName="maritime_service"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription"
+            baseColumnNames="public_user_id"
+            constraintName="subscription_public_user_id_fk_constraint"
+            referencedTableName="public_user"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription"
+            baseColumnNames="serie_id"
+            constraintName="subscription_serie_id_fk_constraint"
+            referencedTableName="serie"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-SubscriptionMaritimeEntityGeographicExtent" author="w124229">
+        <createTable tableName="subscription_maritime_entity_geographic_extent">
+            <column name="subscription_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_entity_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="subscription_id, maritime_entity_id"
+            constraintName="subscription_maritime_entity_geographic_extent_unique_constraint"
+            tableName="subscription_maritime_entity_geographic_extent"
+        />
+        <addForeignKeyConstraint
+            baseTableName="subscription_maritime_entity_geographic_extent"
+            baseColumnNames="subscription_id"
+            constraintName="subscription_maritime_entity_geographic_extent_subscription_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            baseTableName="subscription_maritime_entity_geographic_extent"
+            baseColumnNames="maritime_entity_id"
+            constraintName="subscription_maritime_entity_geographic_extent_maritime_entity_id_fk_constraint"
+            referencedTableName="maritime_entity"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-SubscriptionGeoregulationType" author="w118853">
+        <createTable tableName="subscription_georegulation_type">
+            <column name="subscription_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="georegulation_type" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_georegulation_type"
+            baseColumnNames="subscription_id"
+            constraintName="subscription_georegulation_type_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id"
+        />
+
+        <addUniqueConstraint
+            columnNames="subscription_id, georegulation_type"
+            constraintName="subscription_georegulation_type_unique_constraint"
+            tableName="subscription_georegulation_type"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-SubscriptionMaritimeEntity" author="w118853">
+        <createTable tableName="subscription_maritime_entity">
+            <column name="subscription_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_entity_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="subscription_id, maritime_entity_id"
+            constraintName="subscription_maritime_entity_unique_constraint"
+            tableName="subscription_maritime_entity"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_maritime_entity"
+            baseColumnNames="subscription_id"
+            constraintName="subscription_maritime_entity_subscription_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_maritime_entity"
+            baseColumnNames="maritime_entity_id"
+            constraintName="subscription_maritime_entity_maritime_entity_id_fk_constraint"
+            referencedTableName="maritime_entity"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-SubscriptionWarningHazardTypeGeneral" author="w124229">
+        <createTable tableName="subscription_warning_hazard_type_general">
+            <column name="subscription_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="warning_hazard_type_general" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="subscription_id, warning_hazard_type_general"
+            constraintName="subscription_warning_hazard_type_general_unique_constraint"
+            tableName="subscription_warning_hazard_type_general"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_warning_hazard_type_general"
+            baseColumnNames="subscription_id"
+            constraintName="subscription_warning_hazard_type_general_subscription_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-SubscriptionSubArea" author="w124229">
+        <createTable tableName="subscription_sub_area">
+            <column name="subscription_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="sub_area_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="subscription_id, sub_area_id"
+            constraintName="subscription_sub_area_unique_constraint"
+            tableName="subscription_sub_area"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_sub_area"
+            baseColumnNames="subscription_id"
+            constraintName="subscription_sub_area_subscription_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="subscription_sub_area"
+            baseColumnNames="sub_area_id"
+            constraintName="subscription_sub_area_sub_area_id_fk_constraint"
+            referencedTableName="sub_area"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-Notification" author="a662829">
+        <createTable tableName="notification">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="read" type="${boolean.type}" defaultValue="false"/>
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false" />
+            </column>
+            <column name="read_date" type="${timestamp.type}"/>
+            <column name="public_user_id" type="${id.type}"/>
+            <column name="service_user_id" type="${id.type}"/>
+            <column name="subscription_id" type="${id.type}"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="public_user_id"
+            constraintName="notification_public_user_id_fk_constraint"
+            referencedTableName="public_user"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="service_user_id"
+            constraintName="notification_service_user_id_fk_constraint"
+            referencedTableName="pro_user"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="subscription_id"
+            constraintName="notification_subscription_id_fk_constraint"
+            referencedTableName="subscription"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.22.0-NotificationFolder" author="w124229">
+        <addColumn tableName="notification">
+            <column name="folder_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="folder_id"
+            constraintName="notification_folder_id_fk_constraint"
+            referencedTableName="folder"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

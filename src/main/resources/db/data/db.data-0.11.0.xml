@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.11.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.11.0.Static_Page" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_page (id, title, international_title, "path", "locked") VALUES
+            (gen_random_uuid(), 'Bienvenue sur le Portail national de l''information nautique', 'Welcome to the Portail national de l''information nautique', 'accueil', true),
+            (gen_random_uuid(), 'Répertoire des informations publiques', 'Directory of public information', 'repertoire-informations-publiques', true),
+            (gen_random_uuid(), 'Contact', 'contact', 'contact', true),
+            (gen_random_uuid(), 'Plan du site', 'Sitemap', 'plan-site', true),
+            (gen_random_uuid(), 'Mentions légales', 'Legal notice', 'mentions-legales', true),
+            (gen_random_uuid(), 'CGU', 'TOS', 'cgu', true),
+            (gen_random_uuid(), 'Accessibilité', 'Accessibility', 'accessibilite', true),
+            (gen_random_uuid(), 'Recueil des avis', 'Collection of opinions', 'recueil-avis', true),
+            (gen_random_uuid(), 'Légende', 'Legend', 'legende', true);
+        </sql>
+
+        <update tableName="static_page">
+            <column name="content"><![CDATA[ <h2>Mise en garde sur l'utilisation</h2><p><br></p><p>Le contenu de PING est fourni, pour l'instant, aux seules fins de tests. Toutes les informations présentées et toutes les fonctions associées sont expérimentales. En aucun cas, le contenu de PING peut être utilisé pour remplacer les sources d'informations et les dispositifs existants. Le contenu de PING est sujet à changement sans préavis. En accédant à PING et ses sous-sites, vous acceptez l'avertissement.</p> ]]></column>
+            <column name="international_content"><![CDATA[ <h2>Warning on use</h2><p><br></p><p>PING content is currently provided for testing purposes only. All information presented and all associated functions are experimental. Under no circumstances can the content of PING be used to replace existing sources of information and devices. PING content is subject to change without notice. By accessing PING and its sub-sites, you accept the disclaimer.</p> ]]></column>
+            <where>path = 'accueil'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.33.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.33.0.Warning_Hazard_Type_Details" author="w117851">
+        <sql stripComments="true">
+            UPDATE warning_hazard_type_details SET translation = 'émetteur AIS opérationnel' WHERE enum_name = 'AIS_TRANSMITTER_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'émetteur AIS incertain' WHERE enum_name = 'AIS_TRANSMITTER_UNREALIABLE';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.33.0.georegulation_types" author="a662829">
+        <sql stripComments="true">
+            UPDATE georegulation_types SET translation = 'Navigation', international_translation = 'Shipping' WHERE enum_name = 'NAVIGATION';
+            UPDATE georegulation_types SET translation = 'Occupation DPM', international_translation = 'MPD occupancy' WHERE enum_name = 'MARITIME_PUBLIC_DOMAIN_OCCUPANCY';
+            UPDATE georegulation_types SET translation = 'Autres', international_translation = 'Others' WHERE enum_name = 'OTHERS';
+            DELETE FROM georegulation_activities where enum_name = 'NAVIGATION' AND translation = 'navigation';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

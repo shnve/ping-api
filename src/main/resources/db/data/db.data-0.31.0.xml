@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.31.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.31.0.Static_File" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO attachment (id, creation_date, filename, location, identifier, total_size, type) VALUES
+                ('7f3f7c24-07ed-4bc3-bf27-80e47605be64'::uuid, now(), 'cgu.pdf', '', 'cgu', 0, '');
+            INSERT INTO static_file (id, description, path, locked, attachment_id) VALUES
+                (gen_random_uuid(), 'Conditions générales d''utilisation', 'cgu', true, '7f3f7c24-07ed-4bc3-bf27-80e47605be64'::uuid);
+            INSERT INTO attachment (id, creation_date, filename, location, identifier, total_size, type) VALUES
+                ('312acc74-aea1-4c57-b5f2-654f909f14bc'::uuid, now(), 'confidentialite-leves.pdf', '', 'confidentialite-leves', 0, '');
+            INSERT INTO static_file (id, description, path, locked, attachment_id) VALUES
+                (gen_random_uuid(), 'Notice de confidentialité des données du levé', 'confidentialite-leves', true, '312acc74-aea1-4c57-b5f2-654f909f14bc'::uuid);
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

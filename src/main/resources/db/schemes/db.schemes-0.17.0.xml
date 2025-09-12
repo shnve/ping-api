@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.17.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.17.0-MaritimeService-SissyId" author="a138386">
+        <addColumn tableName="maritime_service">
+            <column name="sissy_id" type="${varchar2.255.type}" />
+        </addColumn>
+
+        <addUniqueConstraint tableName="maritime_service" columnNames="sissy_id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.17.0-MaritimeEntity-SissyId" author="a138386">
+        <addColumn tableName="maritime_entity">
+            <column name="sissy_id" type="${varchar2.255.type}" />
+        </addColumn>
+
+        <addUniqueConstraint tableName="maritime_entity" columnNames="sissy_id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.17.0-Infosource-Object" author="w118853">
+        <addColumn tableName="infosource">
+            <column name="object" type="${json.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.17.0-WarningInfosource" author="a138386">
+        <createTable tableName="warning_infosource">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="warning_id, infosource_id"
+            constraintName="warning_infosource_unique_constraint"
+            tableName="warning_infosource"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.17.0-InfosourceMaritimeEntity" author="a138386">
+        <createTable tableName="infosource_maritime_entity">
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_entity_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="infosource_id, maritime_entity_id"
+            constraintName="infosource_maritime_entity_unique_constraint"
+            tableName="infosource_maritime_entity"
+        />
+    </changeSet>
+</databaseChangeLog>

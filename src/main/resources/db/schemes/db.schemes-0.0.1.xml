@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.0.1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.0.1-Area" author="a138386">
+        <createTable tableName="area">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+            <column name="information" type="${clob.type}"/>
+            <column name="more_information" type="${clob.type}"/>
+            <column name="country" type="${country.type}"/>
+            <column name="geom" type="${multipolygon.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="area_border_areas">
+            <column name="area_id" type="${id.type}"/>
+            <column name="border_areas_id" type="${id.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.0.1-MaritimeEntity" author="a138386">
+        <createTable tableName="maritime_entity">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+            <column name="information" type="${clob.type}"/>
+            <column name="localized_information" type="${clob.type}"/>
+            <column name="type" type="${varchar2.255.type}"/>
+            <column name="geom" type="${multipolygon.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="maritime_entity_areas">
+            <column name="maritime_entity_id" type="${id.type}"/>
+            <column name="areas_id" type="${id.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.0.1-MaritimeService" author="a138386">
+        <createTable tableName="maritime_service">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+            <column name="production_agency" type="${varchar2.255.type}"/>
+            <column name="information" type="${clob.type}"/>
+            <column name="localized_information" type="${clob.type}"/>
+            <column name="country" type="${country.type}"/>
+            <column name="type_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_network" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ping_partner" type="${boolean.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="maritime_notice_producer" type="${boolean.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="maritime_service_areas">
+            <column name="maritime_service_id" type="${id.type}"/>
+            <column name="areas_id" type="${id.type}"/>
+        </createTable>
+
+        <createTable tableName="maritime_service_type">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.0.1-LocalizedText" author="a138386">
+        <createTable tableName="localized_text">
+            <column name="parent_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="${clob.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="parent_id, language"
+            constraintName="localized_text_composite_constraint"
+            tableName="localized_text"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.0.1-Serie" author="a138386">
+        <createTable tableName="serie">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+            <column name="information" type="${clob.type}"/>
+            <column name="localized_information" type="${clob.type}"/>
+            <column name="type" type="${varchar2.255.type}"/>
+            <column name="description" type="${clob.type}" />
+            <column name="maritime_service_id" type="${id.type}" />
+        </createTable>
+
+        <createTable tableName="serie_mandatory_languages">
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="mandatory_languages" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="serie_optional_languages">
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="optional_languages" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="serie_ranges">
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="beginning" type="${integer.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="ending" type="${integer.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="sub_area">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+            <column name="geom" type="${multipolygon.type}"/>
+        </createTable>
+
+        <createTable tableName="sub_area_relationship">
+            <column name="sub_areas_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="serie_sub_area">
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sub_area_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

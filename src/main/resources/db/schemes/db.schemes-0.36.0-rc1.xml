@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.36.0-rc1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.Warning_Hazard_Type_General-addColumn-s124_code" author="a662829">
+        <addColumn tableName="warning_hazard_type_general">
+            <column name="s124_code" type="${smallint.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.Warning_Hazard_Type_Details-addColumn-s124_code" author="a662829">
+        <addColumn tableName="warning_hazard_type_details">
+            <column name="s124_code" type="${smallint.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.MaritimeService-addColumn-ohi_producer_code" author="w117851">
+        <addColumn tableName="maritime_service">
+            <column name="ohi_producer_code" type="${varchar2.255.type}" />
+        </addColumn>
+
+        <addUniqueConstraint tableName="maritime_service" columnNames="ohi_producer_code" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.MaritimeService-addColumn-s124_data_producer" author="w117851">
+        <addColumn tableName="maritime_service">
+            <column name="s124_data_producer" type="${boolean.type}" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.Serie-addColumn-s124_identifier" author="w117851">
+        <addColumn tableName="serie">
+            <column name="s124_identifier" type="${varchar2.255.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.Warning-addColumn-maritime_service_iho_producer_code" author="w117851">
+        <addColumn tableName="warning">
+            <column name="maritime_service_iho_producer_code" type="${varchar2.255.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.Warning-addColumn-serie_s124_identifier" author="w117851">
+        <addColumn tableName="warning">
+            <column name="serie_s124_identifier" type="${varchar2.255.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.StudyReference" author="w130085">
+        <createTable tableName="study_reference">
+            <column name="study_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="study_reference"
+            baseColumnNames="study_id"
+            referencedTableName="study"
+            referencedColumnNames="id"
+            constraintName="fk_reference_study"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.27.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.27.0-WarningGeoregulation-addColumn-isPublicReference-and-id" author="w117851">
+        <addColumn tableName="warning_georegulation">
+            <column name="is_public_reference" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="id" type="${id.type}" defaultValueComputed="${uuid_function}"/>
+        </addColumn>
+
+        <addNotNullConstraint tableName="warning_georegulation" columnName="id" />
+        <addPrimaryKey tableName="warning_georegulation" columnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.27.0-WarningAttachment-addColumn-isPublicReference-and-id" author="w117851">
+        <addColumn tableName="warning_attachment">
+            <column name="is_public_reference" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="id" type="${id.type}" defaultValueComputed="${uuid_function}"/>
+        </addColumn>
+
+        <addNotNullConstraint tableName="warning_attachment" columnName="id" />
+        <addPrimaryKey tableName="warning_attachment" columnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.27.0-WarningReferenceAsPublicReference" author="w117851">
+        <createTable tableName="warning_reference_as_public_reference">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="warning_reference_as_public_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="${varchar2.255.type}" />
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="warning_reference_as_public_reference"
+            columnNames="category, warning_reference_as_public_reference_id, warning_id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_reference_as_public_reference"
+            baseColumnNames="warning_id"
+            constraintName="warning_reference_as_public_reference_warning_id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_reference_as_public_reference"
+            baseColumnNames="warning_reference_as_public_reference_id"
+            constraintName="warning_reference_as_public_reference_warning_reference_as_public_reference_id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.27.0-Warning_MaritimeEntityReference" author="w117851">
+        <createTable tableName="warning_maritime_entity_reference">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="maritime_entity_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="warning_maritime_entity_reference"
+            columnNames="warning_id, maritime_entity_reference_id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_maritime_entity_reference"
+            baseColumnNames="warning_id"
+            constraintName="warning_maritime_entity_reference_warning_id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_maritime_entity_reference"
+            baseColumnNames="maritime_entity_reference_id"
+            constraintName="warning_maritime_entity_reference_maritime_entity_reference_id_fkc"
+            referencedTableName="maritime_entity_reference"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.27.0-Warning_Link" author="w117851">
+        <createTable tableName="warning_link">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_title" type="${varchar2.255.type}"/>
+            <column name="url" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="warning_link"
+            baseColumnNames="warning_id"
+            constraintName="warning_link_warning_id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+</databaseChangeLog>

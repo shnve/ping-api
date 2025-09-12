@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.1.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.4.0-PublicUser" author="a138386">
+        <createTable tableName="public_user">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="keycloak_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}"/>
+            <column name="update_date" type="${timestamp.type}"/>
+            <column name="phone_number" type="${varchar2.255.type}"/>
+            <column name="mobile_phone_number" type="${varchar2.255.type}"/>
+            <column name="organization" type="${varchar2.255.type}"/>
+            <column name="ship_name" type="${varchar2.255.type}"/>
+            <column name="home_port" type="${varchar2.255.type}"/>
+            <column name="registration_number" type="${varchar2.255.type}"/>
+            <column name="preferred_area_id" type="${id.type}"/>
+            <column name="has_email_notification" type="${boolean.type}" defaultValue="true"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.4.0-ServiceUser" author="a138386">
+        <createTable tableName="service_user">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="keycloak_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}"/>
+            <column name="update_date" type="${timestamp.type}"/>
+            <column name="service_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="service_user_role">
+            <column name="service_user_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_role" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.4.0-PublicUser-addColumn-has_accepted_tos" author="a662829">
+        <addColumn tableName="public_user">
+            <column name="has_accepted_tos" type="${boolean.type}" defaultValue="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.4.0-AreaLocalizedInfo" author="a618534">
+        <renameColumn tableName="area"
+                      newColumnName="localized_information"
+                      oldColumnName="more_information"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.34.0-retex-lot3.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.34.0-retex-lot3-Static_Logo" author="a662829">
+        <createTable tableName="static_logo">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="logo_key" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="height_with_unit" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="${blob.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alt_txt" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alt_txt_international" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}"/>
+            <column name="title_international" type="${varchar2.255.type}"/>
+            <column name="href" type="${varchar2.255.type}"/>
+            <column name="locked" type="${boolean.type}" defaultValue="false"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="static_logo"
+                             columnNames="logo_key, description"
+                             constraintName="static_logo_key_description_unique_constraint"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-FixedDateRange.add-column-timezone" author="w117851">
+        <addColumn tableName="fixed_date_range">
+            <column name="timezone" type="${varchar2.255.type}"/>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-FixedDateRange.update-timezone-to-utc-code-and-set-to-fixed-date-range-for-warning" author="w117851" context="!test">
+        <sql stripComments="true">
+            UPDATE warning w SET timezone = (
+                SELECT concat('UTC',
+                      CASE WHEN (EXTRACT(epoch FROM tn.utc_offset)/3600) > -1
+                           THEN concat('+', cast(cast(EXTRACT(epoch FROM tn.utc_offset)/3600 as real) as varchar))
+                           ELSE cast(cast(EXTRACT(epoch FROM tn.utc_offset)/3600 as real) AS varchar)
+                      END
+                )
+                FROM pg_timezone_names tn
+                WHERE tn.name = w.timezone
+            );
+        </sql>
+
+        <sql stripComments="true">
+            UPDATE fixed_date_range fdr
+            SET timezone = fdr_timezone.timezone
+            FROM (
+                 SELECT DISTINCT w.timezone as timezone, w.id as w_id, wfr.warning_id as wfr_id, fdr.parent_id as fdr_parent_id, wfr.id as wfr_id FROM warning w
+                 INNER JOIN warning_feature_part wfr ON w.id = wfr.warning_id
+                 INNER JOIN fixed_date_range fdr ON fdr.parent_id = wfr.id
+            )
+            AS fdr_timezone
+            WHERE fdr.parent_id = fdr_timezone.fdr_parent_id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Warning.RemoveTimezone" author="w117851">
+        <dropColumn tableName="warning" columnName="timezone" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Georegulation.ConvertTimezoneLocalisationToUtcCode" author="w117851" context="!test">
+        <sql stripComments="true">
+            UPDATE georegulation gr SET timezone = (
+                SELECT concat('UTC',
+                      CASE WHEN (EXTRACT(epoch FROM tn.utc_offset)/3600) > -1
+                               THEN concat('+', cast(cast(EXTRACT(epoch FROM tn.utc_offset)/3600 as real) as varchar))
+                           ELSE cast(cast(EXTRACT(epoch FROM tn.utc_offset)/3600 as real) AS varchar)
+                          END
+                   )
+                FROM pg_timezone_names tn
+                WHERE tn.name = gr.timezone
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Infosource.ConvertTimezoneLocalisationToUtcCode" author="w117851" context="!test">
+        <sql stripComments="true">
+            UPDATE infosource i SET timezone = (
+                SELECT concat('UTC',
+                      CASE WHEN (EXTRACT(epoch FROM tn.utc_offset)/3600) > -1
+                               THEN concat('+', cast(cast(EXTRACT(epoch FROM tn.utc_offset)/3600 as real) as varchar))
+                           ELSE cast(EXTRACT(epoch FROM tn.utc_offset)/3600 AS varchar)
+                      END
+                )
+                FROM pg_timezone_names tn
+                WHERE tn.name = i.timezone
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Warning.functionGetAN-without-locality" author="w116610">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_an (_nameOfSerie VARCHAR, _lang TEXT)
+            RETURNS TABLE (
+                      warningId uuid,
+                      warningType VARCHAR,
+                      nameOfSeries VARCHAR,
+                      warningNumber INTEGER,
+                      year INTEGER,
+                      generalArea TEXT,
+                      locality TEXT,
+                      warningHazardTypeGeneral VARCHAR,
+                      publicationDate timestamp,
+                      cancellationDate timestamp,
+                      language TEXT,
+                      productionAgency VARCHAR,
+                      country VARCHAR,
+                      featurePartId uuid,
+                      featurePartPosition INTEGER,
+                      featurePartWarningHazardTypeDetails TEXT,
+                      featurePartInformation TEXT,
+                      featurePartDateRange TEXT,
+                      type TEXT,
+                      geom geometry
+                  ) AS $$
+
+            BEGIN
+
+            RETURN QUERY
+                   (select distinct
+                    w.id as warningId,
+                s.type as warningType,
+                w.name_of_series as nameOfSeries,
+                w.warning_number as warningNumber,
+                w.year as year,
+                string_agg(distinct w_area.name, ',') as generalArea,
+                string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                w.warning_hazard_type_general as warningHazardTypeGeneral,
+                w.publication_time as publicationDate,
+                w.cancellation_date as cancellationDate,
+                _lang as "language",
+                w.production_agency as productionAgency,
+                w.country as country,
+                part.id as featurePartId,
+                part.position as featurePartPosition,
+                string_agg(distinct part_type.warning_hazard_type_detail, ',') as featurePartWarningHazardTypeDetails,
+                part_text.text as featurePartInformation,
+                string_agg(concat(part_date.date_start, ' ', part_date.time_of_day_start, '/', part_date.date_end, ' ', part_date.time_of_day_end, ''), ',') as featurePartDateRange,
+                'geom' as type,
+                part_geom.geom as geom
+                  from warning_feature_part as part
+                  left join warning as w on part.warning_id=w.id
+                  left join serie as s on w.serie_id=s.id
+                  left join warning_general_area as w_area on w.id=w_area.warning_id
+                  left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                  left join warning_feature_part_geometry as part_geom on part_geom.feature_part_id=part.id
+                  left join warning_feature_part_warning_hazard_type_details as part_type on part_type.feature_part_id = part.id
+                  left join localized_text as part_text on part_text.parent_id=part.id and part_text.language=_lang
+                  left join fixed_date_range as part_date on part_date.parent_id=part.id
+                  where w.status='PUBLISHED'
+                  and UPPER(w.name_of_series)=UPPER(_nameOfSerie)
+                  group by w.id, s.type, part.id, part_type.warning_hazard_type_detail, part_text.text, part.position, part_geom.geom
+                    order by w.id
+                   ) UNION (
+                select distinct
+                    w.id as warningId,
+                    s.type as warningType,
+                    w.name_of_series as nameOfSeries,
+                    w.warning_number as warningNumber,
+                    w.year as year,
+                    string_agg(distinct w_area.name, ',') as generalArea,
+                    string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                    w.warning_hazard_type_general as warningHazardType,
+                    w.publication_time as publicationDate,
+                    w.cancellation_date as cancellationDate,
+                    _lang as "language",
+                    w.production_agency as productionAgency,
+                    w.country as country,
+                    part.id as featurePartId,
+                    part.position as featurePartPosition,
+                    string_agg(distinct part_type.warning_hazard_type_detail, ',') as featurePartWarningType,
+                    part_text.text as featurePartInformation,
+                    string_agg(concat(part_date.date_start, ' ', part_date.time_of_day_start, '/', part_date.date_end, ' ', part_date.time_of_day_end, ''), ',') as featurePartDateRange,
+                    'affected_area' as type,
+                    part_affectedarea.geom as geom
+                from warning_feature_part as part
+                left join warning as w on part.warning_id=w.id
+                left join serie as s on w.serie_id=s.id
+                left join warning_general_area as w_area on w.id=w_area.warning_id
+                left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                inner join warning_feature_part_affected_area as part_affectedarea on part_affectedarea.feature_part_id=part.id
+                left join warning_feature_part_warning_hazard_type_details as part_type on part_type.feature_part_id = part.id
+                left join localized_text as part_text on part_text.parent_id=part.id and part_text.language=_lang
+                left join fixed_date_range as part_date on part_date.parent_id=part.id
+                where w.status='PUBLISHED'
+                and UPPER(w.name_of_series)=UPPER(_nameOfSerie)
+                group by w.id, s.type, part.id, part_type.warning_hazard_type_detail, part_text.text, part.position, part_affectedarea.geom
+                order by w.id
+                );
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-DateUtils.ConvertUtc" author="w116610" context="!test">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION convert_utc(utc varchar)
+                RETURNS varchar AS $$
+            DECLARE
+                sign varchar;
+                hours integer;
+                minutes integer;
+            BEGIN
+                sign := substring(utc from 4 for 1);
+                hours := floor(cast(substring(utc from 5) as numeric));
+                minutes := (cast(substring(utc from 5) as numeric) - hours) * 60;
+                RETURN 'UTC' || sign || to_char(hours, 'FM00') || ':' || to_char(minutes, 'FM00');
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-DateUtils.FormatDateToString" author="w116610" context="!test">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION format_date_to_string(dateParam DATE, timeParam TIME, timezoneParam VARCHAR)
+                RETURNS varchar AS $$
+            BEGIN
+                RETURN to_char(((to_char(dateParam, 'YYYY-MM-DD') || ' ' || to_char(timeParam, 'HH24:MI:SS'))::timestamp at time zone 'UTC' at time zone convert_utc(timezoneParam))::timestamp, 'YYYY-MM-DD HH24:MI:SS');
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Create_warning_locality_names" author="a662829">
+
+        <createTable tableName="warning_locality_names">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Insert_warning_locality_names" author="a662829" context="!test">
+        <!-- insert data into warning_locality_names -->
+        <sql stripComments="true">
+            insert into warning_locality_names(id, warning_id, parent_id, name, international_name, position)
+            select gen_random_uuid(), wl.warning_id, sar.parent_id, sa.name, coalesce(sa.international_name, sa.name), wl.position
+            from warning_locality wl, sub_area sa, sub_area_relationship sar
+            where sa.id = wl.sub_area_id and sar.sub_areas_id = wl.sub_area_id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Drop_warning_locality" author="a662829" context="!test">
+        <dropTable tableName="warning_locality"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-DateUtils.FormatDateOrTime" author="w116610" context="!test">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION format_date_or_time(dateParam DATE, timeParam TIME, timezoneParam VARCHAR)
+                RETURNS timestamp AS $$
+            DECLARE
+                _serverUtcOffset INTERVAL := '1 hour';
+            BEGIN
+                RETURN ((to_char(dateParam, 'YYYY-MM-DD') || ' ' || to_char(timeParam + _serverUtcOffset, 'HH24:MI:SS'))::timestamp at time zone 'UTC' at time zone convert_utc(timezoneParam))::timestamp;
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-GetFeaturePartDateRange" author="w116610">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_feature_part_date_range(
+                _position INTEGER,
+                _date_start DATE,
+                _time_of_day_start TIME,
+                _date_end DATE,
+                _time_of_day_end TIME,
+                _timezone TEXT
+            )
+            RETURNS jsonb AS $$
+            BEGIN
+                RETURN (
+                    SELECT distinct jsonb_build_object(
+                        'position', _position,
+                        'date_start', CASE WHEN _time_of_day_start IS NOT NULL THEN format_date_or_time(_date_start, _time_of_day_start, _timezone)::DATE ELSE _date_start END,
+                        'time_of_day_start',
+                            CASE
+                                WHEN _time_of_day_start IS NOT NULL THEN format_date_or_time(_date_start, _time_of_day_start, _timezone)::TIME
+                            END,
+                        'date_end', CASE WHEN _time_of_day_end IS NOT NULL THEN format_date_or_time(_date_end, _time_of_day_end, _timezone)::DATE ELSE _date_end END,
+                        'time_of_day_end',
+                            CASE
+                                WHEN _time_of_day_end IS NOT NULL THEN format_date_or_time(_date_end, _time_of_day_end, _timezone)::TIME
+                            END
+                    )
+                );
+            END;
+            $$ LANGUAGE plpgsql;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-GetAnPartInfo" author="w116610">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_anpart_info (_warningId uuid, _lang TEXT, _defaultLang TEXT, _partPosition INTEGER)
+                RETURNS TABLE (
+                                  featurePartId uuid,
+                                  featurePartWarningHazardTypeDetails TEXT,
+                                  featurePartInformation TEXT,
+                                  featurePartDateRange jsonb
+                              ) AS $$
+
+            BEGIN
+
+                RETURN QUERY
+                    (select distinct
+                         part.id as featurePartId,
+                         case _lang
+                             when 'fr' THEN string_agg(distinct type_details.translation, ',')
+                             when 'en' THEN string_agg(distinct type_details.international_translation, ',')
+                             end featurePartWarningHazardTypeDetails,
+                         case when (part_text.text is not null) THEN part_text.text ELSE default_part_text.text END as featurePartInformation,
+                         to_jsonb(json_agg(distinct get_feature_part_date_range(part_date.position, part_date.date_start, part_date.time_of_day_start, part_date.date_end, part_date.time_of_day_end, part_date.timezone))) as featurePartDateRange
+                         from warning_feature_part as part
+                              left join warning as w on part.warning_id=w.id
+                              left join warning_feature_part_warning_hazard_type_details as part_type on part_type.feature_part_id = part.id
+                              left join localized_text as part_text on part_text.parent_id=part.id and part_text.language=_lang
+                              left join localized_text as default_part_text on default_part_text.parent_id=part.id and default_part_text.language=_defaultLang
+                              left join fixed_date_range as part_date on part_date.parent_id=part.id
+                              left join warning_hazard_type_details as type_details on type_details.enum_name=part_type.warning_hazard_type_detail
+                    where w.id = _warningId and part.position=_partPosition
+                    group by w.id, part.id, featurePartInformation
+                    );
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-GetAnWithAllInfoParts" author="w116610">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_an_with_allinfoparts (_lang TEXT, _defaultLang TEXT = 'fr')
+                RETURNS TABLE (
+                                  warningId uuid,
+                                  warningType VARCHAR,
+                                  nameOfSeries VARCHAR,
+                                  warningNumber INTEGER,
+                                  year INTEGER,
+                                  generalArea TEXT,
+                                  locality TEXT,
+                                  warningHazardTypeGeneral TEXT,
+                                  publicationDate TEXT,
+                                  cancellationDate TEXT,
+                                  language TEXT,
+                                  productionAgency VARCHAR,
+                                  country VARCHAR,
+                                  featurePartId uuid,
+                                  featurePartPosition INTEGER,
+                                  parts jsonb,
+                                  cancelledWarnings jsonb,
+                                  type TEXT,
+                                  geom geometry
+                              ) AS $$
+
+            BEGIN
+
+                RETURN QUERY
+                    (select distinct
+                         w.id as warningId,
+                         s.type as warningType,
+                         w.name_of_series as nameOfSeries,
+                         w.warning_number as warningNumber,
+                         w.year as year,
+                         string_agg(distinct w_area.name, ',') as generalArea,
+                         string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                         case _lang
+                             when 'fr' THEN string_agg(distinct type_general.translation, ',')
+                             when 'en' THEN string_agg(distinct type_general.international_translation, ',')
+                             end warningHazardTypeGeneral,
+                         to_char(w.publication_time, 'DD/MM/YYYY') as publicationDate,
+                         to_char(w.cancellation_date, 'DD/MM/YYYY HH24:MI:SS TZ') as cancellationDate,
+                         _lang as "language",
+                         w.production_agency as productionAgency,
+                         w.country as country,
+                         part.id as featurePartId,
+                         part.position as featurePartPosition,
+                         (select get_anpart_infos(w.id, _lang, _defaultLang)) as parts,
+                         (select get_an_cancelled(w.id) as cancelledWarnings),
+                         'geom' as type,
+                         part_geom.geom as geom
+                     from warning_feature_part as part
+                              left join warning as w on part.warning_id=w.id
+                              left join serie as s on w.serie_id=s.id
+                              left join warning_general_area as w_area on w.id=w_area.warning_id
+                              left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                              left join warning_hazard_type_general as type_general on type_general.enum_name=w.warning_hazard_type_general
+                              left join warning_feature_part_geometry as part_geom on part_geom.feature_part_id=part.id
+                     where w.status='PUBLISHED'
+                     group by w.id, s.type, part.id, part.position, part_geom.geom
+                     order by w.id
+                    ) UNION (
+                        select distinct
+                            w.id as warningId,
+                            s.type as warningType,
+                            w.name_of_series as nameOfSeries,
+                            w.warning_number as warningNumber,
+                            w.year as year,
+                            string_agg(distinct w_area.name, ',') as generalArea,
+                            string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                            case _lang
+                                when 'fr' THEN string_agg(distinct type_general.translation, ',')
+                                when 'en' THEN string_agg(distinct type_general.international_translation, ',')
+                                end warningHazardTypeGeneral,
+                            to_char(w.publication_time, 'DD/MM/YYYY') as publicationDate,
+                            to_char(w.cancellation_date, 'DD/MM/YYYY HH24:MI:SS TZ') as cancellationDate,
+                            _lang as "language",
+                            w.production_agency as productionAgency,
+                            w.country as country,
+                            part.id as featurePartId,
+                            part.position as featurePartPosition,
+                            (select get_anpart_infos(w.id, _lang, _defaultLang)) as parts,
+                            (select get_an_cancelled(w.id) as cancelledWarnings),
+                            'affected_area' as type,
+                            part_affectedarea.geom as geom
+                        from warning_feature_part as part
+                                 left join warning as w on part.warning_id=w.id
+                                 left join serie as s on w.serie_id=s.id
+                                 left join warning_general_area as w_area on w.id=w_area.warning_id
+                                 left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                                 left join warning_hazard_type_general as type_general on type_general.enum_name=w.warning_hazard_type_general
+                                 inner join warning_feature_part_affected_area as part_affectedarea on part_affectedarea.feature_part_id=part.id
+                        where w.status='PUBLISHED'
+                        group by w.id, s.type, part.id, part.position, part_affectedarea.geom
+                        order by w.id
+                    );
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Function-get_an_with_allinfoparts_for_serie" author="w116610">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_an_with_allinfoparts_for_serie (_nameOfSerie VARCHAR, _lang TEXT, _defaultLang TEXT = 'fr')
+            RETURNS TABLE (
+                      warningId uuid,
+                      warningType VARCHAR,
+                      nameOfSeries VARCHAR,
+                      warningNumber INTEGER,
+                      year INTEGER,
+                      generalArea TEXT,
+                      locality TEXT,
+                      warningHazardTypeGeneral TEXT,
+                      publicationDate TEXT,
+                      cancellationDate TEXT,
+                      language TEXT,
+                      productionAgency VARCHAR,
+                      country VARCHAR,
+                      featurePartId uuid,
+                      featurePartPosition INTEGER,
+                      parts jsonb,
+                      cancelledWarnings jsonb,
+                      type TEXT,
+                      geom geometry
+                  ) AS $$
+
+            BEGIN
+
+            RETURN QUERY
+                (select distinct
+                    w.id as warningId,
+                s.type as warningType,
+                w.name_of_series as nameOfSeries,
+                w.warning_number as warningNumber,
+                w.year as year,
+                string_agg(distinct w_area.name, ',') as generalArea,
+                string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                case _lang
+                    when 'fr' THEN string_agg(distinct type_general.translation, ',')
+                    when 'en' THEN string_agg(distinct type_general.international_translation, ',')
+                    end warningHazardTypeGeneral,
+                to_char(w.publication_time, 'DD/MM/YYYY') as publicationDate,
+                to_char(w.cancellation_date, 'DD/MM/YYYY HH24:MI:SS TZ') as cancellationDate,
+                _lang as "language",
+                w.production_agency as productionAgency,
+                w.country as country,
+                part.id as featurePartId,
+                part.position as featurePartPosition,
+                (select get_anpart_infos(w.id, _lang, _defaultLang)) as parts,
+                (select get_an_cancelled(w.id) as cancelledWarnings),
+                'geom' as type,
+                part_geom.geom as geom
+                  from warning_feature_part as part
+                  left join warning as w on part.warning_id=w.id
+                  left join serie as s on w.serie_id=s.id
+                  left join warning_general_area as w_area on w.id=w_area.warning_id
+                  left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                  left join warning_hazard_type_general as type_general on type_general.enum_name=w.warning_hazard_type_general
+                  left join warning_feature_part_geometry as part_geom on part_geom.feature_part_id=part.id
+                  where w.status='PUBLISHED'
+                  and UPPER(w.name_of_series)=UPPER(_nameOfSerie)
+                  group by w.id, s.type, part.id, part.position, part_geom.geom
+                    order by w.id
+                ) UNION (
+                select distinct
+                    w.id as warningId,
+                    s.type as warningType,
+                    w.name_of_series as nameOfSeries,
+                    w.warning_number as warningNumber,
+                    w.year as year,
+                    string_agg(distinct w_area.name, ',') as generalArea,
+                    string_agg(distinct case _lang when 'fr' then w_locality.name else w_locality.international_name end, ',') as locality,
+                    case _lang
+                        when 'fr' THEN string_agg(distinct type_general.translation, ',')
+                        when 'en' THEN string_agg(distinct type_general.international_translation, ',')
+                    end warningHazardTypeGeneral,
+                    to_char(w.publication_time, 'DD/MM/YYYY') as publicationDate,
+                    to_char(w.cancellation_date, 'DD/MM/YYYY HH24:MI:SS TZ') as cancellationDate,
+                    _lang as "language",
+                    w.production_agency as productionAgency,
+                    w.country as country,
+                    part.id as featurePartId,
+                    part.position as featurePartPosition,
+                    (select get_anpart_infos(w.id, _lang, _defaultLang)) as parts,
+                    (select get_an_cancelled(w.id) as cancelledWarnings),
+                    'affected_area' as type,
+                    part_affectedarea.geom as geom
+                from warning_feature_part as part
+                left join warning as w on part.warning_id=w.id
+                left join serie as s on w.serie_id=s.id
+                left join warning_general_area as w_area on w.id=w_area.warning_id
+                left join warning_locality_names as w_locality on w.id=w_locality.warning_id
+                left join warning_hazard_type_general as type_general on type_general.enum_name=w.warning_hazard_type_general
+                inner join warning_feature_part_affected_area as part_affectedarea on part_affectedarea.feature_part_id=part.id
+                where w.status='PUBLISHED'
+                and UPPER(w.name_of_series)=UPPER(_nameOfSerie)
+                group by w.id, s.type, part.id, part.position, part_affectedarea.geom
+                order by w.id
+                );
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Sub_area.add-column-technical_identifier" author="w130085">
+        <addColumn tableName="sub_area">
+            <column name="technical_identifier" type="${varchar2.255.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-DateUtils.FormatDateRangeFromUtcToTimezone" author="w116610" context="!test">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION format_date_range_from_utc_to_timezone(dateParam DATE, timeParam TIME, timezoneParam VARCHAR)
+                RETURNS timestamp AS $$
+            BEGIN
+            RETURN ((to_char(dateParam, 'YYYY-MM-DD') || ' ' || to_char(timeParam, 'HH24:MI:SS'))::timestamp at time zone convert_utc(timezoneParam) at time zone 'UTC')::timestamp;
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Schemes-0.34.0-retex-lot3-Fixed_date_range.FormatDateRangeToTimezone" author="w116610" context="!test">
+        <sql stripComments="true">
+            UPDATE fixed_date_range fdr
+            SET date_start = CASE WHEN time_of_day_start IS NOT NULL THEN format_date_range_from_utc_to_timezone(fdr.date_start, fdr.time_of_day_start, fdr.timezone)::DATE ELSE fdr.date_start END,
+                time_of_day_start = CASE WHEN time_of_day_start IS NOT NULL THEN format_date_range_from_utc_to_timezone(fdr.date_start, fdr.time_of_day_start, fdr.timezone)::TIME ELSE fdr.time_of_day_start END,
+                date_end = CASE WHEN time_of_day_end IS NOT NULL THEN format_date_range_from_utc_to_timezone(fdr.date_end, fdr.time_of_day_end, fdr.timezone)::DATE ELSE fdr.date_end END,
+                time_of_day_end = CASE WHEN time_of_day_end IS NOT NULL THEN format_date_range_from_utc_to_timezone(fdr.date_end, fdr.time_of_day_end, fdr.timezone)::TIME ELSE fdr.time_of_day_end END;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

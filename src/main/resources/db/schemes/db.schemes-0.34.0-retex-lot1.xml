@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.34.0-retex-lot1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <!-- Insert addCancellationTime attribut to the warning table, to add or not the date in the TELEX  -->
+    <changeSet id="DB.Schemes-0.34.0-retex-lot1-Warning-addColumn_add_cancellation_time_to_Telex_for_Warning" author="w130085">
+        <addColumn tableName="warning">
+            <column name="add_cancellation_time_to_telex" type="${boolean.type}" defaultValue="true"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

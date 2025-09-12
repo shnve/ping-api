@@ -1,0 +1,14 @@
+package fr.shom.ping.model.enums;
+
+public enum InfosourceNature {
+    HAZARD_REPORT,
+    OTHER_REPORT,
+    ACTIVITY_FORECAST,
+    MAP_ANOMALY,
+    PUBLICATION_ANOMALY,
+    FUTURE_INFORMATION,
+    LIGHTHOUSE_AND_BEACON,
+    GEOREGULATION,
+    BATHY,
+    SURVEY_TRANSMISSION
+}

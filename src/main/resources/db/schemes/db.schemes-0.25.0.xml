@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.25.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="DB.Schemes.0.25.0-FolderFollowing" author="w117851">
+        <createTable tableName="folder_following">
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="maritime_service_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="folder_id, maritime_service_id"
+            constraintName="folder_following_unique_constraint"
+            tableName="folder_following"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.25.0-Warning-addColumn-forceToReview" author="a662829">
+        <addColumn tableName="warning">
+            <column name="force_to_review" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.25.0-Warning-Model-Name" author="w117851">
+        <addColumn tableName="warning">
+            <column name="model_name" type="${varchar2.255.type}"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

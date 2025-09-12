@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.22.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.23.0-ProUser-addColumn-hasNotificationsSound" author="w124229">
+        <addColumn tableName="pro_user">
+            <column name="has_notifications_sound" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.23.0-PublicUser-addColumn-hasNotificationsSound" author="w124229">
+        <addColumn tableName="public_user">
+            <column name="has_notifications_sound" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.23.0-NotificationService" author="w124229">
+        <addColumn tableName="notification">
+            <column name="service_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="service_id"
+            constraintName="notification_service_id_fk_constraint"
+            referencedTableName="maritime_service"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.23.0-Notification-Warning-Georegulation" author="w124229">
+        <addColumn tableName="notification">
+            <column name="warning_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="warning_id"
+            constraintName="notification_warning_id_fk_constraint"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+
+        <addColumn tableName="notification">
+            <column name="georegulation_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="georegulation_id"
+            constraintName="notification_georegulation_id_fk_constraint"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

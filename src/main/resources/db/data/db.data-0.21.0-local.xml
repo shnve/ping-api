@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.21.0-local.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.21.0.Study" author="w117851">
+        <sql stripComments="true">
+            INSERT INTO study (id, "number", creation_date, last_update, last_update_user_id, folder_id, status) VALUES
+                ('6593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0433/22', '2022-04-19 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'OPEN'),
+                ('3593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0434/22', '2022-04-18 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'OPEN'),
+                ('2593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0435/22', '2022-04-17 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'CLOSED'),
+                ('1593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0436/22', '2022-04-16 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'OPEN'),
+                ('7593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0437/22', '2022-04-15 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'CLOSED'),
+                ('5593cd07-39e3-4afb-9b21-53005d597b8a'::uuid, '0438/22', '2022-04-14 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'OPEN');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

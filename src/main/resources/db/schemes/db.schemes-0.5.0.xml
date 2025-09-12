@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.1.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.5.0-ProUser" author="a138386">
+        <createTable tableName="pro_user">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="keycloak_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastname" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}"/>
+            <column name="update_date" type="${timestamp.type}"/>
+            <column name="service_id" type="${id.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.5.0-Warning-addColumn-timezone" author="a662829">
+        <addColumn tableName="warning">
+            <column name="timezone" type="${varchar2.255.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.5.0-Warning_MoreInformation" author="a138386">
+        <addColumn tableName="warning">
+            <column name="estimated_publication_date" type="${date.type}" />
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false" />
+            </column>
+            <column name="review_date" type="${date.type}" />
+            <column name="end_of_broadcast_date" type="${date.type}" />
+            <column name="last_update" type="${timestamp.type}" />
+            <column name="last_update_user_id" type="${id.type}" />
+            <column name="internal_comment" type="${clob.type}" />
+        </addColumn>
+
+        <createTable tableName="warning_public_comment">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="public_user_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="comment" type="${clob.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.5.0-WarningReference" author="a138386">
+        <createTable tableName="warning_reference">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="no_message_on_hand" type="${boolean.type}" />
+            <column name="category" type="${varchar2.255.type}" />
+        </createTable>
+
+        <createTable tableName="warning_reference_warning">
+            <column name="warning_reference_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

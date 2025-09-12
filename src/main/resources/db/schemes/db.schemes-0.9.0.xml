@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.9.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.9.0-WarningFeature" author="a138386">
+        <addColumn tableName="warning_feature_part_geometry">
+            <column name="properties" type="${json.type}"/>
+        </addColumn>
+
+        <addColumn tableName="warning_feature_part_affected_area">
+            <column name="properties" type="${json.type}"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.9.0-Warning" author="a662829">
+        <addColumn tableName="warning">
+            <column name="telex" type="${clob.type}" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.9.0-Warning_Hazard_Type_Details" author="a662829">
+        <createTable tableName="warning_hazard_type_details">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_translation" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.9.0-Warning_Hazard_Type_General" author="a662829">
+        <createTable tableName="warning_hazard_type_general">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_translation" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bulletin" type="${boolean.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

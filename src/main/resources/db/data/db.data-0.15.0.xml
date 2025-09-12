@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.15.0-local.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.15.0.PublicUser" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO public_user
+            (id, keycloak_id, title, firstname, lastname, email, status, creation_date, update_date, phone_number, mobile_phone_number, organization, ship_name, home_port, registration_number, preferred_area_id, has_email_notification, has_accepted_tos)
+            VALUES('eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'bffe63d3-eddd-444e-a199-99afd2d1706a'::uuid, 'MR', 'Jean', 'Martin', 'jean.martin@xxx.com', 'ENABLED', '2022-01-10 11:18:56.361', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, false);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.15.0.Infosource" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO infosource (id, "number", nature, status, issuing_service_id, issuing_service_user_id, "comment", timezone, creation_date, last_update, validation_time) VALUES
+            ('abfc9257-fb50-4ad5-97d4-abd79c26bd3d'::uuid, 'precise_pangolin-02-2021', 'HAZARD_REPORT', 'DRAFT', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-07 08:00:00.000', '2022-01-07 08:00:00.000', NULL),
+            ('faa9ccb5-a0c4-4cc2-a55f-b5f21c92b725'::uuid, 'hardy_heron-05-2021', 'ACTIVITY_FORECAST', 'SENT', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-10 10:25:00.000'),
+            ('5e038bfc-1c6f-4705-a5a9-70423ad00b1b'::uuid, 'bionic_beaver-08-2021', 'PUBLICATION_ANOMALY', 'TAKEN', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-11 10:25:00.000'),
+            ('61134864-6bfe-4382-9c12-1bc782413ddd'::uuid, 'breezy_badger-02-2021', 'ACTIVITY_FORECAST', 'DRAFT', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-20 08:00:00.000', '2022-01-20 10:37:00.000', NULL),
+            ('b0a59551-d6ab-4da5-b76b-1bdb045174cf'::uuid, 'saucy_salamander-12-2021', 'OTHER_REPORT', 'SENT', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-12 10:25:00.000'),
+            ('0633967e-330b-4956-841f-edf74a13f072'::uuid, 'raring_ringtail-01-2021', 'MAP_ANOMALY', 'TAKEN', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'a comment', 'Europe/Paris', '2022-01-10 10:17:00.000', '2022-01-11 09:15:00.000', '2022-01-13 10:12:00.000');
+            INSERT INTO infosource (id, "number", nature, status, issuing_public_user_id, "comment", timezone, creation_date, last_update, validation_time) VALUES
+            ('4c9addd3-b941-4a60-be5a-d9d393932b32'::uuid, 'disco_dingo-02-2021', 'HAZARD_REPORT', 'DRAFT', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-07 08:00:00.000', '2022-01-07 08:00:00.000', NULL),
+            ('8e85a73e-b3e9-4d67-8245-3d9673d65111'::uuid, 'hirsute_hippo-05-2021', 'ACTIVITY_FORECAST', 'SENT', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-10 10:25:00.000'),
+            ('3458817d-23e2-4e41-91ce-055360e295fc'::uuid, 'cosmic_cuttlefish-11-2021', 'OTHER_REPORT', 'SENT', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-09 07:42:00.000', '2022-01-10 15:48:00.000', '2022-01-12 13:32:00.000'),
+            ('8d7d22ab-e43e-4635-944d-7ae4acb6942e'::uuid, 'utopic_unicorn-08-2021', 'PUBLICATION_ANOMALY', 'TAKEN', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-12 10:25:00.000'),
+            ('a02e0471-f5d5-488e-a0e0-3aff02863497'::uuid, 'groovy_gorilla-08-2021', 'MAP_ANOMALY', 'TAKEN', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-10 10:17:00.000', '2022-01-11 09:15:00.000', '2022-01-13 10:12:00.000'),
+            ('291cf417-10bf-4a37-ae5a-147c7c20d805'::uuid, 'quantal_quetzal-07-2021', 'HAZARD_REPORT', 'DRAFT', 'eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'a comment', 'Europe/Paris', '2022-01-09 07:35:00.000', '2022-01-10 11:23:00.000', NULL);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.15.0.InfosourceFeaturePart" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO infosource_feature_part (id, infosource_id, "position", description, "object") VALUES
+            ('0e423d53-0842-4055-8220-2270b4ef74c4'::uuid, 'abfc9257-fb50-4ad5-97d4-abd79c26bd3d'::uuid, 1, 'description feature 01', '{"objectName": "feature 01", "markupType": "LIGHTHOUSE"}'),
+            ('59120f8b-3d18-47e6-8b77-4c4d5c5431ad'::uuid, 'abfc9257-fb50-4ad5-97d4-abd79c26bd3d'::uuid, 2, 'description feature 02', '{"objectName": "feature 02", "markupType": "BUOY"}'),
+            ('a35f0a1b-a13d-4d19-a344-f6e56f3eff37'::uuid, 'abfc9257-fb50-4ad5-97d4-abd79c26bd3d'::uuid, 3, 'description feature 03', '{"objectName": "feature 03", "markupType": "TURRET_BEACON"}'),
+            ('e3706371-1a4c-4060-8164-4298f5bf67f7'::uuid, 'abfc9257-fb50-4ad5-97d4-abd79c26bd3d'::uuid, 4, 'description feature 04', '{"objectName": "feature 04", "markupType": "OTHER"}'),
+            ('2edbeabe-f577-4e74-ae50-33704361b854'::uuid, 'faa9ccb5-a0c4-4cc2-a55f-b5f21c92b725'::uuid, 1, 'description feature 05', '{"objectName": "feature 05", "markupType": "OTHER"}'),
+            ('268abc35-dbb7-4b75-8132-4e12ba0bf402'::uuid, '5e038bfc-1c6f-4705-a5a9-70423ad00b1b'::uuid, 1, 'description feature 06', '{"objectName": "feature 06", "markupType": "BUOY"}'),
+            ('4c754c58-b533-4080-a203-07a3d5ecfea9'::uuid, '61134864-6bfe-4382-9c12-1bc782413ddd'::uuid, 1, 'description feature 07', '{"objectName": "feature 07", "markupType": "OTHER"}'),
+            ('09b33664-8b8d-4807-ab17-c7b9abc24e9c'::uuid, '291cf417-10bf-4a37-ae5a-147c7c20d805'::uuid, 1, 'description feature 08', '{"objectName": "feature 08", "markupType": "OTHER"}'),
+            ('0ebc9f65-d69f-4a0e-9808-573bc66bc502'::uuid, '291cf417-10bf-4a37-ae5a-147c7c20d805'::uuid, 2, 'description feature 09', '{"objectName": "feature 09", "markupType": "OTHER"}'),
+            ('4b22b1f9-f434-4660-8555-0863e2977f88'::uuid, '3458817d-23e2-4e41-91ce-055360e295fc'::uuid, 1, 'description feature 10', '{"objectName": "feature 10", "markupType": "OTHER"}'),
+            ('d84acf02-631e-4eb7-8618-857729315af2'::uuid, 'a02e0471-f5d5-488e-a0e0-3aff02863497'::uuid, 1, 'description feature 11', '{"objectName": "feature 11", "markupType": "OTHER"}'),
+            ('d046c839-c670-41b6-95eb-de58df674b1a'::uuid, 'b0a59551-d6ab-4da5-b76b-1bdb045174cf'::uuid, 1, 'description feature 12', '{"objectName": "feature 12", "markupType": "OTHER"}'),
+            ('bee709ab-dc07-4c98-af7b-f643dab48217'::uuid, '0633967e-330b-4956-841f-edf74a13f072'::uuid, 1, 'description feature 13', '{"objectName": "feature 13", "markupType": "OTHER"}'),
+            ('f29e1acf-f64d-4505-b7fa-855b9c2c3299'::uuid, '8e85a73e-b3e9-4d67-8245-3d9673d65111'::uuid, 1, 'description feature 14', '{"objectName": "feature 14", "markupType": "LIGHTHOUSE"}'),
+            ('956247e8-5aef-46ad-8e77-e40f620b1731'::uuid, '8e85a73e-b3e9-4d67-8245-3d9673d65111'::uuid, 2, 'description feature 15', '{"objectName": "feature 15", "markupType": "BUOY"}'),
+            ('8f71b55e-cb12-4340-8692-2ad309f264e6'::uuid, '8e85a73e-b3e9-4d67-8245-3d9673d65111'::uuid, 3, 'description feature 16', '{"objectName": "feature 16", "markupType": "TURRET_BEACON", "dateRanges":[{"start":"2022-01-01T01:01:01.000Z","end":"2022-02-01T23:59:59.000Z"},{"start":"2022-01-01T01:01:01.000Z"},{"end":"2022-02-01T23:59:59.000Z"}],"observationDate":"2022-01-27T14:07:32.000Z","objectName": "Name","mapNumber": "Concerned map number","editionNumber": "Edition number","lastPatchNumber": "Last patch number","issueReference": "Concerned issue reference","upToDateAt": "Up-to-date at","chapterOrPage": "Chapter or page","objectFutureInfo": "Object"}'),
+            ('5e5f17f6-b89c-466e-866e-420d1f4f6088'::uuid, '8d7d22ab-e43e-4635-944d-7ae4acb6942e'::uuid, 1, 'description feature 17', '{"objectName": "feature 17", "markupType": "OTHER"}'),
+            ('ed08acee-4c0a-4f0c-8b47-35ec672b3795'::uuid, '8d7d22ab-e43e-4635-944d-7ae4acb6942e'::uuid, 2, 'description feature 18', '{"objectName": "feature 18", "markupType": "OTHER"}');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.15.0-MaritimeEntity" author="a662829">
+        <sql stripComments="true">
+            UPDATE maritime_entity
+            SET maritime_service_id = '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid
+            WHERE id = '3625939b-5dd7-4282-8388-313b6871f2a7'::uuid;
+
+            UPDATE maritime_entity
+            SET maritime_service_id = 'cd2aa150-110e-4cee-828c-c131da0a5706'::uuid
+            WHERE id = 'd06fd909-43f7-48ce-8630-31af8517e23e'::uuid;
+
+            UPDATE maritime_entity
+            SET maritime_service_id = '81110e40-c844-4f79-a87e-47749cb5b806'::uuid
+            WHERE id = 'ec9ffa0b-064f-417f-b687-082932a16fa4'::uuid;
+
+            UPDATE maritime_entity
+            SET maritime_service_id = 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid
+            WHERE id = '01ffd1b1-c75b-41ee-afdb-1c11f5083985'::uuid;
+
+            UPDATE maritime_service
+            SET type = 'NATIONAL_DELEGATED_COORDINATOR'
+            WHERE id IN ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, 'cd2aa150-110e-4cee-828c-c131da0a5706'::uuid, '81110e40-c844-4f79-a87e-47749cb5b806'::uuid);
+
+            UPDATE maritime_service
+            SET type = 'NAVAREA_COORDINATOR'
+            WHERE id = 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid;
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.15.0.InfosourceFeaturePartGeometry" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO infosource_feature_part_geometry (feature_part_id, geom, properties) VALUES
+            ('0e423d53-0842-4055-8220-2270b4ef74c4'::uuid, 'SRID=3857;POLYGON ((-543239.115071175 6110182.76744631, -545465.504887041 6108518.63983875, -543239.115071175 6106854.83488507, -541012.72525531 6108518.63983875, -539899.530347377 6110182.76744631, -543239.115071175 6110182.76744631))'::geometry, NULL),
+            ('59120f8b-3d18-47e6-8b77-4c4d5c5431ad'::uuid, 'SRID=3857;POINT (-575899.89502412 6121208.25465416)'::geometry, NULL),
+            ('a35f0a1b-a13d-4d19-a344-f6e56f3eff37'::uuid, 'SRID=3857;POLYGON ((-574906.213656412 6118494.74015003, -572804.195378572 6121361.12871073, -576587.828278686 6123730.67658758, -578804.502098955 6120596.75842788, -574906.213656412 6118494.74015003))'::geometry, NULL),
+            ('e3706371-1a4c-4060-8164-4298f5bf67f7'::uuid, 'SRID=3857;POINT (-497193.562552621 6123354.37704143)'::geometry, NULL),
+            ('2edbeabe-f577-4e74-ae50-33704361b854'::uuid, 'SRID=3857;POLYGON ((-603351.640099542 6192123.96465293, -585540.521572619 6183726.49942362, -569955.792861562 6197166.42153172, -582200.936848821 6215681.04290064, -603351.640099542 6192123.96465293))'::geometry, NULL),
+            ('268abc35-dbb7-4b75-8132-4e12ba0bf402'::uuid, 'SRID=3857;POLYGON ((-514518.686446509 6109517.07767357, -515409.242372856 6104027.10645706, -502830.139913216 6100701.55912974, -497041.526391967 6104027.10645706, -503164.098385596 6107021.20086602, -507505.558526535 6106688.4721289, -509064.03139764 6105690.36330243, -511847.018667472 6108019.46448199, -514518.686446509 6109517.07767357))'::geometry, NULL),
+            ('4c754c58-b533-4080-a203-07a3d5ecfea9'::uuid, 'SRID=3857;LINESTRING (-506113.960571404 6108652.13573627, -506228.616113833 6105327.12500587, -504757.203319343 6105346.23426295, -504212.58949281 6107658.45436857)'::geometry, NULL),
+            ('09b33664-8b8d-4807-ab17-c7b9abc24e9c'::uuid, 'SRID=3857;POINT (-491761.672698496 6124706.80674941)'::geometry, NULL),
+            ('0ebc9f65-d69f-4a0e-9808-573bc66bc502'::uuid, 'SRID=3857;LINESTRING (-496663.197137283 6123302.27635467, -496682.306394356 6124257.73920823, -494694.930366882 6124143.31452786, -493529.278977593 6124076.20126605, -492640.698523775 6123655.79761048)'::geometry, NULL),
+            ('4b22b1f9-f434-4660-8555-0863e2977f88'::uuid, 'SRID=3857;POLYGON ((-543239.115071175 6110182.76744631, -545465.504887041 6108518.63983875, -543239.115071175 6106854.83488507, -541012.72525531 6108518.63983875, -539899.530347377 6110182.76744631, -543239.115071175 6110182.76744631))'::geometry, NULL),
+            ('d84acf02-631e-4eb7-8618-857729315af2'::uuid, 'SRID=3857;POINT (-575899.89502412 6121208.25465416)'::geometry, NULL),
+            ('d046c839-c670-41b6-95eb-de58df674b1a'::uuid, 'SRID=3857;POLYGON ((-574906.213656412 6118494.74015003, -572804.195378572 6121361.12871073, -576587.828278686 6123730.67658758, -578804.502098955 6120596.75842788, -574906.213656412 6118494.74015003))'::geometry, NULL),
+            ('bee709ab-dc07-4c98-af7b-f643dab48217'::uuid, 'SRID=3857;POINT (-497193.562552621 6123354.37704143)'::geometry, NULL),
+            ('f29e1acf-f64d-4505-b7fa-855b9c2c3299'::uuid, 'SRID=3857;POLYGON ((-603351.640099542 6192123.96465293, -585540.521572619 6183726.49942362, -569955.792861562 6197166.42153172, -582200.936848821 6215681.04290064, -603351.640099542 6192123.96465293))'::geometry, NULL),
+            ('956247e8-5aef-46ad-8e77-e40f620b1731'::uuid, 'SRID=3857;POLYGON ((-514518.686446509 6109517.07767357, -515409.242372856 6104027.10645706, -502830.139913216 6100701.55912974, -497041.526391967 6104027.10645706, -503164.098385596 6107021.20086602, -507505.558526535 6106688.4721289, -509064.03139764 6105690.36330243, -511847.018667472 6108019.46448199, -514518.686446509 6109517.07767357))'::geometry, NULL),
+            ('8f71b55e-cb12-4340-8692-2ad309f264e6'::uuid, 'SRID=3857;LINESTRING (-506113.960571404 6108652.13573627, -506228.616113833 6105327.12500587, -504757.203319343 6105346.23426295, -504212.58949281 6107658.45436857)'::geometry, NULL),
+            ('5e5f17f6-b89c-466e-866e-420d1f4f6088'::uuid, 'SRID=3857;POINT (-491761.672698496 6124706.80674941)'::geometry, NULL),
+            ('ed08acee-4c0a-4f0c-8b47-35ec672b3795'::uuid, 'SRID=3857;LINESTRING (-496663.197137283 6123302.27635467, -496682.306394356 6124257.73920823, -494694.930366882 6124143.31452786, -493529.278977593 6124076.20126605, -492640.698523775 6123655.79761048)'::geometry, NULL);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

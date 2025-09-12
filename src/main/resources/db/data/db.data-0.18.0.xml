@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.18.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.18.0.LighthouseBeaconMessage" author="W118621">
+        <sql stripComments="true">
+            INSERT INTO lighthouse_beacon_message VALUES ('LOCAL_SEND_DATE','Date envoi local','Local send date');
+            INSERT INTO lighthouse_beacon_message VALUES ('UTC_SEND_DATE','Date envoi UTC','UTC send date');
+            INSERT INTO lighthouse_beacon_message VALUES ('NOTICE_NUMBER','Numéro avis','Notice number');
+            INSERT INTO lighthouse_beacon_message VALUES ('PREVIOUS_NOTICE_NUMBER','Numéro avis precedent','Previous notice number');
+            INSERT INTO lighthouse_beacon_message VALUES ('COASTAL_SERVICE','Service littoral','Coastal service');
+            INSERT INTO lighthouse_beacon_message VALUES ('TERRITORIAL_DIVISION','Division territorial','Territorial division');
+            INSERT INTO lighthouse_beacon_message VALUES ('NATURE_CODE','Code nature avis','Natural notice code');
+            INSERT INTO lighthouse_beacon_message VALUES ('INCIDENT_CODE','Intitule incident','Incident title');
+            INSERT INTO lighthouse_beacon_message VALUES ('CMS_CODE','Intitule CMS','CMS title');
+            INSERT INTO lighthouse_beacon_message VALUES ('INDICATION_CODE','Indication','Indication');
+            INSERT INTO lighthouse_beacon_message VALUES ('RECOVERY_TIME_CODE','Delai retablissement','Recovery time');
+            INSERT INTO lighthouse_beacon_message VALUES ('COMMENT','Commentaire','Comment');
+            INSERT INTO lighthouse_beacon_message VALUES ('LEVEL','Niveau','Level');
+            INSERT INTO lighthouse_beacon_message VALUES ('IDENTIFICATION_NUMBER','Numero identification','Number');
+            INSERT INTO lighthouse_beacon_message VALUES ('CONTACT','contact','contact');
+            INSERT INTO lighthouse_beacon_message VALUES ('HERITAGE_NAME','Nom patrimoine','Heritage name');
+            INSERT INTO lighthouse_beacon_message VALUES ('BAPTISM_NAME','Nom bapteme','Baptism name');
+            INSERT INTO lighthouse_beacon_message VALUES ('LIST_OF_LIGHTS','Numéro Feux et Signaux de brume','Feux et Signaux de brume number');
+            INSERT INTO lighthouse_beacon_message VALUES ('MARK','Marque','mark');
+            INSERT INTO lighthouse_beacon_message VALUES ('DEPARTMENT','Departement','Department');
+            INSERT INTO lighthouse_beacon_message VALUES ('AREA','Zone geographique','Geographical Zone');
+            INSERT INTO lighthouse_beacon_message VALUES ('POSITION','Position','Position');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.Warning_Hazard_Type_Details" author="W118621">
+        <sql stripComments="true">
+            UPDATE warning_hazard_type_details SET translation = 'navire en panne', international_translation = 'vessel disabled' WHERE enum_name='VESSEL_DISABLED';
+            UPDATE warning_hazard_type_details SET translation = 'hauteur libre réduite', international_translation = 'vertical clearance reduced' WHERE enum_name='VERTICAL_CLEARANCE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'essais en mer', international_translation = 'sea trials' WHERE enum_name='SEA_TRIALS';
+            UPDATE warning_hazard_type_details SET translation = 'hydravion en opérations', international_translation = 'seaplane operations' WHERE enum_name='SEAPLANE_OPERATIONS';
+            UPDATE warning_hazard_type_details SET translation = 'remorquage de foreuse', international_translation = 'drill rig under tow' WHERE enum_name='DRILL_RIG_UNDER_TOW';
+            UPDATE warning_hazard_type_details SET translation = 'installation/navire de forage sur site', international_translation = 'drilling rig/ship on location' WHERE enum_name='DRILLING_RIG_SHIP_ON_LOCATION';
+            UPDATE warning_hazard_type_details SET translation = 'ré-établissement de bouée', international_translation = 'buoy re-establishment' WHERE enum_name='BUOY_RE_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'feu éteint', international_translation = 'light unlit' WHERE enum_name='LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'feu postérieur d''alignement, feu éteint', international_translation = 'rear leading/range light, light unlit' WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'feu non synchronisé', international_translation = 'light out of synchronization' WHERE enum_name='LIGHT_OUT_OF_SYNCHRONIZATION';
+            UPDATE warning_hazard_type_details SET translation = 'feu opérationnel', international_translation = 'light operating properly' WHERE enum_name='LIGHT_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'secteur de feu, secteur obscurci', international_translation = 'sector light, sector obscured' WHERE enum_name='SECTOR_LIGHT_SECTOR_OBSCURED';
+            UPDATE warning_hazard_type_details SET translation = 'rétablissement de feu', international_translation = 'light re-establishment' WHERE enum_name='LIGHT_RE_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'feu antérieur d''alignement, feu opérationnel', international_translation = 'front leading/range light is operating properly.' WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'feu postérieur d''alignement, feu incertain', international_translation = 'rear leading/range light, unreliable' WHERE enum_name='REAR_LEADING_RANGE_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'feu postérieur d''alignement, portée de feu réduite', international_translation = 'rear leading/range light, light range reduced' WHERE enum_name='REAR_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'balise antérieure d''alignement revenue à la normale', international_translation = 'front leading/range beacon restored to normal.' WHERE enum_name='FRONT_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL';
+            UPDATE warning_hazard_type_details SET translation = 'balise antérieure d''alignement, incertaine', international_translation = 'front leading/range beacon, unreliable' WHERE enum_name='FRONT_LEADING_RANGE_BEACON_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS hors service', international_translation = 'V-AIS out of service' WHERE enum_name='V_AIS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS opérationnel', international_translation = 'V-AIS operating properly' WHERE enum_name='V_AIS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK modifié temporairement', international_translation = 'RAMARK temporary change' WHERE enum_name='RAMARK_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK incertain', international_translation = 'RAMARK unrealiable' WHERE enum_name='RAMARK_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK opérationnel', international_translation = 'RAMARK operating properly' WHERE enum_name='RAMARK_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'LORAN C, incertain', international_translation = 'LORAN C, unrealiable' WHERE enum_name='LORAN_C_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'eLORAN opérationnel', international_translation = 'eLORAN operating properly' WHERE enum_name='ELORAN_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'eLORAN hors service', international_translation = 'eLORAN out of service' WHERE enum_name='ELORAN_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'eLORAN incertain', international_translation = 'eLORAN unrealiable' WHERE enum_name='ELORAN_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'e-Chayka hors service', international_translation = 'e-Chayka out of service' WHERE enum_name='E_CHAYKA_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de station e-Chayka', international_translation = 'e-Chayka station establishment' WHERE enum_name='E_CHAYKA_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de station e-Chayka', international_translation = 'e-Chayka station removal' WHERE enum_name='E_CHAYKA_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'e-Chayka incertain', international_translation = 'e-Chayka unrealiable' WHERE enum_name='E_CHAYKA_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de feu', international_translation = 'light establishment' WHERE enum_name='LIGHT_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place temporaire de feu', international_translation = 'light temporary establishment' WHERE enum_name='LIGHT_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'bouée remise en place pour la saison de navigation', international_translation = 'buoy recommissioned for navigation season' WHERE enum_name='BUOY_RECOMMISSIONED_FOR_NAVIGATION_SEASON';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de station EGNOS', international_translation = 'EGNOS station establishment' WHERE enum_name='EGNOS_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de RAMARK', international_translation = 'RAMARK temporary removal' WHERE enum_name='RAMARK_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'retrait saisonnier achevé', international_translation = 'seasonal decommissioning complete' WHERE enum_name='SEASONAL_DECOMMISSIONING_COMPLETE';
+            UPDATE warning_hazard_type_details SET translation = 'retrait saisonnier en cours', international_translation = 'seasonal decommissioning in progress' WHERE enum_name='SEASONAL_DECOMMISSIONING_IN_PROGRESS';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de station LORAN C', international_translation = 'LORAN C station removal' WHERE enum_name='LORAN_C_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de RAMARK', international_translation = 'RAMARK establishment' WHERE enum_name='RAMARK_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK modifié', international_translation = 'RAMARK change' WHERE enum_name='RAMARK_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS modifié temporairement', international_translation = 'V-AIS temporary change' WHERE enum_name='V_AIS_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de feu', international_translation = 'light temporary removal' WHERE enum_name='LIGHT_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'feu modifié', international_translation = 'light change' WHERE enum_name='LIGHT_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'service RSM AGA', international_translation = 'EGC MSI service' WHERE enum_name='EGC_MSI_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'e-Chayka opérationnel', international_translation = 'e-Chayka operating properly' WHERE enum_name='E_CHAYKA_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de station eLORAN', international_translation = 'eLORAN station establishment' WHERE enum_name='ELORAN_STATION_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'iceberg au-delà de la limite annoncée', international_translation = 'iceberg outside of advertised limit' WHERE enum_name='ICEBERG_OUTSIDE_OF_ADVERTISED_LIMIT';
+            UPDATE warning_hazard_type_details SET translation = 'barrage de glace', international_translation = 'ice boom' WHERE enum_name='ICE_BOOM';
+            UPDATE warning_hazard_type_details SET translation = 'zone de contrôle des glaces', international_translation = 'ice control zone' WHERE enum_name='ICE_CONTROL_ZONE';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de bouée', international_translation = 'buoy removal' WHERE enum_name='BUOY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'bouée remplacée par un mât d''hiver', international_translation = 'buoy replaced by winter spar' WHERE enum_name='BUOY_REPLACED_BY_WINTER_SPAR';
+            UPDATE warning_hazard_type_details SET translation = 'activité volcanique', international_translation = 'volcano activity' WHERE enum_name='VOLCANO_ACTIVITY';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire V-AIS', international_translation = 'V-AIS temporary removal' WHERE enum_name='V_AIS_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place de V-AIS', international_translation = 'V-AIS establishment' WHERE enum_name='V_AIS_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'service VHF', international_translation = 'VHF service' WHERE enum_name='VHF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS incertain', international_translation = 'EGNOS unrealiable' WHERE enum_name='EGNOS_UNREALIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de station eLORAN', international_translation = 'eLORAN station removal' WHERE enum_name='ELORAN_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'feu modifié temporairement', international_translation = 'light temporary change' WHERE enum_name='LIGHT_TEMPORARY_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'V-AIS modifié', international_translation = 'V-AIS change' WHERE enum_name='V_AIS_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place temporaire de V-AIS', international_translation = 'V-AIS temporary establishment' WHERE enum_name='V_AIS_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de feu', international_translation = 'light removal' WHERE enum_name='LIGHT_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'bouée revenue à la normale', international_translation = 'buoy restored to normal' WHERE enum_name='BUOY_RESTORED_TO_NORMAL';
+            UPDATE warning_hazard_type_details SET translation = 'remise en place saisonnière achevée', international_translation = 'seasonal recommissioning complete' WHERE enum_name='SEASONAL_RECOMMISSIONING_COMPLETE';
+            UPDATE warning_hazard_type_details SET translation = 'navire à la dérive', international_translation = 'vessel adrift' WHERE enum_name='VESSEL_ADRIFT';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de RAMARK', international_translation = 'RAMARKremoval' WHERE enum_name='RAMARKREMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de station LORAN C', international_translation = 'LORAN C station temporary removal' WHERE enum_name='LORAN_C_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'mise en place temporaire de RAMARK', international_translation = 'RAMARK temporary establishment' WHERE enum_name='RAMARK_TEMPORARY_ESTABLISHMENT';
+            UPDATE warning_hazard_type_details SET translation = 'RAMARK hors service', international_translation = 'RAMARK out of service' WHERE enum_name='RAMARK_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'bouée lumineuse, feu éteint', international_translation = 'light buoy, light unlit' WHERE enum_name='LIGHT_BUOY_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'suppression temporaire de station EGNOS', international_translation = 'EGNOS station temporary removal' WHERE enum_name='EGNOS_STATION_TEMPORARY_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS hors service', international_translation = 'EGNOS out of service' WHERE enum_name='EGNOS_OUT_OF_SERVICE';
+            UPDATE warning_hazard_type_details SET translation = 'EGNOS opérationnel', international_translation = 'EGNOS operating properly' WHERE enum_name='EGNOS_OPERATING_PROPERLY';
+            UPDATE warning_hazard_type_details SET translation = 'zones d''exclusion', international_translation = 'exclusion zones' WHERE enum_name='EXCLUSION_ZONES';
+            UPDATE warning_hazard_type_details SET translation = 'engin explosif', international_translation = 'explosive device' WHERE enum_name='EXPLOSIVE_DEVICE';
+            UPDATE warning_hazard_type_details SET translation = 'suppression de station EGNOS', international_translation = 'EGNOS station removal' WHERE enum_name='EGNOS_STATION_REMOVAL';
+            UPDATE warning_hazard_type_details SET translation = 'balise postérieure d''alignement, incertaine', international_translation = 'rear leading/range beacon, unreliable' WHERE enum_name='REAR_LEADING_RANGE_BEACON_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'bouée lumineuse, feu non synchronisé', international_translation = 'light buoy, light not synchronized' WHERE enum_name='LIGHT_BUOY_LIGHT_NOT_SYNCHRONIZED';
+            UPDATE warning_hazard_type_details SET translation = 'feu sans rythme', international_translation = 'light without rhythm' WHERE enum_name='LIGHT_WITHOUT_RHYTHM';
+            UPDATE warning_hazard_type_details SET translation = 'feu incertain', international_translation = 'light unreliable' WHERE enum_name='LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'bouée lumineuse, feu endommagé', international_translation = 'light buoy, light damaged' WHERE enum_name='LIGHT_BUOY_LIGHT_DAMAGED';
+            UPDATE warning_hazard_type_details SET translation = 'portée de feu réduite', international_translation = 'light range reduced' WHERE enum_name='LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'modification de STM', international_translation = 'VTS change' WHERE enum_name='VTS_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'bouée lumineuse, feu incertain', international_translation = 'light buoy, light unreliable' WHERE enum_name='LIGHT_BUOY_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'opérations de forage', international_translation = 'drilling site operations' WHERE enum_name='DRILLING_SITE_OPERATIONS';
+            UPDATE warning_hazard_type_details SET translation = 'secteur de feu modifié', international_translation = 'sector light change' WHERE enum_name='SECTOR_LIGHT_CHANGE';
+            UPDATE warning_hazard_type_details SET translation = 'feu antérieur d''alignement, portée de feu réduite', international_translation = 'front leading/range light, light range reduced' WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED';
+            UPDATE warning_hazard_type_details SET translation = 'feu antérieur d''alignement, feu incertain', international_translation = 'front leading/range light, unreliable' WHERE enum_name='FRONT_LEADING_RANGE_LIGHT_UNRELIABLE';
+            UPDATE warning_hazard_type_details SET translation = 'feu postérieur d''alignement, feu éteint', international_translation = 'rear leading/range light, light unlit' WHERE enum_name='REAR_LEADING_RANGE_LIGHT_LIGHT_UNLIT';
+            UPDATE warning_hazard_type_details SET translation = 'feu postérieur d''alignement, feu opérationnel', international_translation = 'rear leading/range light is operating properly' WHERE enum_name='REAR_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

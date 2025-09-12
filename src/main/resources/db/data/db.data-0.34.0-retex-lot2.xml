@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.34.0-retex-lot2.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.34.0-retex-lot2-add-static-page-data-services-to-api-and-ogc-feeds" author="w130085">
+        <sql stripComments="true">
+            INSERT INTO static_page (id, title, international_title, "path", "locked") VALUES
+                (gen_random_uuid(), 'Aides aux services de données et flux OGC', 'Support for data services and OGC feeds', 'data-services', true);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,18 @@
+package fr.shom.ping.model;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+@Entity
+@SuperBuilder
+@AllArgsConstructor
+@JsonInclude(value = NON_NULL)
+@Schema(name = "WarningReferenceCategory Model")
+public class WarningReferenceCategory extends AbstractEnumTypes implements Serializable {
+}

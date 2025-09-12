@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.28.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.28.0-Warning_Hazard_Type_Details" author="a662829">
+        <addUniqueConstraint
+            tableName="warning_hazard_type_details"
+            columnNames="enum_name"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.28.0-Warning_Hazard_Type_General" author="a662829">
+        <addUniqueConstraint
+            tableName="warning_hazard_type_general"
+            columnNames="enum_name"
+        />
+    </changeSet>
+
+</databaseChangeLog>

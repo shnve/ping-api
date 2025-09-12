@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.0.1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.5.0.ProUser" author="a138386">
+        <sql stripComments="true">
+            INSERT INTO pro_user(id, keycloak_id, role, title, firstname, lastname, email, status, creation_date) VALUES
+            (uuid_generate_v4(), '738b9d68-5fbd-4272-93ad-7363a0a8e90a', 'FUNCTIONAL_ADMIN', 'MRS', 'functional', 'admin', 'functional-admin', 'ENABLED', now());
+
+            INSERT INTO pro_user(id, keycloak_id, role, title, firstname, lastname, email, status, creation_date, service_id) VALUES
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', '17a5e038-73f3-453b-9f8a-8125724d8747', 'SERVICE_USER', 'MR', 'service', 'user', 'service-user', 'ENABLED', now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            INSERT INTO service_user_role(service_user_id, service_role, service_id) VALUES
+            <!-- Service Admin on CND Brest -->
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', 'SERVICE_ADMIN', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'),
+            <!-- Service Operator on NAVAREA II -->
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', 'SERVICE_OPERATOR', 'e0432b84-ee63-422c-9650-7428f5ec85f4'),
+            <!-- Service Visitor on CND Toulon -->
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', 'SERVICE_VISITOR', '81110e40-c844-4f79-a87e-47749cb5b806');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.5.0.Warning" author="a662829">
+        <sql stripComments="true">
+            UPDATE warning SET timezone = 'Europe/Paris';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.5.0.Warning_MoreInformation" author="a138386">
+        <sql stripComments="true">
+            UPDATE warning SET cancellation_date = '2099-12-31T23:59:59Z',
+            review_date = '2021-01-15',
+            end_of_broadcast_date = '2099-01-01T01:23:45Z',
+            internal_comment = 'Ceci est un commentaire interne'
+            WHERE id = 'df0d9942-3371-4688-8705-a79ea37e546f';
+
+            INSERT INTO public_user(id, keycloak_id, title, firstname, lastname, email, status, creation_date) VALUES
+            ('09d341c9-a509-41bb-9d1d-26cb10caa210', uuid_generate_v4(), 'MR', 'Public', 'User', 'public@user.fr', 'ENABLED', now());
+
+            INSERT INTO warning_public_comment(id, warning_id, public_user_id, comment) VALUES
+            (uuid_generate_v4(), 'df0d9942-3371-4688-8705-a79ea37e546f', '09d341c9-a509-41bb-9d1d-26cb10caa210', 'Ceci est un commentaire ajouté par un utilisateur grand public');
+
+            INSERT INTO warning_reference(id, warning_id, no_message_on_hand, category) VALUES
+            ('09b677a5-bda0-4ff9-ac91-d586f135abe6', 'df0d9942-3371-4688-8705-a79ea37e546f', false, 'CANCELLATION'),
+            ('86141378-45db-4925-8c24-4a75f8be9b01', 'df0d9942-3371-4688-8705-a79ea37e546f', false, 'REPLACEMENT');
+
+            INSERT INTO warning_reference_warning(warning_reference_id, warning_id) VALUES
+            ('09b677a5-bda0-4ff9-ac91-d586f135abe6', '786e5301-368a-4298-ae03-969f952978ae'), <!-- warningNumber/year = 002/21 -->
+            ('09b677a5-bda0-4ff9-ac91-d586f135abe6', 'b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9'), <!-- warningNumber/year = 001/21 -->
+            ('86141378-45db-4925-8c24-4a75f8be9b01', '8e4ccc61-6b15-47d7-9649-43d2829f01ee'), <!-- warningNumber/year = 206/21 -->
+            ('86141378-45db-4925-8c24-4a75f8be9b01', '33ab1dd5-e362-40dc-8172-dc8e47f43b5f'); <!-- warningNumber/year = 13/21 -->
+
+            <!-- Cancelled warnings -->
+            <!--
+            warning.id = bb9bbc1c-5f43-4f33-8044-cc6f79510093
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'bb9bbc1c-5f43-4f33-8044-cc6f79510093', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, cancellation_date, country, name_of_series, production_agency, warning_number, year) VALUES
+            ('bb9bbc1c-5f43-4f33-8044-cc6f79510093', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'CANCELLED', 'AIDS_TO_NAVIGATION', '2021-01-19T12:12:00Z', '2021-01-21T13:13:00Z' , 'FR', 'AVINAV Brest', 'CECLANT', 5, 2021);
+
+            <!--
+            warning.id = 4b8f2709-27c6-4749-a10a-9d08450a1f91
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), '4b8f2709-27c6-4749-a10a-9d08450a1f91', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, cancellation_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('4b8f2709-27c6-4749-a10a-9d08450a1f91', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'CANCELLED', 'AIDS_TO_NAVIGATION', '2021-01-19T12:12:00Z', '2021-01-21T13:13:00Z' , 'FR', 'AVINAV Brest', 'CECLANT', 6, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            <!--
+            warning.id = 523f565d-c4fa-471c-9d79-eefd3346826d
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), '523f565d-c4fa-471c-9d79-eefd3346826d', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, cancellation_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('523f565d-c4fa-471c-9d79-eefd3346826d', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'CANCELLED', 'AIDS_TO_NAVIGATION', '2021-01-19T12:12:00Z', '2021-01-21T13:13:00Z' , 'FR', 'AVINAV Brest', 'CECLANT', 7, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            <!-- Draft warning -->
+            <!--
+            warning.id = 781bc17b-1b06-4537-8c08-20549c9e9e13
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), '781bc17b-1b06-4537-8c08-20549c9e9e13', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, estimated_publication_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('781bc17b-1b06-4537-8c08-20549c9e9e13', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'DRAFT', 'AIDS_TO_NAVIGATION', '2021-01-19T12:12:00Z', 'FR', 'AVINAV Brest', 'CECLANT', 8, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            <!--
+            warning.id = a2f2cdab-3465-4091-962d-52bec2bcc42c
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'a2f2cdab-3465-4091-962d-52bec2bcc42c', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, estimated_publication_date, review_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('a2f2cdab-3465-4091-962d-52bec2bcc42c', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'DRAFT', 'AIDS_TO_NAVIGATION', '2099-12-31T23:59:59Z', '2021-01-01T01:23:45Z', 'FR', 'AVINAV Brest', 'CECLANT', 9, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            <!--
+            warning.id = bd9b7e07-ecaa-4b9c-8bd9-6f1c9d752d00
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'bd9b7e07-ecaa-4b9c-8bd9-6f1c9d752d00', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, estimated_publication_date, review_date, creation_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('bd9b7e07-ecaa-4b9c-8bd9-6f1c9d752d00', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'DRAFT', 'AIDS_TO_NAVIGATION', '2099-12-31T23:59:59Z', '2099-01-01T23:59:59Z', '2020-12-01T01:23:45Z',  'FR', 'AVINAV Brest', 'CECLANT', 10, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            <!--
+            warning.id = f6c180bb-6c82-48fe-9656-77d14e9e1abb
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'f6c180bb-6c82-48fe-9656-77d14e9e1abb', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, estimated_publication_date, review_date, creation_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('f6c180bb-6c82-48fe-9656-77d14e9e1abb', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'DRAFT', 'AIDS_TO_NAVIGATION', '2099-12-31T23:59:59Z', '2099-01-01T23:59:59Z', '2020-12-02T01:23:45Z',  'FR', 'AVINAV Brest', 'CECLANT', 11, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

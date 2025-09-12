@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.34.0-rc3.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <!--  Drop function get_gr to replace after  -->
+    <changeSet id="DB.Data.0.34.0-rc3.Drop-Function-get_gr" author="w117851">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            DROP FUNCTION IF EXISTS get_gr(_grType VARCHAR);
+        </sql>
+    </changeSet>
+
+    <!--  Replace function get_gr  -->
+    <changeSet id="DB.Data.0.34.0-rc3.FUNCTION_GET_GR" author="w117851">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_gr (_grType VARCHAR)
+            RETURNS TABLE (
+                grId uuid,
+                grType VARCHAR,
+                grNumber TEXT,
+                grActivity TEXT,
+                grTitle TEXT,
+                grSummary TEXT,
+                grTemporary boolean,
+                grCoastlineLimit boolean,
+                grAllTerritorialSea boolean,
+                grAnnouncedByAvurnavAvirade boolean,
+                grPartLengthVessel INTEGER,
+                grPartChoiceLengthVessel VARCHAR,
+                grPartGrossTonnageVessel INTEGER,
+                grPartChoiceGrossTonnageVessel VARCHAR,
+                grPartUnitsGrossTonnageVessel VARCHAR,
+                grIsCommercialShip boolean,
+                grPublic boolean,
+                grArea TEXT,
+                grDate TEXT,
+                grSeasonalPeriod TEXT,
+                partId uuid,
+                partPosition INTEGER,
+                grPartDate TEXT,
+                grPartSeasonalPeriod TEXT,
+                partInformation TEXT,
+                geom geometry,
+                partType TEXT,
+                grLink TEXT
+            ) AS $$
+
+            BEGIN
+
+            RETURN QUERY
+            select distinct
+                gr.id as grId,
+                gr.type as grType,
+                gr.number_year || COALESCE('-' || gr.number_text, '') || COALESCE('-' || string_agg(distinct grAuthorityCode.authority_code, ','), '') || COALESCE('-' || gr.number_date, '')  as grNumber,
+                string_agg(distinct grActivity.activity, ',') as grActivity,
+                gr.title as grTitle,
+                gr.summary as grSummary,
+                gr.is_temporary as grTemporary,
+                gr.has_coastline_limit as grCoastlineLimit,
+                gr.is_all_territorial_sea as grAllTerritorialSea,
+                gr.is_announced_by_avurnav_avirade as grAnnouncedByAvurnavAvirade,
+                grPart.length_vessel as grPartLengthVessel,
+                grPart.choice_length_vessel as grPartChoiceLengthVessel,
+                grPart.gross_tonnage_vessel as grPartGrossTonnageVessel,
+                grPart.choice_gross_tonnage_vessel as grPartChoiceGrossTonnageVessel,
+                grPart.units_gross_tonnage_vessel as grPartUnitsGrossTonnageVessel,
+                grPart.is_commercial_ship as grIsCommercialShip,
+                gr.is_public as grPublic,
+                string_agg(distinct grArea.name, ',') as grArea,
+                string_agg(distinct concat(grDate.date_start, COALESCE('/' || grDate.date_end, '')), ',') as grDate,
+                string_agg(distinct concat(grSeasonPeriod.day_start, '/', grSeasonPeriod.month_start, '-',  grSeasonPeriod.day_end, '/', grSeasonPeriod.month_end), ',') as grSeasonalPeriod,
+                grPart.id as partId,
+                grPart.position as partPosition,
+                string_agg(distinct concat(grPartDate.date_start, COALESCE('/' || grPartDate.date_end, '')), ',') as grPartDate,
+                string_agg(distinct concat(grPartSeasonPeriod.day_start, '/', grPartSeasonPeriod.month_start, '-',  grPartSeasonPeriod.day_end, '/', grPartSeasonPeriod.month_end), ',') as grPartSeasonalPeriod,
+                grPart.information as partInformation,
+                grPartFeature.geom as geom,
+                string_agg(distinct grPartType.type, ',') as partType,
+                string_agg(distinct grLink.link, ',') as grLink
+            from georegulation_part as grPart
+                     left join georegulation as gr on gr.id = grPart.georegulation_id
+                     left join georegulation_part_type as grPartType on grPartType.part_id = grPart.id
+                     left join georegulation_activity as grActivity on grActivity.georegulation_id = gr.id
+                     left join georegulation_link as grLink on grLink.georegulation_id = gr.id
+                     left join georegulation_number_authority_code as grAuthorityCode on grAuthorityCode.georegulation_id = gr.id
+                     left join georegulation_seasonal_period as grSeasonPeriod on grSeasonPeriod.georegulation_id = gr.id
+                     left join fixed_date_range as grDate on grDate.parent_id=gr.id
+                     left join georegulation_part_feature as grPartFeature on grPartFeature.part_id = grPart.id
+                     left join georegulation_part_seasonal_period as grPartSeasonPeriod on grPartSeasonPeriod.part_id = grPart.id
+                     left join fixed_date_range as grPartDate on grPartDate.parent_id=grPart.id
+                     left join maritime_service as grService on grService.id=gr.issuing_service_id
+                     left join maritime_service_areas as grServiceArea on grService.id=grServiceArea.maritime_service_id
+                     left join area as grArea on grArea.id=grServiceArea.areas_id
+            where gr.type=_grType
+            group by gr.id, grPart.id, grPartFeature.geom;
+
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+    <!--  Drop function get_gr_with_allinfoparts to replace after  -->
+    <changeSet id="DB.Data.0.34.0-rc3.Drop-Function-get_gr_with_allinfoparts" author="w117851">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            DROP FUNCTION IF EXISTS get_gr_with_allinfoparts(_grType VARCHAR, _lang TEXT);
+        </sql>
+    </changeSet>
+
+    <!--  Replace function get_gr  -->
+    <changeSet id="DB.Data.0.34.0-rc3-Function-get_gr_with_allinfoparts" author="w117851">
+        <sql stripComments="true" splitStatements="false" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION get_gr_with_allinfoparts(_grType VARCHAR, _lang TEXT)
+                RETURNS TABLE (
+                    grId uuid,
+                    grType TEXT,
+                    grNumber TEXT,
+                    grActivity TEXT,
+                    grTitle TEXT,
+                    grSummary TEXT,
+                    grTemporary boolean,
+                    grCoastlineLimit boolean,
+                    grAllTerritorialSea boolean,
+                    grAnnouncedByAvurnavAvirade boolean,
+                    grPartLengthVessel INTEGER,
+                    grPartChoiceLengthVessel VARCHAR,
+                    grPartGrossTonnageVessel INTEGER,
+                    grPartChoiceGrossTonnageVessel VARCHAR,
+                    grPartUnitsGrossTonnageVessel VARCHAR,
+                    grIsCommercialShip boolean,
+                    grNew boolean,
+                    grPublic boolean,
+                    grArea TEXT,
+                    grDate jsonb,
+                    grSeasonalPeriod TEXT,
+                    grPartId uuid,
+                    grPartPosition INTEGER,
+                    parts jsonb,
+                    grLink TEXT,
+                    language TEXT,
+                    publicationDate TEXT,
+                    geom geometry
+                    ) AS $$
+
+            BEGIN
+
+            RETURN QUERY
+            select distinct
+                gr.id as grId,
+                case _lang
+                    when 'fr' THEN string_agg(distinct grTypesTranslation.translation, ', ')
+                when 'en' THEN string_agg(distinct grTypesTranslation.international_translation, ', ')
+            END as grType,
+                gr.number_year || COALESCE('-' || gr.number_text, '') || COALESCE('-' || string_agg(distinct grAuthorityCode.authority_code, ' '), '') || COALESCE('-' || to_char(gr.number_date, 'DDMMYYYY'), '')  as grNumber,
+                case _lang
+                    when 'fr' THEN string_agg(distinct grActivityTranslation.translation, ', ')
+                    when 'en' THEN string_agg(distinct grActivityTranslation.international_translation, ', ')
+            END as grActivity,
+                gr.title as grTitle,
+                gr.summary as grSummary,
+                gr.is_temporary as grTemporary,
+                gr.has_coastline_limit as grCoastlineLimit,
+                gr.is_all_territorial_sea as grAllTerritorialSea,
+                gr.is_announced_by_avurnav_avirade as grAnnouncedByAvurnavAvirade,
+                grPart.length_vessel as grPartLengthVessel,
+                grPart.choice_length_vessel as grPartChoiceLengthVessel,
+                grPart.gross_tonnage_vessel as grPartGrossTonnageVessel,
+                grPart.choice_gross_tonnage_vessel as grPartChoiceGrossTonnageVessel,
+                grPart.units_gross_tonnage_vessel as grPartUnitsGrossTonnageVessel,
+                grPart.is_commercial_ship as grIsCommercialShip,
+                gr.is_new as grNew,
+                gr.is_public as grPublic,
+                string_agg(distinct grArea.name, ',') as grArea,
+                to_jsonb(json_agg(distinct jsonb_build_object('position', grDate.position, 'date_start', to_char(grDate.date_start, 'DD/MM/YYYY'), 'date_end', to_char(grDate.date_end, 'DD/MM/YYYY')))) as grDate,
+                string_agg(distinct concat(grSeasonPeriod.day_start, '/', grSeasonPeriod.month_start, '-',  grSeasonPeriod.day_end, '/', grSeasonPeriod.month_end), ',') as grSeasonalPeriod,
+                grPart.id as grPartId,
+                grPart.position as grPartPosition,
+                (select get_grpart_infos(gr.id, _lang)) as parts,
+                json_agg(distinct grLink.link)::text as grLink,
+                _lang,
+                to_char(gr.publication_date, 'DD/MM/YYYY') as publicationDate,
+                grPartFeature.geom as geom
+            from georegulation_part as grPart
+                     left join georegulation as gr on gr.id = grPart.georegulation_id
+                     left join georegulation_activity as grActivity on grActivity.georegulation_id = gr.id
+                     left join georegulation_activities as grActivityTranslation on grActivityTranslation.enum_name = grActivity.activity
+                     left join georegulation_types as grTypesTranslation on grTypesTranslation.enum_name = gr.type
+                     left join georegulation_link as grLink on grLink.georegulation_id = gr.id
+                     left join georegulation_number_authority_code as grAuthorityCode on grAuthorityCode.georegulation_id = gr.id
+                     left join georegulation_seasonal_period as grSeasonPeriod on grSeasonPeriod.georegulation_id = gr.id
+                     left join fixed_date_range as grDate on grDate.parent_id=gr.id
+                     left join georegulation_part_feature as grPartFeature on grPartFeature.part_id = grPart.id
+                     left join maritime_service as grService on grService.id=gr.issuing_service_id
+                     left join maritime_service_areas as grServiceArea on grService.id=grServiceArea.maritime_service_id
+                     left join area as grArea on grArea.id=grServiceArea.areas_id
+            where gr.type=_grType and gr.status='PUBLISHED' and gr.is_public is true and gr.is_expired is false
+            group by gr.id, grPart.id, grPartFeature.geom;
+
+            END; $$
+            LANGUAGE 'plpgsql';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

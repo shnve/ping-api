@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.19.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.19.0-MaritimeEntityReference" author="w117851">
+        <createTable tableName="maritime_entity_reference">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="maritime_entity_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_title" type="${varchar2.255.type}"/>
+            <column name="url" type="${varchar2.255.type}"/>
+            <column name="attachment_id" type="${id.type}"/>
+            <column name="creation_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="maritime_entity_reference"
+            baseColumnNames="maritime_entity_id"
+            constraintName="maritime_entity_reference_maritime_entity_id_fkc"
+            referencedTableName="maritime_entity"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Notion-GeoregulationId" author="w118853">
+        <addColumn tableName="notion">
+            <column name="georegulation_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notion"
+            baseColumnNames="georegulation_id"
+            constraintName="notion_georegulation_id_fk_constraint"
+            referencedTableName="georegulation"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Notion-InfosourceId" author="w118853">
+        <addColumn tableName="notion">
+            <column name="infosource_id_tmp" type="${id.type}" valueComputed="infosource_id"/>
+        </addColumn>
+        <dropColumn tableName="notion"
+                    columnName="infosource_id" />
+        <renameColumn tableName="notion" oldColumnName="infosource_id_tmp" newColumnName="infosource_id"/>
+        <addForeignKeyConstraint
+            baseTableName="notion"
+            baseColumnNames="infosource_id"
+            constraintName="notion_infosource_id_fk_constraint"
+            referencedTableName="infosource"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Notion-WarningId" author="w118853">
+        <addColumn tableName="notion">
+            <column name="warning_id_tmp" type="${id.type}" valueComputed="warning_id"/>
+        </addColumn>
+        <dropColumn tableName="notion"
+                    columnName="warning_id" />
+        <renameColumn tableName="notion" oldColumnName="warning_id_tmp" newColumnName="warning_id"/>
+        <addForeignKeyConstraint
+            baseTableName="notion"
+            baseColumnNames="warning_id"
+            constraintName="notion_warning_id_fk_constraint"
+            referencedTableName="warning"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Notion-FolderId" author="a138386">
+        <addColumn tableName="notion">
+            <column name="folder_id" type="${id.type}" valueComputed="(select fn.folder_id from folder_notion fn where fn.notion_id=id)" />
+        </addColumn>
+        <addNotNullConstraint tableName="notion" columnName="folder_id" />
+        <dropTable tableName="folder_notion"/>
+        <addForeignKeyConstraint
+            baseTableName="notion"
+            baseColumnNames="folder_id"
+            constraintName="notion_folder_id_fk_constraint"
+            referencedTableName="folder"
+            referencedColumnNames="id" />
+        <addUniqueConstraint tableName="notion" columnNames="folder_id,infosource_id"/>
+        <addUniqueConstraint tableName="notion" columnNames="folder_id,warning_id"/>
+        <addUniqueConstraint tableName="notion" columnNames="folder_id,georegulation_id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Study" author="w118853">
+        <createTable tableName="study">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="number" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_update" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_update_user_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-FolderStudy" author="w118853">
+        <createTable tableName="folder_study">
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="study_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="folder_study"
+            baseColumnNames="folder_id"
+            constraintName="folder_study_folder_id_fk_constraint"
+            referencedTableName="folder"
+            referencedColumnNames="id" />
+
+        <addForeignKeyConstraint
+            baseTableName="folder_study"
+            baseColumnNames="study_id"
+            constraintName="folder_study_study_id_fk_constraint"
+            referencedTableName="study"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Notion" author="w118853">
+        <addNotNullConstraint tableName="notion" columnName="id" />
+        <addPrimaryKey tableName="notion" columnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-StudyNotion" author="w118853">
+        <createTable tableName="study_notion">
+            <column name="study_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="notion_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="study_id, notion_id"
+            constraintName="study_notion_unique_constraint"
+            tableName="study_notion"
+        />
+        <addForeignKeyConstraint
+            baseTableName="study_notion"
+            baseColumnNames="study_id"
+            constraintName="study_notion_study_id_fk_constraint"
+            referencedTableName="study"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            baseTableName="study_notion"
+            baseColumnNames="notion_id"
+            constraintName="study_notion_notion_id_fk_constraint"
+            referencedTableName="notion"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.19.0-Georegulation" author="a662829">
+        <addNotNullConstraint tableName="georegulation" columnName="number_date" />
+    </changeSet>
+</databaseChangeLog>

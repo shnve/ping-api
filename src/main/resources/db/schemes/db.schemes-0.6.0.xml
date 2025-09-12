@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.1.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.6.0-Attachment" author="a138386">
+        <createTable tableName="attachment">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filename" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="identifier" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_size" type="${long.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.6.0-AttachmentChunk" author="a138386">
+        <createTable tableName="attachment_chunk">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chunk_number" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chunk_size" type="${long.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_chunk_size" type="${long.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_size" type="${long.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="identifier" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filename" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="relative_path" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_chunks" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.6.0-WarningAttachment" author="a138386">
+        <createTable tableName="warning_attachment">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.6.0-PhoneNumber" author="a618534">
+        <createTable tableName="phone_number">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="${id.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.6.0-ProUser-addColumn-preferred_area_id" author="a618534">
+        <addColumn tableName="pro_user">
+            <column name="preferred_area_id" type="${id.type}"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

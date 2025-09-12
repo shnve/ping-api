@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.properties.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="h2, postgresql"/>
+    <property name="varchar2.255.type" value="VARCHAR(255)" dbms="postgresql,h2"/>
+    <property name="country.type" value="VARCHAR(2)" dbms="postgresql,h2"/>
+    <property name="timestamp.type" value="TIMESTAMP" dbms="postgresql,h2"/>
+    <property name="date.type" value="DATE" dbms="postgresql,h2"/>
+    <property name="time.type" value="TIME" dbms="postgresql,h2"/>
+    <property name="clob.type" value="LONGVARCHAR" dbms="h2"/>
+    <property name="clob.type" value="TEXT" dbms="postgresql"/>
+    <property name="blob.type" value="BYTEA" dbms="h2, postgresql"/>
+    <property name="id.type" value="UUID" dbms="h2, postgresql"/>
+    <property name="geometry.type" value="Geometry(Geometry, 3857)" dbms="postgresql"/>
+    <property name="geometry.type" value="Geometry" dbms="h2"/>
+    <property name="multipolygon.type" value="Geometry(MultiPolygon, 3857)" dbms="postgresql"/>
+    <property name="multipolygon.type" value="Geometry" dbms="h2"/>
+    <property name="boolean.type" value="BOOLEAN" dbms="h2, postgresql" />
+    <property name="integer.type" value="INTEGER" dbms="h2, postgresql" />
+    <property name="long.type" value="bigint" dbms="h2, postgresql" />
+    <property name="json.type" value="JSON" dbms="postgresql,h2"/>
+    <property name="smallint.type" value="SMALLINT" dbms="postgresql,h2"/>
+    <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
+    <property name="uuid_function" value="random_uuid()" dbms="h2"/>
+    <property name="float.type" value="real" dbms="h2, postgresql" />
+</databaseChangeLog>

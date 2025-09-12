@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.0.1.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.2.0.MaritimeEntity" author="a575965">
+        <sql stripComments="true">
+            INSERT INTO maritime_entity(id, name, type, geom) VALUES
+            ('d06fd909-43f7-48ce-8630-31af8517e23e', 'Zone de service du CND Cherbourg', 'SERVICE_AREA', 'SRID=3857;MULTIPOLYGON(((-183393.958595375 6210615.60746241,-552737.679269347 6430754.24892372,251991.35451699 6712042.51301317,278897.188473371 6636216.98095428,102786.275304326 6357374.70176995,-183393.958595375 6210615.60746241)))'),
+            ('ec9ffa0b-064f-417f-b687-082932a16fa4', 'Zone de service du CND Toulon', 'SERVICE_AREA', 'SRID=3857;MULTIPOLYGON(((340046.811101514 5229775.66050703,521049.69408081 5024312.92847648,1090964.17697508 5061002.70205336,1076288.26754433 5400994.60386583,834135.761936891 5427900.43782222,342492.796006638 5374088.76990944,340046.811101514 5229775.66050703)))'),
+            ('01ffd1b1-c75b-41ee-afdb-1c11f5083985', 'Zone de service NAVAREA II', 'SERVICE_AREA', 'SRID=3857;MULTIPOLYGON(((-560075.633984723 6195939.69803166,-3367294.37144647 6195939.14867918,-3367294.37144647 545602.045347587,-1191026.15631067 545602.045347587,-1191026.04622991 -758375.06964821,1373331.859993 -758374.711870594,1056023.12150448 416916.40903926,-98481.7537148233 6013329.87196673,-560075.633984723 6195939.69803166)))');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.2.0.MaritimeService" author="a575965">
+        <sql stripComments="true">
+            INSERT INTO maritime_service(id, name, type_id, service_network, production_agency, ping_partner, maritime_notice_producer) VALUES
+            ('cd2aa150-110e-4cee-828c-c131da0a5706', 'CND Cherbourg', 'c88322e0-7148-461e-829c-36df83571840', 'GOVERNMENT_SERVICE', 'CECMED', true, true),
+            ('81110e40-c844-4f79-a87e-47749cb5b806', 'CND Toulon', 'c88322e0-7148-461e-829c-36df83571840', 'GOVERNMENT_SERVICE', 'COMNORD', true, true),
+            ('e0432b84-ee63-422c-9650-7428f5ec85f4', 'NAVAREA II', 'bd3bec49-3611-416e-bd2a-45fa07ecb862', 'GOVERNMENT_SERVICE', 'Shom', true, true);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.2.0.Serie" author="a575965">
+        <sql stripComments="true">
+            <!-- AVINAV BREST -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('be14a276-f0d5-4938-a6c0-4a5453263f36', 'AVINAV Brest', 'LOCAL_NOTICE_TO_MARINER', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('be14a276-f0d5-4938-a6c0-4a5453263f36', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('be14a276-f0d5-4938-a6c0-4a5453263f36', 1, 99999);
+
+            INSERT INTO serie_sub_area(serie_id, sub_area_id) VALUES
+            ('be14a276-f0d5-4938-a6c0-4a5453263f36', '30874a81-a888-4868-9a3c-6619db97346b');
+
+            <!-- AVURNAV Toulon -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 'AVURNAV Toulon', 'COASTAL_NAVIGATIONAL_WARNING', '81110e40-c844-4f79-a87e-47749cb5b806');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 'fr'),
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 'en');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 001, 1999),
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 4000, 4999),
+            ('1fc86bcf-745b-485e-b806-d1c75a927531', 6000, 6999);
+
+            <!-- AVURNAV Local Toulon -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('fa687afe-5a1c-452e-8698-28f57244f29d', 'AVURNAV Local Toulon', 'LOCAL_NAVIGATIONAL_WARNING', '81110e40-c844-4f79-a87e-47749cb5b806');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('fa687afe-5a1c-452e-8698-28f57244f29d', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('fa687afe-5a1c-452e-8698-28f57244f29d', 2001, 3999),
+            ('fa687afe-5a1c-452e-8698-28f57244f29d', 5000, 5999),
+            ('fa687afe-5a1c-452e-8698-28f57244f29d', 7000, 7999);
+
+            <!-- AVINAV Toulon -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('a93afa84-ba1c-4442-8ab2-a2fc7a686ca2', 'AVINAV Toulon', 'LOCAL_NOTICE_TO_MARINER', '81110e40-c844-4f79-a87e-47749cb5b806');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('a93afa84-ba1c-4442-8ab2-a2fc7a686ca2', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('a93afa84-ba1c-4442-8ab2-a2fc7a686ca2', 001, 99999);
+
+            <!-- AVURNAV Cherbourg -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('067f26a9-506d-49b9-91aa-9194d0a02aa6', 'AVURNAV Cherbourg', 'COASTAL_NAVIGATIONAL_WARNING', 'cd2aa150-110e-4cee-828c-c131da0a5706');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('067f26a9-506d-49b9-91aa-9194d0a02aa6', 'fr'),
+            ('067f26a9-506d-49b9-91aa-9194d0a02aa6', 'en');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('067f26a9-506d-49b9-91aa-9194d0a02aa6', 001, 999),
+            ('067f26a9-506d-49b9-91aa-9194d0a02aa6', 2001, 2999);
+
+            <!-- AVURNAV Local Cherbourg -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('792d9eba-c3d2-45fa-a1f2-539e3b29532e', 'AVURNAV Local Cherbourg', 'LOCAL_NAVIGATIONAL_WARNING', 'cd2aa150-110e-4cee-828c-c131da0a5706');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('792d9eba-c3d2-45fa-a1f2-539e3b29532e', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('792d9eba-c3d2-45fa-a1f2-539e3b29532e', 1001, 1999),
+            ('792d9eba-c3d2-45fa-a1f2-539e3b29532e', 3001, 3999);
+
+            <!-- AVINAV Cherbourg -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('91e3f3fb-4af1-48b6-af99-1b968ac44d39', 'AVINAV Cherbourg', 'LOCAL_NOTICE_TO_MARINER', 'cd2aa150-110e-4cee-828c-c131da0a5706');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('91e3f3fb-4af1-48b6-af99-1b968ac44d39', 'fr');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('91e3f3fb-4af1-48b6-af99-1b968ac44d39', 001, 99999);
+
+            <!-- NAVAREA II -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+            ('75ebb271-dc64-4547-a9eb-93507f4bbe6f', 'NAVAREA II', 'NAVAREA_NAVIGATIONAL_WARNING', 'cd2aa150-110e-4cee-828c-c131da0a5706');
+
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+            ('75ebb271-dc64-4547-a9eb-93507f4bbe6f', 'fr'),
+            ('75ebb271-dc64-4547-a9eb-93507f4bbe6f', 'en');
+
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+            ('75ebb271-dc64-4547-a9eb-93507f4bbe6f', 001, 99999);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.2.0-Warning" author="a575965">
+        <sql stripComments="true">
+            <!--
+                warning.id = b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9
+                warning.locality.id = bf3a11eb-f28a-4147-976f-7e99e67e1353
+                featurePart_0.id = 754c2e08-bb04-4c9d-9c19-03b65da2473b
+                serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO localized_text(parent_id, language, text) VALUES
+            ('bf3a11eb-f28a-4147-976f-7e99e67e1353', 'fr', 'Chenal du Fromveur'),
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', 'fr', 'Les usagers sont informes de la mise à l''eau de deux instruments de mesure dans le chenal du Fromveur du 07 septembre 2020 au 30 avril 2021 inclus. Annuler ce message le 010000 UTC mai 21.');
+
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9', 'f08af189-ee71-47f6-af03-cded6a1f238f', 'Finistère');
+
+            INSERT INTO warning_locality(id, warning_id, sub_area_id) VALUES
+            ('bf3a11eb-f28a-4147-976f-7e99e67e1353', 'b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9', 'f08af189-ee71-47f6-af03-cded6a1f238f');
+
+            INSERT INTO warning_feature_part(id, warning_id) VALUES
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', 'b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9');
+
+            INSERT INTO warning_feature_part_geometry(feature_part_id, geom) VALUES
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', 'SRID=3857;POINT(-560382.31665334 6181124.96493232)'),
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', 'SRID=3857;POINT(-560437.976398736 6181208.87300578)');
+
+            INSERT INTO warning_feature_part_warning_hazard_type_details(feature_part_id, warning_hazard_type_detail) VALUES
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', 'SCIENTIFIC_SURVEY');
+
+            INSERT INTO fixed_date_range(parent_id, date_start, time_of_day_start, date_end, time_of_day_end) VALUES
+            ('754c2e08-bb04-4c9d-9c19-03b65da2473b', '2020-09-07', '10:00', '2021-05-01', '00:00');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('b4d9a5a2-fc88-4746-a4f4-9b5782e99bd9', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'PUBLISHED', 'SPECIAL_OPERATIONS', '2021-01-01T05:00:00Z', 'FR', 'AVINAV Brest', 'CECLANT', 001, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+
+        <sql stripComments="true">
+            <!--
+            warning.id = 786e5301-368a-4298-ae03-969f952978ae
+            warning.locality.id = 4950d4be-ed26-4729-8833-669a13b8da58
+            featurePart_0.id = 3f128be1-2f4c-4824-b838-7fc64df840d7
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO localized_text(parent_id, language, text) VALUES
+            ('4950d4be-ed26-4729-8833-669a13b8da58', 'fr', 'Mer d''Iroise'),
+            ('3f128be1-2f4c-4824-b838-7fc64df840d7', 'fr', 'Les navigateurs sont informés que 15 mines à orin sont mouillées à l''ouest du cap de la Chèvre dans une zone délimitée par cette zone
+            Il y a un risque de croche. ');
+
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), '786e5301-368a-4298-ae03-969f952978ae', 'f08af189-ee71-47f6-af03-cded6a1f238f', 'Finistère');
+
+            INSERT INTO warning_locality(id, warning_id, sub_area_id) VALUES
+            ('4950d4be-ed26-4729-8833-669a13b8da58', '786e5301-368a-4298-ae03-969f952978ae', 'f08af189-ee71-47f6-af03-cded6a1f238f');
+
+            INSERT INTO warning_feature_part(id, warning_id) VALUES
+            ('3f128be1-2f4c-4824-b838-7fc64df840d7', '786e5301-368a-4298-ae03-969f952978ae');
+
+            INSERT INTO warning_feature_part_geometry(feature_part_id, geom) VALUES
+            ('3f128be1-2f4c-4824-b838-7fc64df840d7', 'SRID=3857;LINESTRING(-534110.916826128 6137966.44751012,-521401.570562258 6136129.98102624,-521996.016643093 6130733.05039182,-534742.098338923 6132847.02698325)');
+
+            INSERT INTO warning_feature_part_warning_hazard_type_details(feature_part_id, warning_hazard_type_detail) VALUES
+            ('3f128be1-2f4c-4824-b838-7fc64df840d7', 'RESTRICTED_AREA');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('786e5301-368a-4298-ae03-969f952978ae', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'PUBLISHED', 'ROUTING_INFORMATION', '2021-01-01T13:18:00Z', 'FR', 'AVINAV Brest', 'CECLANT', 002, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+
+        <sql stripComments="true">
+            <!--
+            warning.id = ac89e4f7-fc07-4dc1-ac6f-077ddf44541c
+            warning.locality.id = 9e47a045-0a39-4f3c-aa04-30612b50ad09
+            featurePart_0.id = 0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO localized_text(parent_id, language, text) VALUES
+            ('9e47a045-0a39-4f3c-aa04-30612b50ad09', 'fr', 'Goulet de Brest – passe nord'),
+            ('0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5', 'fr', '22 décembre 2020 Remplace AVURNAV local 5141 du 17 novembre 2020
+            Les navigateurs sont informés de la présence d''une nouvelle obstruction à proximité de 48-19.95N, 004-36.03W.
+            Ne pas mouiller, pêcher, draguer, plonger à proximité');
+
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'ac89e4f7-fc07-4dc1-ac6f-077ddf44541c', 'f08af189-ee71-47f6-af03-cded6a1f238f', 'Finistère');
+
+            INSERT INTO warning_locality(id, warning_id, sub_area_id) VALUES
+            ('9e47a045-0a39-4f3c-aa04-30612b50ad09', 'ac89e4f7-fc07-4dc1-ac6f-077ddf44541c', 'f08af189-ee71-47f6-af03-cded6a1f238f');
+
+            INSERT INTO warning_feature_part(id, warning_id) VALUES
+            ('0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5', 'ac89e4f7-fc07-4dc1-ac6f-077ddf44541c');
+
+            INSERT INTO warning_feature_part_geometry(feature_part_id, geom) VALUES
+            ('0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5', 'SRID=3857;POLYGON((-512732.038896727 6162444.9527267,-512779.812039406 6162043.6583282,-512196.979698732 6161909.8935287,-511499.491815628 6162292.07867012,-511614.147358057 6162750.70083983,-512168.315813126 6162788.91935397,-512732.038896727 6162444.9527267))');
+
+            INSERT INTO warning_feature_part_warning_hazard_type_details(feature_part_id, warning_hazard_type_detail) VALUES
+            ('0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5', 'RESTRICTED_AREA');
+
+            INSERT INTO fixed_date_range(parent_id, date_start, time_of_day_start) VALUES
+            ('0c60a9a9-0cf9-4ad1-9527-d2bf518b95d5', '2020-12-21', '12:00');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('ac89e4f7-fc07-4dc1-ac6f-077ddf44541c', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'PUBLISHED', 'AIDS_TO_NAVIGATION', '2020-12-22T17:15:00Z', 'FR', 'AVINAV Brest', 'CECLANT', 003, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+
+
+        <sql stripComments="true">
+            <!--
+            warning.id = c21e0774-6a74-4e46-889b-79687bdd9a24
+            warning.locality.id = 6f225d1b-26bf-4e56-b184-cb7231725d8b
+            featurePart_0.id = bf884097-1158-44cc-8f04-b329f81b94ce
+            serie.id = be14a276-f0d5-4938-a6c0-4a5453263f36
+            -->
+            INSERT INTO localized_text(parent_id, language, text) VALUES
+            ('6f225d1b-26bf-4e56-b184-cb7231725d8b', 'fr', 'Accès à la Gironde – Passe de l''Ouest'),
+            ('bf884097-1158-44cc-8f04-b329f81b94ce', 'fr', 'les navigateurs sont informés que le feu de la bouée 8A est signalé  éteint.');
+
+            INSERT INTO warning_general_area(id, warning_id, sub_area_id, name) VALUES
+            (uuid_generate_v4(), 'c21e0774-6a74-4e46-889b-79687bdd9a24', '30874a81-a888-4868-9a3c-6619db97346b', 'Gironde');
+
+            INSERT INTO warning_locality(id, warning_id, sub_area_id) VALUES
+            ('6f225d1b-26bf-4e56-b184-cb7231725d8b', 'c21e0774-6a74-4e46-889b-79687bdd9a24', 'f08af189-ee71-47f6-af03-cded6a1f238f');
+
+            INSERT INTO warning_feature_part(id, warning_id) VALUES
+            ('bf884097-1158-44cc-8f04-b329f81b94ce', 'c21e0774-6a74-4e46-889b-79687bdd9a24');
+
+            INSERT INTO warning_feature_part_geometry(feature_part_id, geom) VALUES
+            ('bf884097-1158-44cc-8f04-b329f81b94ce', 'SRID=3857;POINT(-135455.782787071 5727110.33512042)');
+
+            INSERT INTO warning_feature_part_affected_area(feature_part_id, geom) VALUES
+            ('bf884097-1158-44cc-8f04-b329f81b94ce', 'SRID=3857;POLYGON((-135453.388833509 5728274.08589565,-135338.951925432 5728268.46323471,-135225.617536843 5728251.64944352,-135114.477552849 5728223.80657336,-135006.60269285 5728185.20296981,-134903.032184293 5728136.21068049,-134804.763741507 5728077.30186158,-134712.743946674 5728009.04421787,-134627.859125884 5727932.09552077,-134550.926808535 5727847.19725776,-134482.68785247 5727755.16747498,-134423.799310736 5727656.89288241,-134374.828108631 5727553.32029858,-134336.245591748 5727445.44751753,-134308.422997183 5727334.31368667,-134291.627891144 5727220.98928878,-134286.021606778 5727106.56582482,-134291.657706322 5726992.1452974,-134308.481481764 5726878.82959628,-134336.330498199 5726767.70988821,-134374.936174046 5726659.85611322,-134423.926382218 5726556.30668835,-134482.82904674 5726458.05851766,-134551.076699571 5726366.05740427,-134628.011953457 5726281.18895645,-134712.893837713 5726204.27007452,-134804.904935778 5726136.04110022,-134903.159255778 5726077.15870318,-135006.710758268 5726028.18957282,-135114.562459303 5725989.60497534,-135225.676021424 5725961.77622798,-135338.981740614 5725944.97113354,-135453.388833509 5725939.35140914,-135567.795926405 5725944.97113354,-135681.101645592 5725961.77622798,-135792.215207713 5725989.60497534,-135900.066908748 5726028.18957282,-136003.618411238 5726077.15870318,-136101.872731238 5726136.04110022,-136193.883829306 5726204.27007452,-136278.765713559 5726281.18895645,-136355.700967445 5726366.05740427,-136423.948620279 5726458.05851766,-136482.8512848 5726556.30668835,-136531.841492973 5726659.85611322,-136570.447168817 5726767.70988821,-136598.296185255 5726878.82959628,-136615.119960694 5726992.1452974,-136620.756060241 5727106.56582482,-136615.149775875 5727220.98928878,-136598.354669836 5727334.31368667,-136570.532075268 5727445.44751753,-136531.949558388 5727553.32029858,-136482.978356283 5727656.89288241,-136424.089814547 5727755.16747498,-136355.850858484 5727847.19725776,-136278.918541135 5727932.09552077,-136194.033720345 5728009.04421787,-136102.013925509 5728077.30186158,-136003.745482726 5728136.21068049,-135900.174974166 5728185.20296981,-135792.30011417 5728223.80657336,-135681.160130176 5728251.64944352,-135567.825741587 5728268.46323471,-135453.388833509 5728274.08589565))');
+
+            INSERT INTO warning_feature_part_warning_hazard_type_details(feature_part_id, warning_hazard_type_detail) VALUES
+            ('bf884097-1158-44cc-8f04-b329f81b94ce', 'RESTRICTED_AREA');
+
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+            ('c21e0774-6a74-4e46-889b-79687bdd9a24', 'be14a276-f0d5-4938-a6c0-4a5453263f36', 'PUBLISHED', 'ROUTING_INFORMATION', '2021-01-19T12:12:00Z', 'FR', 'AVINAV Brest', 'CECLANT', 4, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.2.0-Subarea" author="a575965">
+        <sql stripComments="true">
+            <!-- Create subarea for CECLANT -->
+            INSERT INTO sub_area(id, name, international_name, geom) VALUES
+            ('37167b7c-360c-471e-aa9b-24f704601dfd', 'Cantabrico', 'Cantabrico', 'SRID=3857;MULTIPOLYGON(((-779236.435552915 5621521.48619207,-667916.944759642 5621521.48619207,-111319.490793272 5621521.48619207,-72566.2260816292 5144853.03080053,-779236.435552915 5136046.18352675,-779236.435552915 5196151.75344306,-779236.435552915 5595321.27663579,-779236.435552915 5621521.48619207)))'),
+            ('63301fcb-49fa-4fa2-b89a-9f8fc2fcae07', 'Finisterre', 'Finisterre', 'SRID=3857;MULTIPOLYGON(((-779236.435552915 5621521.48619207,-779236.435552915 5595321.27663579,-779236.435552915 5196151.75344306,-779236.435552915 5136046.13870541,-1335833.88951928 5136046.18352675,-1335833.88951928 5261371.96698509,-1335833.88951928 5621521.48619207,-890555.92634619 5621521.48619207,-779236.435552915 5621521.48619207)))'),
+            ('78ce3ce1-2bc2-4f14-982c-6e3cac1c8295', 'Iroise', 'Iroise', 'SRID=3857;MULTIPOLYGON(((-667916.944759642 6182047.99917679,-387762.521864934 6182047.99917679,-115027.030961939 6024072.11937378,-667916.944759642 6024072.11937378,-667916.944759642 6182047.99917679)))'),
+            ('28992c04-0d0c-4d83-882c-a7585154c031', 'Ouessant', 'Ouessant', 'SRID=3857;MULTIPOLYGON(((-387762.889219254 6182047.99917679,-667916.944759642 6182047.99917679,-695746.817457959 6182047.99917679,-695746.817457959 6446275.84101716,-636376.426078864 6457829.35398069,-621306.806047554 6470486.85984146,-604425.984505187 6472324.62178221,-589333.510582418 6483893.7528627,-471153.288252065 6553993.51610239,-387762.889219254 6577190.19165091,-387762.889219254 6182047.99917679)))'),
+            ('d0fab853-56d8-4f42-9c0f-790d549f875a', 'Rochebonne', 'Rochebonne', 'SRID=3857;MULTIPOLYGON(((-111319.490793272 5860839.8299478,41581.6480698219 5642806.34013982,-42237.0860996638 5497028.0102347,-111319.490793272 5621521.48619207,-667916.944759642 5621521.48619207,-667916.944759642 5860839.8299478,-111319.490793272 5860839.8299478)))'),
+            ('eef44037-bf98-4f1d-844b-45c8dea6962a', 'Yeu', 'Yeu', 'SRID=3857;MULTIPOLYGON(((-111319.490793272 5860839.8299478,-667916.944759642 5860839.8299478,-667916.944759642 6024072.11937378,-115027.030961939 6024072.11937378,-111319.490793272 5860839.8299478)))'),
+            ('335993e3-f9ea-4092-99cd-82ed888e8a26', 'Casquets', 'Casquets', 'SRID=3857;MULTIPOLYGON(((-217073.007046884 6577190.19165091,-217073.007046884 6391255.34713234,-212815.036524042 6391354.54851361,-203245.901775961 6388226.64110982,-181440.973877847 6362385.10534755,-110718.922140444 6225907.84048871,-172755.827206156 6117542.84702559,-387762.855823407 6182047.99917679,-387762.889219254 6577190.19165091,-217073.007046884 6577190.19165091)))'),
+            ('69264734-76b8-4eb7-abb4-0a56be240850', 'Pazenn', 'Pazenn', 'SRID=3857;MULTIPOLYGON(((-779236.435552915 5621521.48619207,-890555.92634619 5621521.48619207,-1335833.88951928 5621521.48619207,-1335833.88951928 6182047.99917679,-890555.92634619 6182047.99917679,-695746.817457959 6182047.99917679,-667916.944759642 6182047.99917679,-667916.944759642 6024072.11937378,-667916.944759642 5860839.8299478,-667916.944759642 5621521.48619207,-779236.435552915 5621521.48619207)))'),
+            ('0c75c0b7-f737-4dfb-ba73-c099004582ac', 'Sole', 'Sole', 'SRID=3857;MULTIPOLYGON(((-1669792.3618991 6446275.84101716,-1113194.90793273 6446275.84101716,-695746.817457959 6446275.84101716,-695746.817457959 6182047.99917679,-890555.92634619 6182047.99917679,-1335833.88951928 6182047.99917679,-1669792.3618991 6182047.99917679,-1669792.3618991 6446275.84101716)))');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.2.0-MaritimeServices-Areas" author="a575965">
+        <sql stripComments="true">
+            INSERT INTO maritime_service_areas(maritime_service_id, areas_id) VALUES
+            ('69a6e75d-4b15-41e6-a65a-dc739f8e7d36', '476380f3-8546-4504-b9b1-d9ab48bab841'), <!-- cnd brest / Atlantique -->
+            ('cd2aa150-110e-4cee-828c-c131da0a5706', 'cd5ee35d-5c1e-42b3-b238-383b62da8a90'), <!-- cnd cherbourg / Manche -->
+            ('81110e40-c844-4f79-a87e-47749cb5b806', '1f40779a-33e5-4ba7-a6a2-e83f84a46cfd'), <!-- cnd toulon / Mediterranee -->
+            ('e0432b84-ee63-422c-9650-7428f5ec85f4', '9b2f2562-d02e-4717-8d6d-10655847d5fe'); <!-- NAVAREA II / NAVAREA II-->
+        </sql>
+    </changeSet>
+</databaseChangeLog>

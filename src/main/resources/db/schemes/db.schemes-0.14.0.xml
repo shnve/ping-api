@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.14.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.14.0-Infosource" author="a662829">
+        <createTable tableName="infosource">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="number" type="${varchar2.255.type}"/>
+
+            <column name="nature" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="issuing_service_user_id" type="${id.type}"/>
+
+            <column name="issuing_service_id" type="${id.type}"/>
+
+            <column name="issuing_public_user_id" type="${id.type}"/>
+
+            <column name="comment" type="${clob.type}"/>
+
+            <column name="creation_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_update" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="validation_time" type="${timestamp.type}"/>
+
+            <column name="timezone" type="${varchar2.255.type}"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.14.0-InfosourceFeaturePart" author="a662829">
+        <createTable tableName="infosource_feature_part">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="${clob.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_description" type="${clob.type}"/>
+            <column name="markup_type" type="${varchar2.255.type}"/>
+            <column name="object" type="${json.type}"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes.0.14.0-InfosourceFeaturePartGeometry" author="a662829">
+        <createTable tableName="infosource_feature_part_geometry">
+            <column name="feature_part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="${json.type}"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes.0.14.0-InfosourceAttachment" author="a662829">
+        <createTable tableName="infosource_attachment">
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes.0.14.0-InfosourceAction" author="a662829">
+        <createTable tableName="infosource_action">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="${clob.type}"/>
+            <column name="user_id" type="${id.type}"/>
+            <column name="user_type" type="${varchar2.255.type}"/>
+            <column name="service_id" type="${id.type}"/>
+            <column name="date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

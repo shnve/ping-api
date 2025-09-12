@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.21.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.21.0-FolderAttachment" author="w124229">
+        <dropDefaultValue tableName="folder_attachment" columnName="creation_date" />
+        <dropColumn tableName="folder_attachment" columnName="filename" />
+        <dropColumn tableName="folder_attachment" columnName="identifier" />
+        <dropColumn tableName="folder_attachment" columnName="total_size" />
+        <dropColumn tableName="folder_attachment" columnName="type" />
+        <addNotNullConstraint tableName="folder_attachment" columnName="reception_date" />
+        <dropNotNullConstraint tableName="folder_attachment" columnName="maritime_service_id" />
+        <addColumn tableName="folder_attachment">
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-WarningGeogulation" author="a138386">
+        <createTable tableName="warning_georegulation">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="warning_georegulation"
+            baseColumnNames="warning_id"
+            constraintName="warning_georegulation_warning__id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_georegulation"
+            baseColumnNames="georegulation_id"
+            constraintName="warning_georegulation_georegulation__id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-GeoregulationPartType" author="a138386">
+        <createTable tableName="georegulation_part_type_i18n">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="translation" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="international_translation" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-InfosourceGeoregulation" author="a138386">
+        <addColumn tableName="infosource">
+            <column name="georegulation_id" type="${id.type}" />
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="infosource"
+                                 baseColumnNames="georegulation_id"
+                                 constraintName="infosource_georegulation_id_fk_constraint"
+                                 referencedTableName="georegulation"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-Study-FolderId" author="w117851">
+        <addColumn tableName="study">
+            <column name="folder_id" type="${id.type}" />
+        </addColumn>
+        <update tableName="study">
+            <column name="folder_id" valueComputed="(select fs.folder_id from folder_study fs where fs.study_id=id)">
+                <constraints nullable="false" />
+            </column>
+        </update>
+        <dropTable tableName="folder_study"/>
+        <addForeignKeyConstraint
+            baseTableName="study"
+            baseColumnNames="folder_id"
+            constraintName="study_folder_id_fk_constraint"
+            referencedTableName="folder"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-StudyStatus" author="w117851">
+        <addColumn tableName="study">
+            <column name="status" type="${varchar2.255.type}" />
+        </addColumn>
+        <update tableName="study">
+            <column name="status" valueComputed="('OPEN')">
+                <constraints nullable="false" />
+            </column>
+        </update>
+        <addUniqueConstraint tableName="study" columnNames="number, folder_id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-StudyFolderAttachment" author="w117851">
+        <createTable tableName="study_folder_attachment">
+            <column name="study_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="folder_attachment_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="study_id, folder_attachment_id"
+            constraintName="study_folder_attachment_unique_constraint"
+            tableName="study_folder_attachment" />
+        <addForeignKeyConstraint
+            baseTableName="study_folder_attachment"
+            baseColumnNames="study_id"
+            constraintName="study_folder_attachment_study_id_fk_constraint"
+            referencedTableName="study"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            baseTableName="study_folder_attachment"
+            baseColumnNames="folder_attachment_id"
+            constraintName="study_folder_attachment_folder_attachment_id_fk_constraint"
+            referencedTableName="folder_attachment"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-InfosourceParentId" author="a138386">
+        <addColumn tableName="infosource">
+            <column name="parent_infosource_id" type="${id.type}"></column>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="infosource"
+            baseColumnNames="parent_infosource_id"
+            constraintName="infosource_parent_infosource_id_fkc"
+            referencedTableName="infosource"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-GeoregulationNumberAuthority" author="a138386">
+        <addForeignKeyConstraint
+            baseTableName="georegulation_number_authority"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_number_authority_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_number_authority"
+            baseColumnNames="authority_id"
+            constraintName="georegulation_number_authority_authority_id_fkc"
+            referencedTableName="maritime_service"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.21.0-WarningInfosource" author="a138386">
+        <addForeignKeyConstraint baseTableName="warning_infosource"
+                                 baseColumnNames="warning_id"
+                                 constraintName="warning_infosource_warning_id_fk_constraint"
+                                 referencedTableName="warning"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="warning_infosource"
+                                 baseColumnNames="infosource_id"
+                                 constraintName="warning_infosource_infosource_id_fk_constraint"
+                                 referencedTableName="infosource"
+                                 referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>

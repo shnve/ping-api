@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.23.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet id="DB.Data.0.23.0.GeoregulationPartType" author="w116610">
+        <sql stripComments="true">
+            INSERT INTO georegulation_part_type_i18n(enum_name, translation, international_translation) VALUES
+                ('MOVEMENT_PROHIBITED', 'Circulation interdite', 'Movement prohibited'),
+                ('MOVEMENT_RESTRICTED', 'Circulation réglementée', 'Movement restricted'),
+                ('STOPPING_PROHIBITED', 'Stationnement interdit', 'Stopping prohibited'),
+                ('STOPPING_RESTRICTED', 'Stationnement réglementé', 'Stopping restricted');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.23.0.GeoregulationPartType-Landing" author="w116610">
+        <sql stripComments="true">
+            INSERT INTO georegulation_part_type_i18n(enum_name, translation, international_translation) VALUES
+                ('LANDING_PROHIBITED', 'Débarquement interdit', 'Landing prohibited'),
+                ('LANDING_RESTRICTED', 'Débarquement réglementé', 'Landing restricted');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.23.0.GeoregulationPartType-enum_name" author="w116610">
+        <sql stripComments="true">
+            UPDATE georegulation_part_type_i18n SET enum_name = 'SPEED_RESTRICTED' WHERE enum_name = 'SPEED_RESTRICTED ';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

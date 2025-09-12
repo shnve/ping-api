@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.24.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.24.0-ProUser-addColumn-hasSubscriptionEmailNotifications" author="a662829">
+        <addColumn tableName="pro_user">
+            <column name="has_subscription_email_notifications" type="${boolean.type}" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.24.0-PublicUser-addColumn-hasSubscriptionEmailNotifications" author="a662829">
+        <addColumn tableName="public_user">
+            <column name="has_subscription_email_notifications" type="${boolean.type}" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.24.0-MaritimeEntityAdditionalService" author="a662829">
+        <createTable tableName="maritime_entity_additional_service">
+            <column name="maritime_entity_id" type="${id.type}"/>
+            <column name="maritime_service_id" type="${id.type}"/>
+        </createTable>
+        <addUniqueConstraint
+            columnNames="maritime_entity_id, maritime_service_id"
+            constraintName="maritime_entity_additional_service_composite_constraint"
+            tableName="maritime_entity_additional_service"
+        />
+    </changeSet>
+</databaseChangeLog>

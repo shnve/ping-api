@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.1.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.8.0-Area" author="a662829">
+        <addColumn tableName="area">
+            <column name="disclaimer" type="${clob.type}"/>
+            <column name="international_disclaimer" type="${clob.type}"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

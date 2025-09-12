@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.34.0-retex-lot2.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.34.0-retex-lot2-Notification-Infosource" author="a662829">
+
+        <addColumn tableName="notification">
+            <column name="infosource_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="infosource_id"
+            constraintName="notification_infosource_id_fk_constraint"
+            referencedTableName="infosource"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

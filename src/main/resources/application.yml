@@ -1,0 +1,539 @@
+---
+info.app:
+  name: '@project.name@'
+  version: '@project.version@'
+
+management:
+  endpoints.web:
+    exposure:
+      include: health,info
+  info:
+    env:
+      enabled: true
+
+server:
+  error:
+    include-message: always
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  paths-to-exclude: /admin-api/**
+  swagger-ui:
+    path: /swagger-ui
+
+ping:
+  portal-url: http://localhost:4200
+  services-url: http://localhost:8082
+  shom-organization-info:
+    name: Shom
+    address: "13, rue du Chatellier - CS 92803 29228 BREST Cedex 2"
+    country: France
+    electronic-mail-address: "ping@shom.fr"
+    function: information
+    linkage: ${ping.portal-url}
+    resource-name: PING - The national nautical information platform
+  root-folder: c:/tmp/ping-api
+  upload-folder: ${ping.root-folder}/attachments
+  temp-folder-for-archive-files: ${ping.root-folder}/archives
+  generated-shapefile-folder: ${ping.root-folder}/shapefiles
+  generated-gpx-folder: ${ping.root-folder}/gpx
+  generated-navtex-folder: ${ping.root-folder}/navtex
+  generated-s124-folder: ${ping.root-folder}/s124
+  s124-sanitize-regex: "[/\\\\:*?\"<>|]"
+  s100-root-folder-name: "S100_ROOT"
+  certificates-folder-name: "Certs"
+  s124-folder-name: "S-124"
+  dataset-files-folder-name: "DATASET_FILES"
+  georegulation-max-global-period-duration-in-days: 30
+  max-upload-file-size-in-megabytes: 50
+  max-upload-file-size-in-gigabytes-for-survey: 10
+  static-logo-min-height: 5
+  static-logo-max-height: 500
+  secom-page-size-max: 40
+  proxy:
+    proxy-host: proxy-internet.localnet
+    proxy-port: 3128
+    use-proxy: true
+  shedlock:
+    default-lock-time-at-most-for: PT30S
+    lock-time-at-least-for: PT5M
+    lock-time-at-most-for: PT10M
+  keycloak:
+    server-url: ${ping.services-url}/auth
+    pool-size: 10
+    public-realm:
+      realm: ping-public
+      admin-client:
+        client-id: ping-admin
+        client-secret: XXX
+      api-client:
+        client-id: ping-api
+        client-secret: XXX
+    pro-realm:
+      realm: ping-pro
+      admin-client:
+        client-id: ping-admin
+        client-secret: XXX
+      api-client:
+        client-id: ping-api
+        client-secret: XXX
+    roles:
+      functional-admin: functional-admin
+      service-user: service-user
+    principal-attribute: preferred_username
+    pro-issuer-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.pro-realm.realm}
+    public-issuer-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.public-realm.realm}
+  security:
+    ignored-paths:
+      - /error
+      - /internal/**
+    csrf-allowed-request-uris:
+      - /**
+  cors:
+    allowed-origins:
+      - ${ping.portal-url}
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Content-Type
+      - Content-Disposition
+      - Authorization
+    allow-credentials: true
+    register-on-path: /**
+    exposed-headers:
+      - Content-Disposition
+
+  georegulations-cron-check-links:
+    cron-value: 0 0 7,19 * * *
+    email-recipient: XXX
+    email-subject: Géo-règlements avec des liens externes invalides
+    email-body-start: 'Les liens externes des géo-règlements listés ci-dessous sont invalides :'
+
+  notifications.connection:
+    timeout: ${SSE_TIMEOUT:32400000}
+    heartbeat: ${SSE_HEARTBEAT_INTERVAL:30000}
+
+
+  subscription-notification:
+    email-front-link-root: ${ping.portal-url}
+    email-access-warning-link: /avurnav-notice/
+    email-access-georegulation-link: /georegulation-visu/
+    email-delete-subscription-link: /subscription/delete/
+
+  email-notification:
+    email-front-link-root: ${ping.portal-url}
+    email-access-infosource-link: /infosource/tables/
+
+  survey-external-analysis-mail:
+    email-subject: "Analyse Cartonaut terminée"
+    email-body-end-with-critical-probes: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut a trouvé des profondeurs très inférieures à celles indiquées sur les cartes. Il convient de signaler ces profondeurs sans délai.<br/><a href=\"{{link}}\">Voir le résultat</a> de l'analyse de Cartonaut, incluant la proposition de signalement."
+    email-body-end-without-critical-probe: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut n'a pas trouvé de profondeur très inférieures à celles indiquées sur les cartes.<br/><a href=\"{{link}}\">Voir le résultat</a> de l'analyse de Cartonaut."
+    email-body-end-with-failure: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut n'a pas pu produire de résultat. Vous êtes invité(e) à vérifier si votre levé révèle des profondeurs dangereuses non portées sur les cartes marines. En cas de profondeurs dangereuses, rendez-vous à la rubrique <a href=\"{{link}}\">Contribuer/Nouvelle remontée d'information</a>."
+    email-access-survey-link: /survey/tables/
+    email-access-new-contribution-link: /infosource/choice
+
+  gpx-disclaimer:
+    fr: "Mise en garde : ces données GPX générées depuis PING sont partielles et seulement destinées à faciliter l'intégration de la position de l'avertissement de navigation ou de l'avis aux navigateurs dans une carte numérique. L'intégralité des informations est disponible sur le portail PING."
+    en: "Disclaimer : these GPX data generated from PING are partial and only intended to facilitate the integration of the position of the navigation warning or notice to mariners into a digital map. The full information is available on the PING portal."
+
+  upload-extensions:
+    - csv
+    - xyz
+    - pts
+    - lgz
+    - glz
+    - asc
+    - rar
+    - dat
+    - csar
+    - LAS
+    - odt
+    - ods
+    - gml
+    - gpkg
+    - dxf
+    - dwg
+    - tiff
+    - docx
+    - xlsx
+    - pptx
+    - doc
+    - xls
+    - ppt
+    - tar
+    - 7z
+    - zip
+    - gz
+    - eml
+    - pdf
+    - txt
+    - xml
+    - svg
+    - jpg
+    - png
+    - gif
+    - jfif
+    - kml
+    - shp
+    - gpx
+    - dbf
+    - shx
+    - sbn
+    - sbx
+    - fbn
+    - fbx
+    - ain
+    - aih
+    - prj
+    - shp.xml
+    - atx
+    - ixs
+    - mxs
+    - cpg
+    - qix
+
+  upload-extensions-for-survey-misc:
+    - csv
+    - txt
+    - xyz
+    - pts
+    - lgz
+    - glz
+    - asc
+    - zip
+    - 7z
+    - gz
+    - rar
+    - dat
+    - csar
+    - LAS
+    - pdf
+    - xls
+    - xlsx
+    - doc
+    - docx
+    - odt
+    - ods
+    - gml
+    - shp
+    - gpkg
+    - dxf
+    - dwg
+    - tiff
+    - png
+
+  upload-extensions-for-survey-bathy:
+    - csv
+    - txt
+    - xyz
+    - pts
+    - lgz
+    - glz
+    - asc
+    - zip
+    - 7z
+    - gz
+    - rar
+    - dat
+
+  clamav:
+    host: localhost
+    port: 4310
+    sync-analysis-threshold: 45
+    clamav-replaced-path: ${ping.root-folder}
+    clamav-replacement-path: ${ping.root-folder}
+
+  survey-file-analysis-line-compliant-header-read-offset: 4
+
+  bypass-external-analysis-fingerprint: false
+  bypass-external-search-fingerprint: false
+  authorized-certificate-fingerprints:
+    - XXX
+    - XXX
+
+  cartonaut-sftp: ${ping.root-folder}/sftp_cartonaut
+  surveys-working-dir: ${ping.root-folder}/surveys
+  enable-bathy-dangers-integration: false
+  max-polygon-vertices-for-is-bathy: 4
+  generated-survey-zip-archive-folder: ${ping.root-folder}/survey-archives
+  cartonaut-sftp-root-relative-path: /chemin/relatif/sftp_cartonaut
+  keystore:
+    path: secom/secom_keystore.jks
+    password: XXX
+    s100:
+      alias-ca: s100_root
+      alias-shom: shom
+    secom:
+      alias-ca: secom_root
+      alias-secom: ping_secom
+
+kafka:
+  bootstrapAddress: ${KAFKA_BOOTSTRAP_ADDRESS:localhost:9092}
+  topicName: lighthouseAndBeaconInfosourceTopic
+  groupId: pingGroup
+  individualGroupId: ${KAFKA_INDIVIDUAL_GROUP:pingIndividualGroup}
+  containerFactory: lighthouseAndBeaconInfosourceMessageDtoListenerContainerFactory
+  sissy-update-topic-name: sissyUpdateTopic
+  sse-notification-topic-name: sseNotificationTopic
+  sse-notification-transactional-id: sse-transactional-id
+  sseContainerFactory: sseNotificationListenerContainerFactory
+  invalid-georegulations-links-topic-name: pingEmailTopic
+  subscription-mail-notification-topic-name: pingEmailTopic
+  infosource-received-notification-topic-name: pingEmailTopic
+  survey-external-analysis-notification-topic-name: pingEmailTopic
+
+keycloak:
+  ssl-required: external
+  use-resource-role-mappings: true
+  bearer-only: true
+  principal-attribute: preferred_username
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          ping-pro:
+            token-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.pro-realm.realm}/protocol/openid-connect/token
+            authorization-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.pro-realm.realm}/protocol/openid-connect/auth
+          ping-public:
+            token-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.public-realm.realm}/protocol/openid-connect/token
+            authorization-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.public-realm.realm}/protocol/openid-connect/auth
+        registration:
+          ping-admin-pro:
+            provider: ping-pro
+            authorization-grant-type: authorization_code
+            redirect-uri: ${ping.portal-url}
+            client-id: ping-admin
+            client-secret: ${ping.keycloak.pro-realm.admin-client.client-secret}
+            scope:
+              - openid
+          ping-api-pro:
+            provider: ping-pro
+            authorization-grant-type: authorization_code
+            redirect-uri: ${ping.portal-url}
+            client-id: ping-api
+            client-secret: ${ping.keycloak.pro-realm.api-client.client-secret}
+            scope:
+              - openid
+          ping-admin-public:
+            provider: ping-public
+            authorization-grant-type: authorization_code
+            redirect-uri: ${ping.portal-url}
+            client-id: ping-admin
+            client-secret: ${ping.keycloak.public-realm.admin-client.client-secret}
+            scope:
+              - openid
+          ping-api-public:
+            provider: ping-public
+            authorization-grant-type: authorization_code
+            redirect-uri: ${ping.portal-url}
+            client-id: ping-api
+            client-secret: ${ping.keycloak.public-realm.api-client.client-secret}
+            scope:
+              - openid
+
+  liquibase:
+    change-log: classpath:db/db.changelog.xml
+    contexts: prod
+  jpa:
+    hibernate.ddl-auto: validate
+    database-platform: fr.shom.ping.PostgisPG95JsonDialect
+    properties.hibernate.jdbc.time_zone: UTC
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  servlet.multipart:
+    max-file-size: 5MB
+    max-request-size: 5MB
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      schema: classpath:quartz/schema.sql
+    properties:
+      org:
+        quartz:
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            useProperties: true
+            misfireThreshold: 60000
+            tablePrefix: qrtz_
+            isClustered: true
+            clusterCheckinInterval: 5000
+          scheduler:
+            instanceName: ping-scheduler
+            instanceId: AUTO
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 25
+            threadPriority: 5
+          plugin:
+            shutdownHook:
+              class: org.quartz.plugins.management.ShutdownHookPlugin
+              cleanShutdown: TRUE
+
+resilience4j:
+  ratelimiter:
+    metrics:
+      enabled: true
+    instances:
+      rateLimiterUserCreateAPI:
+        limitForPeriod: 5
+        limitRefreshPeriod: 60s
+        timeoutDuration: 1s
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  liquibase:
+    change-log: classpath:db/db.changelog-tests.xml
+    contexts: test
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;NON_KEYWORDS=year,value
+    username: sa
+    password: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        globally_quoted_identifiers: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+ping:
+  services-url: https://pp-services.ping.shom.fr
+  proxy:
+    use-proxy: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  sql:
+    init:
+      platform: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ping-api
+    username: ping-api
+    password: ping-api
+  jpa:
+    show-sql: true
+
+  liquibase:
+    contexts: local
+
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+        jdbc.core: trace
+      keycloak: debug
+      hibernate:
+        type.descriptor.sql.BasicBinder: trace
+    fr.shom.ping: debug
+
+ping:
+  proxy:
+    use-proxy: false
+  #enable-bathy-dangers-integration: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local-prod
+
+  sql:
+    init:
+      platform: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ping-api-prod?currentSchema=ping_api
+    username: ping-api
+    password: ping-api
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+  liquibase:
+    contexts: prod
+
+logging:
+  level:
+    org:
+      springframework.security: debug
+      keycloak: debug
+      hibernate:
+        type.descriptor.sql.BasicBinder: trace
+    fr.shom.ping: debug
+
+ping:
+  proxy:
+    use-proxy: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: deploy
+
+  sql:
+    init:
+      platform: postgres
+  datasource:
+    url: jdbc:postgresql://${JDBC_HOST}:${JDBC_PORT}/${JDBC_DATABASE}
+    username: ${JDBC_USER}
+    # JDBC_PASSWORD must be set as environment variable on server
+    password : ${JDBC_PASSWORD}
+  jpa:
+    show-sql: ${PING_API_JPA_SHOW_SQL:false}
+
+  liquibase:
+    contexts: qlf
+
+logging:
+  level:
+    org:
+      springframework.security: ${PING_LOG_LEVEL_SECURITY:warn}
+      keycloak: ${PING_LOG_LEVEL_KEYCLOAK:warn}
+      hibernate:
+        type.descriptor.sql.BasicBinder: ${PING_LOG_LEVEL_HIBERNATE:warn}
+    fr.shom.ping: ${PING_LOG_LEVEL_SHOMPING:warn}
+
+ping:
+  portal-url: https://${PING_PORTAL_URL}
+  services-url: https://${PING_SERVICES_EXT_URL}
+  root-folder: /DATA/ping/api
+  proxy:
+    proxy-host: ${PROXY_HOST}
+    proxy-port: ${PROXY_PORT}
+    use-proxy: ${USE_PROXY:true}
+  cors:
+    allowed-origins:
+      - https://${PING_PORTAL_URL}
+
+  bypass-external-analysis-fingerprint: ${BYPASS_EXTERNAL_ANALYSIS_FINGERPRINT:false}
+  bypass-external-search-fingerprint: ${BYPASS_EXTERNAL_SEARCH_FINGERPRINT:false}
+  cartonaut-sftp-root-relative-path: ${CARTONAUT_SFTP_ROOT_RELATIVE_PATH:/chemin/relatif/sftp_cartonaut}
+  enable-bathy-dangers-integration: ${ENABLE_BATHY-DANGERS_INTEGRATION:false}
+

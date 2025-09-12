@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.18.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.18.0-Tag" author="a662829">
+        <createTable tableName="tag">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="value" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="maritime_service_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="value, maritime_service_id"
+            constraintName="tag_unique_constraint"
+            tableName="tag"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-InfosourceTag" author="a662829">
+        <createTable tableName="infosource_tag">
+            <column name="infosource_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="tag_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="infosource_id, tag_id"
+            constraintName="infosource_tag_unique_constraint"
+            tableName="infosource_tag"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Lighthouse_Beacon_Message" author="W118621">
+        <createTable tableName="lighthouse_beacon_message">
+            <column name="enum_name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_translation" type="${varchar2.255.type}">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Folder" author="w118853">
+        <createTable tableName="folder">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="number" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="${varchar2.255.type}"/>
+            <column name="object" type="${varchar2.255.type}" />
+            <column name="creation_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_update" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="review_date" type="${date.type}"/>
+            <column name="issuing_service_id" type="${id.type}"/>
+            <column name="area_id" type="${id.type}"/>
+            <column name="locality_id" type="${id.type}"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="DB.Schemes.0.18.0-FolderAttachment" author="w118853">
+        <createTable tableName="folder_attachment">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filename" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="identifier" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_size" type="${long.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="${varchar2.255.type}" />
+            <column name="reception_date" type="${timestamp.type}"/>
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_service_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-FolderMaritimeEntity" author="w118853">
+        <createTable tableName="folder_maritime_entity">
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_entity_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="folder_id, maritime_entity_id"
+            constraintName="folder_maritime_entity_unique_constraint"
+            tableName="folder_maritime_entity"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-FolderMaritimeService" author="w118853">
+        <createTable tableName="folder_maritime_service">
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="maritime_service_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="folder_id, maritime_service_id"
+            constraintName="folder_maritime_service_unique_constraint"
+            tableName="folder_maritime_service"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Notion" author="w118853">
+        <createTable tableName="notion">
+            <column name="id" type="${id.type}">
+            </column>
+            <column name="type" type="${varchar2.255.type}" />
+            <column name="infosource_id" type="${id.type}" >
+                <constraints unique="true" />
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints unique="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-FolderNotion" author="w118853">
+        <createTable tableName="folder_notion">
+            <column name="folder_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="notion_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="folder_id, notion_id"
+            constraintName="folder_notion_unique_constraint"
+            tableName="folder_notion"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-MaritimeService-FolderManager" author="w118853">
+        <addColumn tableName="maritime_service">
+            <column name="folder_manager" type="${boolean.type}" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation" author="a138386">
+        <createTable tableName="georegulation">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="issuing_service_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="number_year" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number_text" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number_date" type="${date.type}"/>
+            <column name="additional_numbers" type="${json.type}" />
+            <column name="title" type="${clob.type}" />
+            <column name="international_title" type="${clob.type}"/>
+            <column name="summary" type="${clob.type}"/>
+            <column name="international_summary" type="${clob.type}"/>
+            <column name="is_temporary" type="${boolean.type}" defaultValue="false"/>
+            <column name="has_coastline_limit" type="${boolean.type}" defaultValue="false"/>
+            <column name="is_public" type="${boolean.type}" defaultValue="false"/>
+            <column name="mark_as_new_in_months" type="${integer.type}"/>
+            <column name="internal_comment" type="${clob.type}"/>
+            <column name="timezone" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_update" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_update_user_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="publication_date" type="${timestamp.type}" />
+            <column name="repeal_date" type="${timestamp.type}" />
+            <column name="is_expired" type="${boolean.type}" defaultValue="false"/>
+            <column name="is_new" type="${boolean.type}" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Number_Authority_Code" author="a138386">
+        <createTable tableName="georegulation_number_authority_code">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="authority_code" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Number_Authority" author="a138386">
+        <createTable tableName="georegulation_number_authority">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="authority_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Activity" author="a138386">
+        <createTable tableName="georegulation_activity">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activity" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_activity"
+            columnNames="georegulation_id, activity"
+            />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_activity"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_activity_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+            />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Attachment" author="a138386">
+        <createTable tableName="georegulation_attachment">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_attachment"
+            columnNames="georegulation_id, attachment_id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_attachment"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_attachment_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_attachment"
+            baseColumnNames="attachment_id"
+            constraintName="georegulation_attachment_attachment_id_fkc"
+            referencedTableName="attachment"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Entity" author="a138386">
+        <createTable tableName="georegulation_entity">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entity_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_entity"
+            columnNames="georegulation_id, entity_id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_entity"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_entity_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_entity"
+            baseColumnNames="entity_id"
+            constraintName="georegulation_entity_entity_id_fkc"
+            referencedTableName="maritime_entity"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Link" author="a138386">
+        <createTable tableName="georegulation_link">
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_link"
+            columnNames="georegulation_id, link"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_link"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_link_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Part" author="a138386">
+        <createTable tableName="georegulation_part">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="georegulation_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="information" type="${clob.type}"/>
+            <column name="international_information" type="${clob.type}"/>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_part"
+            columnNames="id, georegulation_id, position"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_part"
+            baseColumnNames="georegulation_id"
+            constraintName="georegulation_part_georegulation_id_fkc"
+            referencedTableName="georegulation"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Part_Feature" author="a138386">
+        <createTable tableName="georegulation_part_feature">
+            <column name="part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="${json.type}"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_part_feature"
+            baseColumnNames="part_id"
+            constraintName="georegulation_part_feature_part_id_fkc"
+            referencedTableName="georegulation_part"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-Georegulation_Part_Type" author="a138386">
+        <createTable tableName="georegulation_part_type">
+            <column name="part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="georegulation_part_type"
+            columnNames="part_id, type"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="georegulation_part_type"
+            baseColumnNames="part_id"
+            constraintName="georegulation_part_type_part_id_fkc"
+            referencedTableName="georegulation_part"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-MaritimeService_AuthorityCode" author="a138386">
+        <addColumn tableName="maritime_service">
+            <column name="authority_code" type="${varchar2.255.type}"/>
+        </addColumn>
+
+        <addUniqueConstraint
+            tableName="maritime_service"
+            columnNames="authority_code"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-WarningEntity" author="w117851">
+        <createTable tableName="warning_entity">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="entity_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="warning_id, entity_id"
+            constraintName="warning_entity_unique_constraint"
+            tableName="warning_entity"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_entity"
+            baseColumnNames="warning_id"
+            constraintName="warning_entity_warning_id_fkc"
+            referencedTableName="warning"
+            referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_entity"
+            baseColumnNames="entity_id"
+            constraintName="warning_entity_entity_id_fkc"
+            referencedTableName="maritime_entity"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.18.0-subArea" author="W118621">
+        <addColumn tableName="sub_area">
+            <column name="area_id" type="${id.type}"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

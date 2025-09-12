@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.21.0-local.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.22.0.MaritimeService" author="w124229">
+        <sql stripComments="true">
+            UPDATE maritime_service SET shom_service = false WHERE id = '69a6e75d-4b15-41e6-a65a-dc739f8e7d36';
+            UPDATE maritime_service SET shom_service = false WHERE id = 'cd2aa150-110e-4cee-828c-c131da0a5706';
+            UPDATE maritime_service SET shom_service = false WHERE id = '81110e40-c844-4f79-a87e-47749cb5b806';
+            UPDATE maritime_service SET shom_service = true WHERE id = 'e0432b84-ee63-422c-9650-7428f5ec85f4';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.22.0.Subscription" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO subscription (id, area_id, service_id, public_user_id, serie_id, creation_date, title, "type", sending_mail, lang) VALUES
+            ('83ec8910-df31-4f37-b07c-b276d0586647'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-26 08:00:00.000', 'Abonnement 0', 'GEOREGULATION', false, null),
+            ('0558be69-edd1-4e37-814b-e7b73087c4d0'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-27 08:00:00.000', 'Abonnement 1', 'GEOREGULATION', false, null),
+            ('73dbcb7c-c922-4810-9d22-0a10b072384b'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-28 08:00:00.000', 'Abonnement 2', 'GEOREGULATION', true, null),
+            ('05fc58b2-6df3-46b5-829c-f0c976dcef4c'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-29 08:00:00.000', 'Abonnement 3', 'GEOREGULATION', true, null),
+            ('e06b4204-7abd-4bdc-aadf-1e0d7756ab46'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-23 08:00:00.000', 'Abonnement 4', 'GEOREGULATION', false, null),
+            ('ab200982-b3fa-4e57-a877-d4c7df35b928'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-25 08:00:00.000', 'Abonnement 5', 'GEOREGULATION', false, null),
+            ('f9048766-6483-4b16-8899-b5fc1a82a9ed'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-25 08:00:00.000', 'Abonnement 7', 'WARNING', false, null),
+            ('1063abc9-ad70-4364-a752-5b08e02f4b49'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, null, null, '2022-04-25 08:00:00.000', 'Abonnement 8', 'WARNING', false, null),
+            ('352ab588-23fc-2497-5ae3-21b5c54e45a4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, null, '09d341c9-a509-41bb-9d1d-26cb10caa210'::uuid, null, '2022-04-25 08:00:00.000', 'Abonnement 9', 'WARNING', false, null);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

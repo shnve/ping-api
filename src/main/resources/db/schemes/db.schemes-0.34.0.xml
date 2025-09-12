@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.34.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <!-- Add column allTerritorialSea to know if the GR concerns the entire territorial sea and to know if the GR is concerned by AVURNAV-AVIRADE to table GR -->
+    <changeSet id="DB.Schemes.0.34.0-Add_column_allTerritorialSea_and_announcedByAvurnavAvirade_to_GR"
+               author="w130085">
+        <addColumn tableName="georegulation">
+            <column name="is_all_territorial_sea" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_announced_by_avurnav_avirade" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!-- Add columns in the regulation class for the restriction of the length or gross tonnage of a vessel as well as its commercial vessel status -->
+    <changeSet id="DB.Schemes.0.34.0-Add_column_to_GR_part" author="w130085">
+        <addColumn tableName="georegulation_part">
+            <column name="length_vessel" type="${integer.type}"/>
+            <column name="choice_length_vessel" type="${varchar2.255.type}"/>
+            <column name="gross_tonnage_vessel" type="${integer.type}"/>
+            <column name="choice_gross_tonnage_vessel" type="${varchar2.255.type}"/>
+            <column name="units_gross_tonnage_vessel" type="${varchar2.255.type}"/>
+            <column name="is_commercial_ship" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

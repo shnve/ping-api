@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.19.0-local.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.19.0.Georegulation" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO georegulation (id, status, issuing_service_id, "type", number_year, number_text, number_date, additional_numbers, title, international_title, summary, international_summary, is_temporary, has_coastline_limit, is_public, mark_as_new_in_months, internal_comment, timezone, creation_date, last_update, last_update_user_id, publication_date, repeal_date, is_expired) VALUES
+                ('00a06b50-22ce-4c81-9289-c67f4325fbdb'::uuid, 'PUBLISHED', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, 'NAVIGATION', '2022', 'AA', '2022-04-07', '[{"year": "2022", "text": "text"}]', 'a title', 'an international title', 'a summary', 'an international summary', false, false, false, 0, 'an internal comment', 'UTC', '2022-04-19 08:00:00.000', '2022-04-20 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '2022-04-20 08:00:00.000', '2022-04-20 08:00:00.000', false),
+                ('1edee344-dfb0-4827-823e-2b444c13aed5'::uuid, 'PUBLISHED', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, 'NAVIGATION', '2022', 'BB', '2022-04-09', '[{"year": "2022", "text": "text"}]', 'a title', 'an international title', 'a summary', 'an international summary', false, false, false, 0, 'an internal comment', 'UTC', '2022-04-09 08:00:00.000', '2022-04-10 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '2022-04-19 08:00:00.000', '2022-04-19 08:00:00.000', false),
+                ('b1350b71-f5c5-4c16-a5dc-f3db3ac446a4'::uuid, 'PUBLISHED', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, 'NAVIGATION', '2022', 'CC', '2022-04-10', '[{"year": "2022", "text": "text"}]', 'a title', 'an international title', 'a summary', 'an international summary', false, false, false, 0, 'an internal comment', 'UTC', '2022-04-07 08:00:00.000', '2022-04-08 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '2022-04-08 08:00:00.000', '2022-04-08 08:00:00.000', false);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.Serie" author="w118853">
+        <sql stripComments="true">
+            <!-- Notice TP -->
+            INSERT INTO serie(id, name, type, maritime_service_id) VALUES
+                ('22c5e383-8c42-4bce-8c94-2517edba6cf5', 'AVINAV TP', 'TEMPORARY_NOTICE_TO_MARINER', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+            INSERT INTO serie_mandatory_languages(serie_id, mandatory_languages) VALUES
+                ('22c5e383-8c42-4bce-8c94-2517edba6cf5', 'fr');
+            INSERT INTO serie_ranges(serie_id, beginning, ending) VALUES
+                ('22c5e383-8c42-4bce-8c94-2517edba6cf5', 1, 99999);
+            INSERT INTO serie_sub_area(serie_id, sub_area_id) VALUES
+                ('22c5e383-8c42-4bce-8c94-2517edba6cf5', '30874a81-a888-4868-9a3c-6619db97346b');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.Warning" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO warning(id, serie_id, status, warning_hazard_type_general, publication_time, estimated_publication_date, review_date, creation_date, country, name_of_series, production_agency, warning_number, year, last_update, last_update_user_id) VALUES
+                ('2bf7f9f0-facc-42ac-ab9c-0659a8054c83', '22c5e383-8c42-4bce-8c94-2517edba6cf5', 'DRAFT', 'AIDS_TO_NAVIGATION', '2022-05-01T23:59:59Z', '2099-12-31T23:59:59Z', '2099-01-01T23:59:59Z', '2022-04-19T01:23:45Z',  'FR', 'AVINAV Brest', 'CECLANT', 11, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'),
+                ('242c7fdd-2da5-4daf-85c7-44957d11da07', 'a1cb5f20-fb32-453b-8844-2b5d9f7ddc3e', 'DRAFT', 'AIDS_TO_NAVIGATION', '2022-05-10T23:59:59Z', '2099-12-31T23:59:59Z', '2099-01-01T23:59:59Z', '2020-05-05T01:23:45Z',  'FR', 'AVINAV Brest', 'CECLANT', 11, 2021, now(), '69a6e75d-4b15-41e6-a65a-dc739f8e7d36');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.Notion" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO notion (id, folder_id, "type", infosource_id, warning_id, georegulation_id) VALUES
+                ('049346ed-1c08-41c5-87d4-1ba5ca3c73a9'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'WARNING', null, '242c7fdd-2da5-4daf-85c7-44957d11da07'::uuid, null),
+                ('94e3b93b-2254-4d34-863a-ff9ad988b5db'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'WARNING', null, '2bf7f9f0-facc-42ac-ab9c-0659a8054c83'::uuid, null),
+                ('bacc68e6-9e73-4079-936c-3db725ac9d0d'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'GEOREGULATION', null, null, '00a06b50-22ce-4c81-9289-c67f4325fbdb'::uuid),
+                ('d1bb1086-4dae-468e-a973-6d893897948b'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'GEOREGULATION', null, null, '1edee344-dfb0-4827-823e-2b444c13aed5'::uuid),
+                ('dbe9607f-2d73-4b11-ac6f-7ac04be17c26'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'GEOREGULATION', null, null, 'b1350b71-f5c5-4c16-a5dc-f3db3ac446a4'::uuid),
+                ('e0962b1e-bc3b-4937-9cdc-4ff93baeb6c5'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'INFOSOURCE', 'c3f44a0d-8b8a-4619-bebf-d6de68ed8a9e'::uuid, null, null),
+                ('f258b999-c728-4c07-ae8e-9e06939f399d'::uuid, '68d69314-b22c-4aea-a931-32562ca157a6'::uuid, 'INFOSOURCE', '75bbd4d7-14af-4873-acc4-7b713df133fe'::uuid, null, null);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.WarningInfosource" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO warning_infosource (warning_id, infosource_id) VALUES
+                ('2bf7f9f0-facc-42ac-ab9c-0659a8054c83'::uuid, 'c3f44a0d-8b8a-4619-bebf-d6de68ed8a9e'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.Study" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO study (id, "number", creation_date, last_update, last_update_user_id) VALUES
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, '0432/AA', '2022-04-19 08:00:00.000', '2022-04-26 08:00:00.000', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.StudyNotion" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO study_notion (study_id, notion_id) VALUES
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, '5850867f-86d0-4047-b1d0-64d3a93ae278'::uuid),
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, '049346ed-1c08-41c5-87d4-1ba5ca3c73a9'::uuid),
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, 'bacc68e6-9e73-4079-936c-3db725ac9d0d'::uuid),
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, 'd1bb1086-4dae-468e-a973-6d893897948b'::uuid),
+                ('6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid, 'dbe9607f-2d73-4b11-ac6f-7ac04be17c26'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.19.0.FolderStudy" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO folder_study (folder_id, study_id) VALUES
+                ('68d69314-b22c-4aea-a931-32562ca157a6'::uuid, '6593bd07-39e3-4afb-9b21-53005d587b8a'::uuid);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

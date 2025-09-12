@@ -1,0 +1,11 @@
+package fr.shom.ping.model.enums;
+
+public enum SurveyFileAnalysisError {
+    EXCEED_ATTEMPTS_OR_WRONG_SEPARATOR,
+    WRONG_NB_OF_SEPARATOR,
+    NOT_NUMERIC_VALUE,
+    OUT_OF_BOUNDS,
+    FAILED_TO_RETRIEVE_STATS,
+    FAILED_TO_ANALYZE,
+    FAILED_TO_ANALYZE_FILE_IN_ARCHIVE
+}

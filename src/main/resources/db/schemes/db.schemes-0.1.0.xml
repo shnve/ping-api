@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-0.1.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.0.1.0-Warning" author="a138386">
+        <createTable tableName="warning">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="serie_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="${varchar2.255.type}"/>
+            <column name="name_of_series" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="production_agency" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="warning_identifier" type="${varchar2.255.type}"/>
+            <column name="warning_number" type="${integer.type}" />
+            <column name="year" type="${integer.type}"/>
+            <column name="warning_hazard_type_general" type="${varchar2.255.type}"/>
+            <column name="publication_time" type="${timestamp.type}"/>
+            <column name="cancellation_date" type="${timestamp.type}"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="warning"
+            baseColumnNames="serie_id"
+            constraintName="serie_id_fk_constraint"
+            referencedTableName="serie"
+            referencedColumnNames="id" />
+
+        <addUniqueConstraint tableName="warning"
+                             columnNames="serie_id, warning_number, year"
+                             constraintName="warning_number_constraint"/>
+
+        <createTable tableName="warning_general_area">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sub_area_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="international_name" type="${varchar2.255.type}"/>
+        </createTable>
+
+        <createTable tableName="warning_locality">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sub_area_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="urn" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-FixedDateRange" author="a138386">
+        <createTable tableName="fixed_date_range">
+            <column name="parent_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_end" type="${date.type}"/>
+            <column name="date_start" type="${date.type}"/>
+            <column name="time_of_day_start" type="${time.type}"/>
+            <column name="time_of_day_end" type="${time.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-FeatureReference" author="a138386">
+        <createTable tableName="feature_reference">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-ENCFeatureReference" author="a138386">
+        <createTable tableName="enc_feature_reference">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="feature_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="edition_number" type="${varchar2.255.type}"/>
+            <column name="enc_name" type="${varchar2.255.type}"/>
+            <column name="update_number" type="${varchar2.255.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-ENCFeatureReferenceObjectIdentifier" author="a138386">
+        <createTable tableName="enc_feature_reference_object_identifier">
+            <column name="enc_feature_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_identifier" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="enc_feature_reference_object_identifier"
+            baseColumnNames="enc_feature_reference_id"
+            constraintName="enc_feature_reference_id_fk_constraint"
+            referencedTableName="enc_feature_reference"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-FeatureReferenceIdentifier" author="a138386">
+        <createTable tableName="feature_reference_identifier">
+            <column name="feature_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="identifier" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="feature_reference_identifier"
+            baseColumnNames="feature_reference_id"
+            constraintName="feature_reference_identifier_pk_constraint"
+            referencedTableName="feature_reference"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-FeatureReferenceLightNumber" author="a138386">
+        <createTable tableName="feature_reference_light_number">
+            <column name="feature_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="light_number" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="feature_reference_light_number"
+            baseColumnNames="feature_reference_id"
+            constraintName="feature_reference_light_number_pk_constraint"
+            referencedTableName="feature_reference"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-WarningFeaturePart" author="a138386">
+        <createTable tableName="warning_feature_part">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="${integer.type}" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-WarningFeaturePartAreaAffected" author="a138386">
+        <createTable tableName="warning_feature_part_affected_area">
+            <column name="feature_part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-WarningFeaturePartGeometry" author="a138386">
+        <createTable tableName="warning_feature_part_geometry">
+            <column name="feature_part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-WarningFeaturePartFeatureReference" author="a13838">
+        <createTable tableName="warning_feature_part_feature_reference">
+            <column name="feature_reference_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="feature_part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="feature_reference_id, feature_part_id"
+            constraintName="warning_feature_part_feature_reference_unique_constraint"
+            tableName="warning_feature_part_feature_reference"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="warning_feature_part_feature_reference"
+            baseColumnNames="feature_reference_id"
+            constraintName="feature_reference_fk_constraint"
+            referencedTableName="feature_reference"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+            baseTableName="warning_feature_part_feature_reference"
+            baseColumnNames="feature_part_id"
+            constraintName="warning_feature_fk_constraint"
+            referencedTableName="warning_feature_part"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-WarningFeaturePartWarningHazardTypeDetails" author="a138386">
+        <createTable tableName="warning_feature_part_warning_hazard_type_details">
+            <column name="feature_part_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="warning_hazard_type_detail" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.0.1.0-FeatureName" author="a138386">
+        <createTable tableName="feature_name">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

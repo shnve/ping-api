@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.17.0.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.17.0.InfosourceFeaturePart" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO infosource_feature_part(id, infosource_id, "position", description, international_description, "object") VALUES
+            ('acf8365e-142c-4b8e-be3f-9df7cd4dd7df'::uuid, '86bcf6b5-7de6-4b87-b8e7-29e2620d3d3f'::uuid, 20, 'description feature 20', NULL, '{"number":"XX/AA","contact":"&lt;img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==\" /&gt;mon contact","heritageName":"nom patrimoine","fireBookNumber":"n° livre feux 69","marque":"la marque","department":"le département","geographicalZone":"la zone géographique"}'::json);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.17.0.InfosourceFeaturePartGeometry" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO infosource_feature_part_geometry (feature_part_id, geom) VALUES
+                ('acf8365e-142c-4b8e-be3f-9df7cd4dd7df'::uuid, 'SRID=3857;POINT (-575899.89502412 6121208.25465416)'::geometry);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.17.0.Infosource" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO infosource
+            (id, "number", nature, status, issuing_service_user_id, issuing_service_id, issuing_public_user_id, "comment", creation_date, last_update, validation_time, timezone, "object") VALUES
+            ('86bcf6b5-7de6-4b87-b8e7-29e2620d3d3f'::uuid, 'quirky-penguin-03-2022', 'LIGHTHOUSE_AND_BEACON', 'OPENED', '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, '69a6e75d-4b15-41e6-a65a-dc739f8e7d36'::uuid, NULL, 'a comment', '2022-01-08 09:00:00.000', '2022-01-08 09:15:00.000', '2022-01-12 10:25:00.000', 'Europe/Paris', '{"indication":"1","level":"URGENT","naturalNoticeCode":"2","incidentTitle":"52","recoveryTime":"7","comment":"commentaire sur l''IS","costalService":"service littoral","territorialDivision":"division territoriale","previousNoticeNumber":"XX/AA"}'::json);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

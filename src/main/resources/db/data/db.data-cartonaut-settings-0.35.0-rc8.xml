@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-cartonaut-settings-0.35.0-rc8.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-add-survey-transmission-popup-content" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+            (gen_random_uuid(), 'survey-transmission-popup-content', 'Accueil > Mes contributions > Transmettre un levé au Shom', '/survey/deposit', 'Popup transmission versement');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Merci pour votre contribution !<br/><br/>L'outil d'assistance à la détection de l'information nautique bathymétrique constitue une aide à la décision pour le signalement des informations critiques pour la navigation.<br/><br/>L'outil détecte les sondes du levé qui sont inférieures à celles indiquées sur les cartes électroniques de navigation (ENC) du Shom (écart très important, important ou avéré).<br/><br/>L'outil propose également une information synthétique sur l'existence de ces sondes détectées, soit par des sondes significatives des écarts, soit par des zones de fonds moindres avec indication de l'écart maximal. Cette information synthétique pourra vous servir de base pour réaliser un signalement vers les autorités en charge de l'information nautique (avertissements de navigation, avis aux navigateurs).<br/><br/>Bien que l'outil apporte une assistance, il est rappelé qu'il est de la responsabilité du contributeur d'identifier les informations nautiques pertinentes à porter à la connaissance de des autorités chargées de traiter et diffuser l'information nautique. En aucun cas les détections proposées ne pourront être considérés comme exhaustives de tout danger révélé par un levé. ]]></column>
+            <column name="international_content"><![CDATA[ Thank you for your contribution !<br/><br/>The bathymetric nautical information detection assistance tool provides decision support for reporting critical information for navigation.<br/><br/>The tool detects survey probes that are inferior to those indicated on the electronic navigation charts (ENC) of the Shom (very significant, significant or proven deviation).<br/><br/>The tool also offers summary information on the existence of these detected probes, i.e. by significant probes of the deviations, or by zones of lesser funds with indication of the maximum deviation. This summary information can serve as a basis for making a report to the authorities in charge of nautical information (navigation warnings, notices to navigators).<br/><br/>Although the tool provides assistance, it is reminded that it is the responsibility of the contributor to identify relevant nautical information to be brought to the attention of the authorities responsible for processing and disseminating nautical information. Under no circumstances can the proposed detections be considered exhaustive of any danger revealed by a survey. ]]></column>
+            <where>section_key = 'survey-transmission-popup-content'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-update-entries" author="a662829">
+        <sql stripComments="true">
+            UPDATE static_section SET location='Accueil > Mes contributions > Mes levés > Modale de détails', path='/survey/tables/{id}', name='Détection de sondes moindres' WHERE section_key='survey-analysis-result-alert';
+            UPDATE static_section SET location='Accueil > Mes contributions > Transmettre un levé au Shom' WHERE section_key IN ('survey-bathy-data', 'survey-technical-metadata', 'survey-other-documents');
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-add-survey-analysis-general-instructions" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+                (gen_random_uuid(), 'survey-analysis-general-instructions', 'Accueil > Mes contributions > Analyser l''information nautique d''un levé', '/survey/notdeposit', 'Consignes générales de l''analyse d''un levé');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Consignes générales de l'analyse d'un levé ]]></column>
+            <column name="international_content"><![CDATA[ General instructions for analyzing a survey ]]></column>
+            <where>section_key = 'survey-analysis-general-instructions'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-add-survey-transmission-general-instructions" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+                (gen_random_uuid(), 'survey-transmission-general-instructions', 'Accueil > Mes contributions > Transmettre un levé au Shom', '/survey/deposit', 'Consignes générales du versement d''un levé');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ Consignes générales du versement d'un levé ]]></column>
+            <column name="international_content"><![CDATA[ General instructions for survey transmission ]]></column>
+            <where>section_key = 'survey-transmission-general-instructions'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="DB.Data.cartonaut.Static_Section-add-survey-transmission-confidentiality" author="a662829">
+        <sql stripComments="true">
+            INSERT INTO static_section (id, section_key, location, path, name) VALUES
+                (gen_random_uuid(), 'survey-transmission-confidentiality', 'Accueil > Mes contributions > Transmettre un levé au Shom', '/survey/deposit', 'Modalités de confidentialité de transmission d''un levé');
+        </sql>
+
+        <update tableName="static_section">
+            <column name="content"><![CDATA[ <a href="/static-file/confidentiality-choice-information" target="_blank" rel="noopener noreferrer">En savoir plus sur la politique d'utilisation des données par le Shom</a> ]]></column>
+            <column name="international_content"><![CDATA[ <a href="/static-file/confidentiality-choice-information" target="_blank" rel="noopener noreferrer">Find out more about Shom's data use policy</a> ]]></column>
+            <where>section_key = 'survey-transmission-confidentiality'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

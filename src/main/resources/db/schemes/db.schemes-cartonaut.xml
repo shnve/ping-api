@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-cartonaut.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.cartonaut-MaritimeService-addColumn-surveyOwner" author="a662829">
+        <addColumn tableName="maritime_service">
+            <column name="survey_owner" type="${boolean.type}" defaultValue="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyFile" author="a662829">
+        <createTable tableName="survey_file">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="compliant" type="${varchar2.255.type}" defaultValue="NOT_AVAILABLE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="statistics" type="${json.type}"/>
+
+            <column name="archive" type="${boolean.type}" defaultValueBoolean="false"/>
+
+            <column name="compliant_analysis_results" type="${json.type}"/>
+
+            <column name="cartonaut_file_id" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyFileList" author="a662829">
+        <createTable tableName="survey_file_list">
+            <column name="survey_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="survey_file_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyFileInArchive" author="a662829">
+        <createTable tableName="survey_file_in_archive">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="filename" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="compliant" type="${varchar2.255.type}" defaultValue="NOT_AVAILABLE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="statistics" type="${json.type}"/>
+
+            <column name="compliant_analysis_results" type="${json.type}"/>
+
+            <column name="cartonaut_file_id" type="${integer.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyFileArchiveContent" author="a662829">
+        <createTable tableName="survey_file_archive_content">
+            <column name="survey_archive_file_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="survey_file_in_archive_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyProcessingResultList" author="a662829">
+        <createTable tableName="survey_processing_result_list">
+            <column name="survey_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="processing_result_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyProcessingResult" author="a662829">
+        <createTable tableName="survey_processing_result">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="processing_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="errors" type="${json.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="detected_objects" type="${json.type}"/>
+
+            <column name="external_analysis_status" type="${varchar2.255.type}"/>
+
+            <column name="external_analysis_progress" type="${float.type}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyProcessingResultAttachments" author="a662829">
+        <createTable tableName="survey_processing_result_attachments">
+            <column name="processing_result_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyAttachment" author="a662829">
+        <createTable tableName="survey_attachment">
+            <column name="survey_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="attachment_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-Survey" author="a662829">
+        <createTable tableName="survey">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="identifier" type="${varchar2.255.type}">
+                <constraints unique="true"/>
+            </column>
+
+            <column name="shom_id" type="${varchar2.255.type}"/>
+
+            <column name="name_and_location" type="${varchar2.255.type}">
+                <constraints unique="true"/>
+            </column>
+
+            <column name="area_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="issuing_service_id" type="${id.type}"/>
+
+            <column name="issuing_service_user_id" type="${id.type}"/>
+
+            <column name="issuing_public_user_id" type="${id.type}"/>
+
+            <column name="state" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="test" type="${boolean.type}" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="start_date" type="${timestamp.type}"/>
+
+            <column name="end_date" type="${timestamp.type}"/>
+
+            <column name="last_update" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="transmission_status" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_update_transmission_date" type="${timestamp.type}"/>
+
+            <column name="technical_metadata_file_id" type="${id.type}"/>
+
+            <column name="metadata" type="${json.type}"/>
+
+            <column name="statistics" type="${json.type}"/>
+
+            <column name="geographic_format" type="${boolean.type}" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="epsg" type="${varchar2.255.type}"/>
+
+            <column name="coordinates_order" type="${varchar2.255.type}"/>
+
+            <column name="activity_choice" type="${varchar2.255.type}"/>
+
+            <column name="broadcast_restriction" type="${varchar2.255.type}"/>
+
+            <column name="confidentiality_information" type="${clob.type}"/>
+
+            <column name="z_direction" type="${varchar2.255.type}"/>
+
+            <column name="vertical_ref" type="${varchar2.255.type}"/>
+
+            <column name="file_separator" type="${varchar2.255.type}"/>
+
+            <column name="external_analysis_enabled" type="${boolean.type}"/>
+
+            <column name="goal" type="${clob.type}"/>
+
+            <column name="owner_organization" type="${varchar2.255.type}"/>
+
+            <column name="producer_organization" type="${varchar2.255.type}"/>
+
+            <column name="owner_email" type="${varchar2.255.type}" />
+
+            <column name="technical_manager_email" type="${varchar2.255.type}" />
+
+            <column name="creation_date" type="${timestamp.type}" defaultValueComputed="${now}">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="compliant" type="${varchar2.255.type}" defaultValue="NOT_AVAILABLE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="bounding_box" type="${geometry.type}"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-PublicUser-addColumn-isProAccount" author="a662829">
+        <addColumn tableName="public_user">
+            <column name="is_pro_account" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyIssuerType" author="a662829">
+        <createTable tableName="survey_issuer_type">
+            <column name="survey_id" type="${id.type}">
+                <constraints nullable="false"/>>
+            </column>
+
+            <column name="issuer_type" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="survey_issuer_type" columnNames="survey_id, issuer_type"/>
+        <addForeignKeyConstraint
+            baseTableName="survey_issuer_type"
+            baseColumnNames="survey_id"
+            constraintName="survey_issuer_type_survey_id_fkc"
+            referencedTableName="survey"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-Notification-Survey" author="a662829">
+        <addColumn tableName="notification">
+            <column name="survey_id" type="${id.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="notification"
+            baseColumnNames="survey_id"
+            constraintName="notification_survey_id_fk_constraint"
+            referencedTableName="survey"
+            referencedColumnNames="id"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyDetection" author="a662829">
+        <createTable tableName="survey_detection">
+            <column name="processing_result_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="depth" type="${float.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="difference" type="${float.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="${smallint.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyDanger" author="a662829">
+        <createTable tableName="survey_danger">
+            <column name="processing_result_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="${geometry.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nature" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_of_value" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="${float.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-SurveyEnc" author="a662829">
+        <createTable tableName="survey_enc">
+            <column name="processing_result_id" type="${id.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_number" type="${float.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="${timestamp.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comments" type="${clob.type}" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-Static_Section" author="a662829">
+        <createTable tableName="static_section">
+            <column name="id" type="${id.type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="section_key" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="${varchar2.255.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="${blob.type}"/>
+            <column name="international_content" type="${blob.type}"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="static_section"
+                             columnNames="section_key, location, path, name"
+                             constraintName="static_section_key_location_path_name_unique_constraint"/>
+
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-InfosourceSurvey" author="w117851">
+        <addColumn tableName="infosource">
+            <column name="start_date" type="${timestamp.type}"/>
+            <column name="end_date" type="${timestamp.type}"/>
+            <column name="confidentiality_information" type="${clob.type}"/>
+            <column name="survey_id" type="${id.type}" />
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="infosource"
+                                 baseColumnNames="survey_id"
+                                 constraintName="infosource_survey_id_fk_constraint"
+                                 referencedTableName="survey"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-WarningSurvey" author="w117851">
+        <createTable tableName="warning_survey">
+            <column name="warning_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="survey_id" type="${id.type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+            columnNames="warning_id, survey_id"
+            constraintName="warning_survey_unique_constraint"
+            tableName="warning_survey"
+        />
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-warning" author="w117851">
+        <addColumn tableName="warning">
+            <column name="is_bathy" type="${boolean.type}" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="DB.Schemes.cartonaut-Survey_add_column_bri-internal-comment" author="a662829">
+        <addColumn tableName="survey">
+            <column name="bri_internal_comment" type="${clob.type}"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

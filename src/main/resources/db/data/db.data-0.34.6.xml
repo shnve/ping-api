@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.34.6.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.0.34.6-Warning_Hazard_Type_Details" author="a662829">
+        <sql stripComments="true" dbms="postgresql">
+            UPDATE warning_hazard_type_details SET translation = 'Services RSM' WHERE enum_name='MSI_SERVICES';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

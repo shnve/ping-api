@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-0.18.0-local.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.0.18.0.Folder" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO folder (id, "number", status, comment, "object", creation_date, last_update, review_date, issuing_service_id, area_id, locality_id) VALUES
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '01', 'OPEN', 'a comment', 'an object', '2022-04-07 08:00:00.000', '2022-04-07 08:00:00.000', '2022-04-25', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('79bbcd44-b422-450a-81d0-54040e15c428'::uuid, '02', 'OPEN', 'a comment', 'an object', '2022-04-08 08:00:00.000', '2022-04-09 08:00:00.000', '2022-04-28', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('46235500-bc73-4b11-9e77-5d9682afcdcc'::uuid, '03', 'OPEN', 'a comment', 'an object', '2022-04-09 08:00:00.000', '2022-04-10 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('c01c8520-04d6-46f8-a80c-7308327fc5da'::uuid, '04', 'OPEN', 'a comment', 'an object', '2022-04-10 08:00:00.000', '2022-04-11 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('d7c2fb41-a3ab-4170-9d33-020953b21902'::uuid, '05', 'OPEN', 'a comment', 'an object', '2022-04-11 08:00:00.000', '2022-04-12 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('bf562166-a45d-4347-b306-623d5851ee50'::uuid, '06', 'OPEN', 'a comment', 'an object', '2022-04-11 08:00:00.000', '2022-04-13 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('68d69314-b22c-4aea-a931-32562ca157a6'::uuid, '07', 'OPEN', 'a comment', 'an object', '2022-04-12 08:00:00.000', '2022-04-14 08:00:00.000', '2022-04-20', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('7b4c5abb-515a-43e1-8e63-1da251b4c009'::uuid, '11', 'CLOSED', 'a comment', 'an object', '2022-04-07 08:00:00.000', '2022-04-09 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid),
+                ('a92413c1-ea6f-4a1d-be54-a8ef46447237'::uuid, '12', 'CLOSED', 'a comment', 'an object', '2022-04-05 08:00:00.000', '2022-04-07 08:00:00.000', '2022-04-19', 'e0432b84-ee63-422c-9650-7428f5ec85f4'::uuid, '9b2f2562-d02e-4717-8d6d-10655847d5fe'::uuid, '13e937e1-a383-4d65-83d7-cb43cafa0f5e'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.FolderMaritimeEntity" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO folder_maritime_entity (folder_id, maritime_entity_id) VALUES
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '3625939b-5dd7-4282-8388-313b6871f2a7'::uuid),
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, 'ec9ffa0b-064f-417f-b687-082932a16fa4'::uuid),
+                ('46235500-bc73-4b11-9e77-5d9682afcdcc'::uuid, '3625939b-5dd7-4282-8388-313b6871f2a7'::uuid),
+                ('46235500-bc73-4b11-9e77-5d9682afcdcc'::uuid, 'ec9ffa0b-064f-417f-b687-082932a16fa4'::uuid),
+                ('7b4c5abb-515a-43e1-8e63-1da251b4c009'::uuid, '3625939b-5dd7-4282-8388-313b6871f2a7'::uuid),
+                ('7b4c5abb-515a-43e1-8e63-1da251b4c009'::uuid, 'ec9ffa0b-064f-417f-b687-082932a16fa4'::uuid);
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="DB.Data.0.18.0.FolderMaritimeService" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO folder_maritime_service (folder_id, maritime_service_id) VALUES
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, 'cd2aa150-110e-4cee-828c-c131da0a5706'::uuid),
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '81110e40-c844-4f79-a87e-47749cb5b806'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.Notion" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO notion (id, "type", infosource_id, warning_id) VALUES
+                ('49a3169d-73af-483e-9caa-2527a9be3ac6'::uuid, 'INFOSOURCE', 'c3f44a0d-8b8a-4619-bebf-d6de68ed8a9e'::uuid, null),
+                ('5850867f-86d0-4047-b1d0-64d3a93ae278'::uuid, 'INFOSOURCE', '75bbd4d7-14af-4873-acc4-7b713df133fe'::uuid, null),
+                ('79fd0924-4f7d-4160-8561-36e083cd65bd'::uuid, 'WARNING', null, 'c40ce071-461a-4815-a71e-18a7c242a9d3'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.FolderNotion" author="w118853">
+        <sql stripComments="true">
+            INSERT INTO folder_notion (folder_id, notion_id) VALUES
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '49a3169d-73af-483e-9caa-2527a9be3ac6'::uuid),
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '5850867f-86d0-4047-b1d0-64d3a93ae278'::uuid),
+                ('f09a5a4a-7cd1-438f-8751-4db077dea736'::uuid, '79fd0924-4f7d-4160-8561-36e083cd65bd'::uuid);
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.MaritimeService" author="w118853">
+        <sql stripComments="true">
+            UPDATE maritime_service SET folder_manager = false WHERE id = '69a6e75d-4b15-41e6-a65a-dc739f8e7d36';
+            UPDATE maritime_service SET folder_manager = false WHERE id = 'cd2aa150-110e-4cee-828c-c131da0a5706';
+            UPDATE maritime_service SET folder_manager = false WHERE id = '81110e40-c844-4f79-a87e-47749cb5b806';
+            UPDATE maritime_service SET folder_manager = true WHERE id = 'e0432b84-ee63-422c-9650-7428f5ec85f4';
+        </sql>
+    </changeSet>
+
+    <changeSet id="DB.Data.0.18.0.ProUser" author="w118853">
+        <sql stripComments="true">
+            UPDATE pro_user SET preferred_area_id = '9b2f2562-d02e-4717-8d6d-10655847d5fe' WHERE id = '69a6e75d-4b15-41e6-a65a-dc739f8e7d36';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
