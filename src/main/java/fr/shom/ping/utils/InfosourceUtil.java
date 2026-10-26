@@ -46,7 +46,7 @@ public final class InfosourceUtil {
 
     public static String buildNaturesOrderedArraySqlCase(String lang) {
         return "CASE infos.nature\n" +
-            (Locale.FRENCH.getLanguage().equals(lang) ?
+            ("es".equals(lang) ?
                 "WHEN 'PUBLICATION_ANOMALY' THEN 1\n" +
                     "WHEN 'MAP_ANOMALY' THEN 2\n" +
                     "WHEN 'GEOREGULATION' THEN 3\n" +
@@ -69,7 +69,7 @@ public final class InfosourceUtil {
 
     public static String buildStatusOrderedArraySqlCase(String lang) {
         return "CASE infos.status\n" +
-            (Locale.FRENCH.getLanguage().equals(lang) ?
+            ("es".equals(lang) ?
                 "WHEN 'DRAFT' THEN 1\n" +
                     "WHEN 'SENT' THEN 2\n" +
                     "WHEN 'OPENED' THEN 3\n" +

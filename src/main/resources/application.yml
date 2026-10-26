@@ -22,17 +22,17 @@ springdoc:
     path: /swagger-ui
 
 ping:
-  portal-url: http://localhost:4200
-  services-url: http://localhost:8082
+  portal-url: ${PING_PORTAL_URL:http://localhost:4200}
+  services-url: ${PING_SERVICES_URL:http://localhost:8180}
   shom-organization-info:
-    name: Shom
-    address: "13, rue du Chatellier - CS 92803 29228 BREST Cedex 2"
-    country: France
-    electronic-mail-address: "ping@shom.fr"
+    name: "Servicio de Hidrografía y Navegación (SHN)"
+    address: "Observatorio Naval Cagigal, La Planicie, Caracas"
+    country: Venezuela
+    electronic-mail-address: "shn@armada.mil.ve"
     function: information
     linkage: ${ping.portal-url}
-    resource-name: PING - The national nautical information platform
-  root-folder: c:/tmp/ping-api
+    resource-name: PISAC - Plataforma de información de seguridad acuática
+  root-folder: ${PING_ROOT_FOLDER:/tmp/pisac-api}
   upload-folder: ${ping.root-folder}/attachments
   temp-folder-for-archive-files: ${ping.root-folder}/archives
   generated-shapefile-folder: ${ping.root-folder}/shapefiles
@@ -59,24 +59,24 @@ ping:
     lock-time-at-least-for: PT5M
     lock-time-at-most-for: PT10M
   keycloak:
-    server-url: ${ping.services-url}/auth
+    server-url: ${ping.services-url}
     pool-size: 10
     public-realm:
       realm: ping-public
       admin-client:
         client-id: ping-admin
-        client-secret: XXX
+        client-secret: ${KEYCLOAK_PUBLIC_ADMIN_SECRET:CHANGE_ME}
       api-client:
         client-id: ping-api
-        client-secret: XXX
+        client-secret: ${KEYCLOAK_PUBLIC_API_SECRET:CHANGE_ME}
     pro-realm:
       realm: ping-pro
       admin-client:
         client-id: ping-admin
-        client-secret: XXX
+        client-secret: ${KEYCLOAK_PRO_ADMIN_SECRET:CHANGE_ME}
       api-client:
         client-id: ping-api
-        client-secret: XXX
+        client-secret: ${KEYCLOAK_PRO_API_SECRET:CHANGE_ME}
     roles:
       functional-admin: functional-admin
       service-user: service-user
@@ -92,6 +92,7 @@ ping:
   cors:
     allowed-origins:
       - ${ping.portal-url}
+      - http://localhost:4200
     allowed-methods:
       - GET
       - POST
@@ -110,8 +111,8 @@ ping:
   georegulations-cron-check-links:
     cron-value: 0 0 7,19 * * *
     email-recipient: XXX
-    email-subject: Géo-règlements avec des liens externes invalides
-    email-body-start: 'Les liens externes des géo-règlements listés ci-dessous sont invalides :'
+    email-subject: Regulaciones con enlaces externos inválidos
+    email-body-start: 'Los enlaces externos de las regulaciones listadas a continuación son inválidos :'
 
   notifications.connection:
     timeout: ${SSE_TIMEOUT:32400000}
@@ -129,16 +130,16 @@ ping:
     email-access-infosource-link: /infosource/tables/
 
   survey-external-analysis-mail:
-    email-subject: "Analyse Cartonaut terminée"
-    email-body-end-with-critical-probes: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut a trouvé des profondeurs très inférieures à celles indiquées sur les cartes. Il convient de signaler ces profondeurs sans délai.<br/><a href=\"{{link}}\">Voir le résultat</a> de l'analyse de Cartonaut, incluant la proposition de signalement."
-    email-body-end-without-critical-probe: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut n'a pas trouvé de profondeur très inférieures à celles indiquées sur les cartes.<br/><a href=\"{{link}}\">Voir le résultat</a> de l'analyse de Cartonaut."
-    email-body-end-with-failure: "Suite à votre demande de {{surveyType}} du {{dateTime}}, le robot Cartonaut n'a pas pu produire de résultat. Vous êtes invité(e) à vérifier si votre levé révèle des profondeurs dangereuses non portées sur les cartes marines. En cas de profondeurs dangereuses, rendez-vous à la rubrique <a href=\"{{link}}\">Contribuer/Nouvelle remontée d'information</a>."
+    email-subject: "Análisis Cartonaut terminado"
+    email-body-end-with-critical-probes: "Tras su solicitud de {{surveyType}} del {{dateTime}}, el robot Cartonaut ha encontrado profundidades muy inferiores a las indicadas en las cartas. Es necesario reportar estas profundidades sin demora.<br/><a href=\"{{link}}\">Ver el resultado</a> del análisis de Cartonaut, incluyendo la propuesta de reporte."
+    email-body-end-without-critical-probe: "Tras su solicitud de {{surveyType}} del {{dateTime}}, el robot Cartonaut no encontró profundidades muy inferiores a las indicadas en las cartas.<br/><a href=\"{{link}}\">Ver el resultado</a> del análisis de Cartonaut."
+    email-body-end-with-failure: "Tras su solicitud de {{surveyType}} del {{dateTime}}, el robot Cartonaut no pudo producir un resultado. Le invitamos a verificar si su levantamiento revela profundidades peligrosas no indicadas en las cartas marinas. En caso de profundidades peligrosas, diríjase a la sección <a href=\"{{link}}\">Contribuir/Nuevo reporte de información</a>."
     email-access-survey-link: /survey/tables/
     email-access-new-contribution-link: /infosource/choice
 
   gpx-disclaimer:
-    fr: "Mise en garde : ces données GPX générées depuis PING sont partielles et seulement destinées à faciliter l'intégration de la position de l'avertissement de navigation ou de l'avis aux navigateurs dans une carte numérique. L'intégralité des informations est disponible sur le portail PING."
-    en: "Disclaimer : these GPX data generated from PING are partial and only intended to facilitate the integration of the position of the navigation warning or notice to mariners into a digital map. The full information is available on the PING portal."
+    fr: "Advertencia: estos datos GPX generados desde PISAC son parciales y solo están destinados a facilitar la integración de la posición de la advertencia de navegación o aviso a los navegantes en una carta digital. La información completa está disponible en el portal PISAC."
+    en: "Disclaimer : these GPX data generated from PISAC are partial and only intended to facilitate the integration of the position of the navigation warning or notice to mariners into a digital map. The full information is available on the PISAC portal."
 
   upload-extensions:
     - csv
@@ -263,13 +264,24 @@ ping:
   cartonaut-sftp-root-relative-path: /chemin/relatif/sftp_cartonaut
   keystore:
     path: secom/secom_keystore.jks
-    password: XXX
+    password: ${KEYSTORE_PASSWORD:CHANGE_ME}
     s100:
       alias-ca: s100_root
-      alias-shom: shom
+      alias-shom: shn
     secom:
       alias-ca: secom_root
       alias-secom: ping_secom
+
+  cartography:
+    storage-base-path: ${CARTOGRAPHY_STORAGE_PATH:db/geotiff}
+    temp-path: ${CARTOGRAPHY_TEMP_PATH:/tmp/pisac-cartography}
+    geoserver-url: ${GEOSERVER_URL:http://localhost:8082/geoserver}
+    geoserver-user: ${GEOSERVER_USER:CHANGE_ME}
+    geoserver-password: ${GEOSERVER_PASSWORD:CHANGE_ME}
+    geoserver-workspace: ${GEOSERVER_WORKSPACE:pisac_shn}
+    geoserver-layer-group: ${GEOSERVER_LAYER_GROUP:cartografia_ve}
+    docker-image: ${GDAL_DOCKER_IMAGE:ghcr.io/osgeo/gdal:ubuntu-full-latest}
+    pdf-dpi: ${CARTOGRAPHY_PDF_DPI:300}
 
 kafka:
   bootstrapAddress: ${KAFKA_BOOTSTRAP_ADDRESS:localhost:9092}
@@ -287,10 +299,30 @@ kafka:
   survey-external-analysis-notification-topic-name: pingEmailTopic
 
 keycloak:
-  ssl-required: external
-  use-resource-role-mappings: true
-  bearer-only: true
+  server-url: ${ping.services-url}
+  pool-size: 10
+  public-realm:
+    realm: ping-public
+    admin-client:
+      client-id: ping-admin
+      client-secret: ${KEYCLOAK_PUBLIC_ADMIN_SECRET:CHANGE_ME}
+    api-client:
+      client-id: ping-api
+      client-secret: ${KEYCLOAK_PUBLIC_API_SECRET:CHANGE_ME}
+  pro-realm:
+    realm: ping-pro
+    admin-client:
+      client-id: ping-admin
+      client-secret: ${KEYCLOAK_PRO_ADMIN_SECRET:CHANGE_ME}
+    api-client:
+      client-id: ping-api
+      client-secret: ${KEYCLOAK_PRO_API_SECRET:CHANGE_ME}
+  roles:
+    functional-admin: functional-admin
+    service-user: service-user
   principal-attribute: preferred_username
+  pro-issuer-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.pro-realm.realm}
+  public-issuer-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.public-realm.realm}
 
 spring:
   security:
@@ -351,8 +383,8 @@ spring:
     serialization:
       fail-on-empty-beans: false
   servlet.multipart:
-    max-file-size: 5MB
-    max-request-size: 5MB
+    max-file-size: 500MB
+    max-request-size: 500MB
   quartz:
     job-store-type: jdbc
     jdbc:
@@ -425,38 +457,57 @@ ping:
 ---
 spring:
   config:
-    activate:
-      on-profile: local
-
+    import: optional:file:.env[.properties]
+  profiles:
+    active: local
+  kafka:
+    bootstrap-servers: ""
+    listener:
+      auto-startup: false
   sql:
     init:
       platform: postgres
   datasource:
-    url: jdbc:postgresql://localhost:5432/ping-api
-    username: ping-api
-    password: ping-api
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ping-api}
+    username: ${POSTGRES_USER:ping-api}
+    password: ${POSTGRES_PASSWORD:CHANGE_ME}
+    driver-class-name: org.postgresql.Driver
   jpa:
-    show-sql: true
-
-  liquibase:
-    contexts: local
-
+    show-sql: true 
 logging:
   level:
     org:
       springframework:
         security: trace
         jdbc.core: trace
+        kafka: INFO
       keycloak: debug
       hibernate:
         type.descriptor.sql.BasicBinder: trace
     fr.shom.ping: debug
-
+    org.apache.kafka: INFO
 ping:
   proxy:
     use-proxy: false
-  #enable-bathy-dangers-integration: true
-
+  cors:
+    allowed-origins:
+      - ${ping.portal-url}
+      - http://localhost:4200
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Content-Type
+      - Content-Disposition
+      - Authorization
+    allow-credentials: true
+    exposed-headers:  # <--- Fíjate que esté alineado con 'allow-credentials'
+      - Content-Disposition
+  cartography:
+    temp-path: ${CARTOGRAPHY_TEMP_PATH:C:/tmp/pisac-cartography}
 ---
 spring:
   config:
@@ -467,9 +518,9 @@ spring:
     init:
       platform: postgres
   datasource:
-    url: jdbc:postgresql://localhost:5432/ping-api-prod?currentSchema=ping_api
-    username: ping-api
-    password: ping-api
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ping-api-prod?currentSchema=ping_api}
+    username: ${POSTGRES_USER:ping-api}
+    password: ${POSTGRES_PASSWORD:CHANGE_ME}
   jpa:
     show-sql: true
     hibernate:
@@ -486,10 +537,6 @@ logging:
       hibernate:
         type.descriptor.sql.BasicBinder: trace
     fr.shom.ping: debug
-
-ping:
-  proxy:
-    use-proxy: false
 
 ---
 spring:
@@ -523,7 +570,7 @@ logging:
 ping:
   portal-url: https://${PING_PORTAL_URL}
   services-url: https://${PING_SERVICES_EXT_URL}
-  root-folder: /DATA/ping/api
+  root-folder: /DATA/pisac/api
   proxy:
     proxy-host: ${PROXY_HOST}
     proxy-port: ${PROXY_PORT}

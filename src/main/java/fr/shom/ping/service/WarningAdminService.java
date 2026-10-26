@@ -240,11 +240,9 @@ public class WarningAdminService {
         warning.setProductionAgency(serie.getMaritimeService().getProductionAgency());
         warning.setGeneralAreas(new TreeSet<>(generalAreas));
 
-        // if serie maritime service is a s124 data producer, set s124 identifier and ohi producer code
-        if (serie.getMaritimeService().isS124DataProducer()) {
-            warning.setSerieS124Identifier(serie.getS124Identifier());
-            warning.setMaritimeServiceihoProducerCode(serie.getMaritimeService().getIhoProducerCode());
-        }
+        // Always inherit S124 configuration from serie to prevent nulls
+        warning.setSerieS124Identifier(serie.getS124Identifier());
+        warning.setMaritimeServiceihoProducerCode(serie.getMaritimeService().getIhoProducerCode());
 
         // Check localities against general areas of serie
         List<WarningLocalityNames> localities = newArrayList(getLocalities(warningCreateDto, generalAreas));
@@ -717,6 +715,9 @@ public class WarningAdminService {
         }
 
         // copy properties
+        warning.setSerieS124Identifier(serie.getS124Identifier());
+        warning.setMaritimeServiceihoProducerCode(serie.getMaritimeService().getIhoProducerCode());
+        
         warning.setWarningHazardTypeGeneral(warningUpdateDto.getTypeGeneral());
         warning.setEstimatedPublicationDate(warningUpdateDto.getEstimatedPublicationDate());
         warning.setReviewDate(warningUpdateDto.getReviewDate());
@@ -836,6 +837,10 @@ public class WarningAdminService {
         if (warning.getStatus() != PUBLISHED) {
             throw new BadRequestException("Warning must be in PUBLISHED status");
         }
+
+        // Always inherit S124 configuration from serie to prevent nulls
+        warning.setSerieS124Identifier(warning.getSerie().getS124Identifier());
+        warning.setMaritimeServiceihoProducerCode(warning.getSerie().getMaritimeService().getIhoProducerCode());
 
         // update references
         Set<WarningReference> warningReferences = warning.getWarningReferences().stream()

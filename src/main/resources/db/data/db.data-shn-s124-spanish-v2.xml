@@ -1,0 +1,1340 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.Warning_Hazard_Types.Spanish.V2" author="antigravity">
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Grabador Acústico"/>
+            <where>enum_name = 'ACOUSTIC_RECORDER'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Transmisor AIS Funcionando Correctamente"/>
+            <where>enum_name = 'AIS_TRANSMITTER_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Transmisor AIS Fuera de Servicio"/>
+            <where>enum_name = 'AIS_TRANSMITTER_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRANSMITTER_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRANSMITTER_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Transmisor AIS Poco Fiable"/>
+            <where>enum_name = 'AIS_TRANSMITTER_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRASMITTER_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRASMITTER_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Todas las Ayudas a la Navegación son Poco Fiables"/>
+            <where>enum_name = 'ALL_AIDS_TO_NAVIGATION_NOT_RELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio Anticontaminación"/>
+            <where>enum_name = 'ANTI_POLLUTION_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación Anticontaminación"/>
+            <where>enum_name = 'ANTI_POLLUTION_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Sitio de Acuicultura"/>
+            <where>enum_name = 'AQUACULTURE_SITE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="AtoN Funcionando Correctamente"/>
+            <where>enum_name = 'ATON_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Señal Sonora Funcionando Correctamente"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Señal Sonora Fuera de Servicio"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación Temporal de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Información de Ruta de Hielo Autorizada"/>
+            <where>enum_name = 'AUTHORIZED_ICE_ROUTING_INFORMATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Baliza"/>
+            <where>enum_name = 'BEACON_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Dañada"/>
+            <where>enum_name = 'BEACON_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Diurna de Baliza Poco Fiable"/>
+            <where>enum_name = 'BEACON_DAYMARK_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Baliza"/>
+            <where>enum_name = 'BEACON_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Desaparecida"/>
+            <where>enum_name = 'BEACON_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de Baliza"/>
+            <where>enum_name = 'BEACON_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Restaurada a la Normalidad"/>
+            <where>enum_name = 'BEACON_RESTORED_TO_NORMAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Baliza"/>
+            <where>enum_name = 'BEACON_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Baliza"/>
+            <where>enum_name = 'BEACON_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación Temporal de Baliza"/>
+            <where>enum_name = 'BEACON_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Superior de Baliza Dañada"/>
+            <where>enum_name = 'BEACON_TOPMARK_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Superior de Baliza Desaparecida"/>
+            <where>enum_name = 'BEACON_TOPMARK_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Voladura"/>
+            <where>enum_name = 'BLASTING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Construcción de Rompeolas"/>
+            <where>enum_name = 'BREAKWATER_CONSTRUCTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Espacio Libre Horizontal del Puente"/>
+            <where>enum_name = 'BRIDGE_HORIZ_CLEAR_CHG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Puente Incapaz de Cerrar"/>
+            <where>enum_name = 'BRIDGE_UNABLE_CLOSE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Puente Incapaz de Abrir"/>
+            <where>enum_name = 'BRIDGE_UNABLE_OPEN'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Espacio Libre Vertical del Puente"/>
+            <where>enum_name = 'BRIDGE_VERT_CLEAR_CHG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya a la Deriva"/>
+            <where>enum_name = 'BUOY_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Boya"/>
+            <where>enum_name = 'BUOY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Dañada"/>
+            <where>enum_name = 'BUOY_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Diurna de Boya Poco Fiable"/>
+            <where>enum_name = 'BUOY_DAYMARK_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Retirada por Invierno"/>
+            <where>enum_name = 'BUOY_DECOMMISSIONED_FOR_WINTER'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Destruida"/>
+            <where>enum_name = 'BUOY_DESTROYED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Boya"/>
+            <where>enum_name = 'BUOY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Levantada por Invierno"/>
+            <where>enum_name = 'BUOY_LIFTED_FOR_WINTER'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Desaparecida"/>
+            <where>enum_name = 'BUOY_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Movimiento de Boya"/>
+            <where>enum_name = 'BUOY_MOVE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Fuera de Posición"/>
+            <where>enum_name = 'BUOY_OFF_POSITION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Restablecida"/>
+            <where>enum_name = 'BUOY_RE_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Recomisionada para la Temporada de Navegación"/>
+            <where>enum_name = 'BUOY_RECOMMISSIONED_FOR_NAVIGATION_SEASON'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de Boya"/>
+            <where>enum_name = 'BUOY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Reemplazada por Boya Ciega de Invierno"/>
+            <where>enum_name = 'BUOY_REPLACED_BY_WINTER_SPAR'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Restaurada a la Normalidad"/>
+            <where>enum_name = 'BUOY_RESTORED_TO_NORMAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Boya"/>
+            <where>enum_name = 'BUOY_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Boya"/>
+            <where>enum_name = 'BUOY_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación Temporal de Boya"/>
+            <where>enum_name = 'BUOY_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Superior de Boya Dañada"/>
+            <where>enum_name = 'BUOY_TOPMARK_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Superior de Boya Desaparecida"/>
+            <where>enum_name = 'BUOY_TOPMARK_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="La Boya será Retirada"/>
+            <where>enum_name = 'BUOY_WILL_BE_WITHDRAWN'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Retirada"/>
+            <where>enum_name = 'BUOY_WITHDRAWN'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Tendido de Cables"/>
+            <where>enum_name = 'CABLE_LAYING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Chayka Funcionando Correctamente"/>
+            <where>enum_name = 'CHAYKA_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Chayka Fuera de Servicio"/>
+            <where>enum_name = 'CHAYKA_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación Chayka"/>
+            <where>enum_name = 'CHAYKA_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación Chayka"/>
+            <where>enum_name = 'CHAYKA_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Chayka Poco Fiable"/>
+            <where>enum_name = 'CHAYKA_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Agrupación de Barcos de Pesca"/>
+            <where>enum_name = 'CLUSTER_OF_FISHING_VESSELS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Contenedor a la Deriva"/>
+            <where>enum_name = 'CONTAINER_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Naufragio Peligroso"/>
+            <where>enum_name = 'DANGEROUS_WRECK'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Tronco Muerto a la Deriva"/>
+            <where>enum_name = 'DEAD_HEAD_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ballena Muerta a la Deriva"/>
+            <where>enum_name = 'DEAD_WHALE_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación Abandonada a la Deriva"/>
+            <where>enum_name = 'DERELICT_VESSEL_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGLONASS Funcionando Correctamente"/>
+            <where>enum_name = 'DGLONASS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGLONASS Fuera de Servicio"/>
+            <where>enum_name = 'DGLONASS_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de la Estación DGLONASS"/>
+            <where>enum_name = 'DGLONASS_STATION_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGLONASS Poco Fiable"/>
+            <where>enum_name = 'DGLONASS_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGPS Funcionando Correctamente"/>
+            <where>enum_name = 'DGPS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGPS Fuera de Servicio"/>
+            <where>enum_name = 'DGPS_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de la Estación DGPS"/>
+            <where>enum_name = 'DGPS_STATION_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación DGPS"/>
+            <where>enum_name = 'DGPS_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación DGPS"/>
+            <where>enum_name = 'DGPS_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="DGPS Poco Fiable"/>
+            <where>enum_name = 'DGPS_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones de Buceo"/>
+            <where>enum_name = 'DIVING_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Muelle a la Deriva"/>
+            <where>enum_name = 'DOCK_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Dragado"/>
+            <where>enum_name = 'DREDGING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Plataforma de Perforación Remolcada"/>
+            <where>enum_name = 'DRILL_RIG_UNDER_TOW'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones en el Sitio de Perforación"/>
+            <where>enum_name = 'DRILLING_SITE_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="E-Chayka Funcionando Correctamente"/>
+            <where>enum_name = 'E_CHAYKA_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="E-Chayka Fuera de Servicio"/>
+            <where>enum_name = 'E_CHAYKA_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Estación E-Chayka"/>
+            <where>enum_name = 'E_CHAYKA_STATION_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación E-Chayka"/>
+            <where>enum_name = 'E_CHAYKA_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación E-Chayka"/>
+            <where>enum_name = 'E_CHAYKA_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="E-Chayka Poco Fiable"/>
+            <where>enum_name = 'E_CHAYKA_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Servicio EGC MSI"/>
+            <where>enum_name = 'EGC_MSI_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="EGNOS Funcionando Correctamente"/>
+            <where>enum_name = 'EGNOS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="EGNOS Fuera de Servicio"/>
+            <where>enum_name = 'EGNOS_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Estación EGNOS"/>
+            <where>enum_name = 'EGNOS_STATION_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación EGNOS"/>
+            <where>enum_name = 'EGNOS_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación EGNOS"/>
+            <where>enum_name = 'EGNOS_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="EGNOS Poco Fiable"/>
+            <where>enum_name = 'EGNOS_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="ELORAN Funcionando Correctamente"/>
+            <where>enum_name = 'ELORAN_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="ELORAN Fuera de Servicio"/>
+            <where>enum_name = 'ELORAN_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Estación ELORAN"/>
+            <where>enum_name = 'ELORAN_STATION_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación ELORAN"/>
+            <where>enum_name = 'ELORAN_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación ELORAN"/>
+            <where>enum_name = 'ELORAN_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="ELORAN Poco Fiable"/>
+            <where>enum_name = 'ELORAN_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Zona de Exclusión"/>
+            <where>enum_name = 'EXCLUSION_ZONES'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Dispositivo Explosivo"/>
+            <where>enum_name = 'EXPLOSIVE_DEVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marcador de Canal Dañado"/>
+            <where>enum_name = 'FAIRWAY_MARKER_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marcador de Canal Destruido"/>
+            <where>enum_name = 'FAIRWAY_MARKER_DESTROYED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marcador de Canal - Luz No Sincronizada"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marcador de Canal - Luz Apagada"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marcador de Canal - Luz Poco Fiable"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Peligro de Lluvia Radiactiva"/>
+            <where>enum_name = 'FALLOUT_HAZARD'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Fuegos Artificiales"/>
+            <where>enum_name = 'FIREWORKS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio de Tiro"/>
+            <where>enum_name = 'FIRING_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Dispositivo Agregador de Peces"/>
+            <where>enum_name = 'FISH_AGGREGATING_DEVICE_FAD'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Red de Pesca a la Deriva"/>
+            <where>enum_name = 'FISH_NET_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Escombros Flotantes"/>
+            <where>enum_name = 'FLOATING_DEBRIS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Iluminada - Apagada"/>
+            <where>enum_name = 'FLOODLIT_BEACON_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en la Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Señal de Niebla Funcionando Correctamente"/>
+            <where>enum_name = 'FOG_SIGNAL_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Señal de Niebla Fuera de Servicio"/>
+            <where>enum_name = 'FOG_SIGNAL_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retiro Temporal de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Anterior Poco Fiable"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_BEACON_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Anterior Restaurada"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Alcance de la Luz Anterior Reducido"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Anterior Apagada"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Anterior Poco Fiable"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="La Luz Anterior Funciona Correctamente"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Anterior Sin Ritmo"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Degradación GNSS"/>
+            <where>enum_name = 'GNSS_DEGRADATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Área Peligrosa"/>
+            <where>enum_name = 'HAZARDOUS_AREA'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Servicio HF"/>
+            <where>enum_name = 'HF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nivel Alto de Agua"/>
+            <where>enum_name = 'HIGH_WATER_LEVEL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Espacio Libre Horizontal Reducido"/>
+            <where>enum_name = 'HORIZ_CLEAR_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Actividad de Levantamiento Hidrográfico"/>
+            <where>enum_name = 'HYDROGRAPHIC_SURVEY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Barrera de Hielo - Instalación o Retiro"/>
+            <where>enum_name = 'ICE_BOOM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Zona de Control de Hielo En Vigor o Desactivada"/>
+            <where>enum_name = 'ICE_CONTROL_ZONE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Iceberg Fuera de los Límites Anunciados"/>
+            <where>enum_name = 'ICEBERG_OUTSIDE_OF_ADVERTISED_LIMIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio de Interferencia (Jamming)"/>
+            <where>enum_name = 'JAMMING_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luces Anterior y Posterior Fuera de Sincronización"/>
+            <where>enum_name = 'LEADING_RANGE_LIGHTS_OUT_OF_SYNCHRONIZATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Luminosa - Luz Dañada"/>
+            <where>enum_name = 'LIGHT_BUOY_LIGHT_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Luminosa - Luz No Sincronizada"/>
+            <where>enum_name = 'LIGHT_BUOY_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Luminosa - Luz Apagada"/>
+            <where>enum_name = 'LIGHT_BUOY_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Luminosa - Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHT_BUOY_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Luz"/>
+            <where>enum_name = 'LIGHT_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Diurna Luminosa Poco Fiable"/>
+            <where>enum_name = 'LIGHT_DAYMARK_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de Luz"/>
+            <where>enum_name = 'LIGHT_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Funcionando Correctamente"/>
+            <where>enum_name = 'LIGHT_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Fuera de Sincronización"/>
+            <where>enum_name = 'LIGHT_OUT_OF_SYNCHRONIZATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Alcance de la Luz Reducido"/>
+            <where>enum_name = 'LIGHT_RANGE_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Restablecimiento de Luz"/>
+            <where>enum_name = 'LIGHT_RE_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de Luz"/>
+            <where>enum_name = 'LIGHT_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Luminosa - Luz Dañada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Luminosa - Luz No Sincronizada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Luminosa - Luz Apagada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Luminosa - Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Luz"/>
+            <where>enum_name = 'LIGHT_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de Luz"/>
+            <where>enum_name = 'LIGHT_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retiro Temporal de Luz"/>
+            <where>enum_name = 'LIGHT_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Apagada"/>
+            <where>enum_name = 'LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Sin Ritmo"/>
+            <where>enum_name = 'LIGHT_WITHOUT_RHYTHM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Iluminada - Luz Dañada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Iluminada - Luz No Sincronizada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Iluminada - Luz Apagada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Iluminada - Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Aviso de la Autoridad Sanitaria Local"/>
+            <where>enum_name = 'LOCAL_HEALTH_AUTHORITY_NOTICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Esclusa Cerrada"/>
+            <where>enum_name = 'LOCK_CLOSED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Tronco a la Deriva"/>
+            <where>enum_name = 'LOG_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Barrera de Troncos a la Deriva"/>
+            <where>enum_name = 'LOG_BOOM_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Aparejos de Pesca Largos"/>
+            <where>enum_name = 'LONG_FISHING_GEAR'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="LORAN C - Funcionando Correctamente"/>
+            <where>enum_name = 'LORAN_C_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="LORAN C - Fuera de Servicio"/>
+            <where>enum_name = 'LORAN_C_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="LORAN C - Poco Fiable"/>
+            <where>enum_name = 'LORAN_C_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada de la Estación LORAN C"/>
+            <where>enum_name = 'LORAN_C_STATION_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retirada Temporal de la Estación LORAN C"/>
+            <where>enum_name = 'LORAN_C_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nivel Bajo de Agua"/>
+            <where>enum_name = 'LOW_WATER_LEVEL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ayudas Marinas a la Navegación Poco Fiables"/>
+            <where>enum_name = 'MARINE_AIDS_TO_NAVIGATION_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Mamíferos Marinos"/>
+            <where>enum_name = 'MARINE_MAMMALS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en el Nivel de Seguridad Marítima"/>
+            <where>enum_name = 'MARITIME_SECURITY_LEVEL_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Servicio MF"/>
+            <where>enum_name = 'MF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio Militar"/>
+            <where>enum_name = 'MILITARY_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación Militar"/>
+            <where>enum_name = 'MILITARY_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Minas Navales"/>
+            <where>enum_name = 'MINES'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Servicios MSI"/>
+            <where>enum_name = 'MSI_SERVICES'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Aviso de la Autoridad Sanitaria Nacional"/>
+            <where>enum_name = 'NATIONAL_HEALTH_AUTHORITY_NOTICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en el Servicio NAVTEX"/>
+            <where>enum_name = 'NAVTEX'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Numerosos Barcos de Pesca"/>
+            <where>enum_name = 'NUMEROUS_FISHING_VESSELS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Objeto a la Deriva"/>
+            <where>enum_name = 'OBJECT_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en Plataformas o Equipos en Alta Mar"/>
+            <where>enum_name = 'OFFSHORE_RIGS_PLATFORM_CHG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre del Puerto"/>
+            <where>enum_name = 'OPEN_CLOSE_HARBOUR'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre del Puente Giratorio"/>
+            <where>enum_name = 'OPEN_CLOSE_SWING_BRIDGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre de Vías Navegables"/>
+            <where>enum_name = 'OPEN_CLOSE_WATERWAY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Cables"/>
+            <where>enum_name = 'OPERATION_ON_CABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Tuberías"/>
+            <where>enum_name = 'OPERATION_ON_PIPE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Tendido de Tuberías"/>
+            <where>enum_name = 'PIPE_LAYING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de RACON"/>
+            <where>enum_name = 'RACON_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de RACON"/>
+            <where>enum_name = 'RACON_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RACON Funcionando Correctamente"/>
+            <where>enum_name = 'RACON_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RACON Fuera de Servicio"/>
+            <where>enum_name = 'RACON_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de RACON"/>
+            <where>enum_name = 'RACON_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de RACON"/>
+            <where>enum_name = 'RACON_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de RACON"/>
+            <where>enum_name = 'RACON_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retiro Temporal de RACON"/>
+            <where>enum_name = 'RACON_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RACON Poco Fiable"/>
+            <where>enum_name = 'RACON_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en el Servicio del Sistema de Vigilancia Radar"/>
+            <where>enum_name = 'RADAR_SURVEILLANCE_SYSTEM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de RAMARK"/>
+            <where>enum_name = 'RAMARK_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de RAMARK"/>
+            <where>enum_name = 'RAMARK_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RAMARK Funcionando Correctamente"/>
+            <where>enum_name = 'RAMARK_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RAMARK Fuera de Servicio"/>
+            <where>enum_name = 'RAMARK_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de RAMARK"/>
+            <where>enum_name = 'RAMARK_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de RAMARK"/>
+            <where>enum_name = 'RAMARK_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retiro Temporal de RAMARK"/>
+            <where>enum_name = 'RAMARK_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="RAMARK Poco Fiable"/>
+            <where>enum_name = 'RAMARK_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de RAMARK"/>
+            <where>enum_name = 'RAMARKREMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Posterior Poco Fiable"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_BEACON_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Posterior Restaurada"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Alcance de la Luz Posterior Reducido"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior Apagada"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_LIGHT_UNLIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior Poco Fiable"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_UNRELIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="La Luz Posterior Funciona Correctamente"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior Sin Ritmo"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Regata o Carrera"/>
+            <where>enum_name = 'REGATTA_RACE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Regulación Nueva o Modificada"/>
+            <where>enum_name = 'REGULATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en Parque o Dispositivo de Energía Renovable"/>
+            <where>enum_name = 'RENEWABLE_ENERGY_DEVICE_FARM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en el Área Restringida"/>
+            <where>enum_name = 'RESTRICTED_AREA'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en Barra de Arena o Lengua de Arena"/>
+            <where>enum_name = 'SANDSPIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio SAR"/>
+            <where>enum_name = 'SAR_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación SAR"/>
+            <where>enum_name = 'SAR_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Científica a la Deriva"/>
+            <where>enum_name = 'SCIENTIFIC_BUOY_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Equipo Científico"/>
+            <where>enum_name = 'SCIENTIFIC_BUOY_APPARATUS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Amarres Científicos"/>
+            <where>enum_name = 'SCIENTIFIC_MOORING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Levantamiento Científico"/>
+            <where>enum_name = 'SCIENTIFIC_SURVEY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Pruebas en el Mar"/>
+            <where>enum_name = 'SEA_TRIALS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Hidroaviones"/>
+            <where>enum_name = 'SEAPLANE_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Desmantelamiento Estacional Completo"/>
+            <where>enum_name = 'SEASONAL_DECOMMISSIONING_COMPLETE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Desmantelamiento Estacional en Progreso"/>
+            <where>enum_name = 'SEASONAL_DECOMMISSIONING_IN_PROGRESS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Puesta en Servicio Estacional Completa"/>
+            <where>enum_name = 'SEASONAL_RECOMMISSIONING_COMPLETE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Puesta en Servicio Estacional en Progreso"/>
+            <where>enum_name = 'SEASONAL_RECOMMISSIONING_IN_PROGRESS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz de Sector - Sector Oscurecido"/>
+            <where>enum_name = 'SECTOR_LIGHT_SECTOR_OBSCURED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Luz de Sector"/>
+            <where>enum_name = 'SECTOR_LIGHT_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de Luz de Sector"/>
+            <where>enum_name = 'SECTOR_LIGHT_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Regulación de Seguridad"/>
+            <where>enum_name = 'SECURITY_REGULATION_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Levantamiento Sísmico"/>
+            <where>enum_name = 'SEISMIC_SURVEY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Superficial Reportada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_REPORTED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Superficial Confirmada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_CONFIRMED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega a la Deriva"/>
+            <where>enum_name = 'SPAR_BUOY_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Dañada"/>
+            <where>enum_name = 'SPAR_BUOY_DAMAGED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Destruida"/>
+            <where>enum_name = 'SPAR_BUOY_DESTROYED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Desaparecida"/>
+            <where>enum_name = 'SPAR_BUOY_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Movimiento de Boya Ciega"/>
+            <where>enum_name = 'SPAR_BUOY_MOVE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Fuera de Posición"/>
+            <where>enum_name = 'SPAR_BUOY_OFF_POSITION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Restablecida"/>
+            <where>enum_name = 'SPAR_BUOY_RE_ESTABLISMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Restaurada a la Normalidad"/>
+            <where>enum_name = 'SPAR_BUOY_RESTORED_TO_NORMAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca Superior de Boya Ciega Desaparecida"/>
+            <where>enum_name = 'SPAR_BUOY_TOPMARK_MISSING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Ciega Retirada"/>
+            <where>enum_name = 'SPAR_BUOY_WITHDRAWN'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marea de Tempestad"/>
+            <where>enum_name = 'STORM_SURGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en Cable Submarino"/>
+            <where>enum_name = 'SUBMARINE_CABLE_CHG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en Tubería Submarina"/>
+            <where>enum_name = 'SUBMARINE_PIPELINE_CHG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Red de Pesca Sumergida"/>
+            <where>enum_name = 'SUBMERGED_FISH_NET'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Objeto Sumergido"/>
+            <where>enum_name = 'SUBMERGED_OBJECT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Amarre Subacuático"/>
+            <where>enum_name = 'SUBSURFACE_MOORING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nadadores"/>
+            <where>enum_name = 'SWIMMERS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Balizamiento Temporal"/>
+            <where>enum_name = 'TEMPORARY_BUOY_BUOYS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Mareógrafo"/>
+            <where>enum_name = 'TIDE_GAUGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Congestión de Tráfico"/>
+            <where>enum_name = 'TRAFFIC_CONGESTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Alerta de Tsunami"/>
+            <where>enum_name = 'TSUNAMI_WARNING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Roca No Cartografiada"/>
+            <where>enum_name = 'UNCHARTED_ROCK'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones Submarinas"/>
+            <where>enum_name = 'UNDERWATER_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Objetivo Radar No Identificado - Posible Iceberg"/>
+            <where>enum_name = 'UNIDENTIFIED_RADAR_TARGET_POSSIBLE_ICEBERG'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remolque Difícil de Manejar"/>
+            <where>enum_name = 'UNWIELDY_TOW'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de V-AIS"/>
+            <where>enum_name = 'V_AIS_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento de V-AIS"/>
+            <where>enum_name = 'V_AIS_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="V-AIS Funcionando Correctamente"/>
+            <where>enum_name = 'V_AIS_OPERATING_PROPERLY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="V-AIS Fuera de Servicio"/>
+            <where>enum_name = 'V_AIS_OUT_OF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Eliminación de V-AIS"/>
+            <where>enum_name = 'V_AIS_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio Temporal de V-AIS"/>
+            <where>enum_name = 'V_AIS_TEMPORARY_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Establecimiento Temporal de V-AIS"/>
+            <where>enum_name = 'V_AIS_TEMPORARY_ESTABLISHMENT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Retiro Temporal de V-AIS"/>
+            <where>enum_name = 'V_AIS_TEMPORARY_REMOVAL'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="V-AIS Poco Fiable"/>
+            <where>enum_name = 'V_AIS_UNREALIABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Espacio Libre Vertical Reducido"/>
+            <where>enum_name = 'VERTICAL_CLEARANCE_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación a la Deriva"/>
+            <where>enum_name = 'VESSEL_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación Desactivada"/>
+            <where>enum_name = 'VESSEL_DISABLED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en el Servicio VHF"/>
+            <where>enum_name = 'VHF_SERVICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Actividad Volcánica"/>
+            <where>enum_name = 'VOLCANO_ACTIVITY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio VTS"/>
+            <where>enum_name = 'VTS_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Vía Navegable Recomendada o No Recomendada Para Embarcaciones"/>
+            <where>enum_name = 'WATERWAY_RECOMMENDED_NOT_RECOMMENDED_FOR_SHIPPING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Construcción de Muelle"/>
+            <where>enum_name = 'WHARF_CONSTRUCTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Obras en Curso"/>
+            <where>enum_name = 'WORKS_IN_PROGRESS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Aviso de la Organización Mundial de la Salud"/>
+            <where>enum_name = 'WORLD_HEALTH_ORGANIZATION_NOTICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Peligros a la Deriva"/>
+            <where>enum_name = 'DRIFTING_HAZARDS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Peligros Descubiertos Recientemente"/>
+            <where>enum_name = 'NEWLY_DISCOVERED_DANGERS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Cambio de Instrumentos Científicos"/>
+            <where>enum_name = 'SCIENTIFIC_INSTRUMENTS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Cambio de Ruta"/>
+            <where>enum_name = 'ROUTING_INFORMATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Obras"/>
+            <where>enum_name = 'WORKS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Operaciones Especiales"/>
+            <where>enum_name = 'SPECIAL_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Operaciones de Remolque"/>
+            <where>enum_name = 'TOWING_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Otros Peligros"/>
+            <where>enum_name = 'HAZARD_OTHER'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Piratería o Robo"/>
+            <where>enum_name = 'PIRACY'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Instalaciones de Acuicultura y Pesca"/>
+            <where>enum_name = 'AQUACULTURE_AND_FISHING_INSTALLATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Infraestructura Offshore"/>
+            <where>enum_name = 'OFFSHORE_STRUCTURES'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Lista de Plataformas"/>
+            <where>enum_name = 'RIG_LIST'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Cambios en Ayudas a la Navegación"/>
+            <where>enum_name = 'AIDS_TO_NAVIGATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Cambio de Servicio de Comunicación o Radiodifusión"/>
+            <where>enum_name = 'RADIO_SERVICES'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Fenómenos Naturales Peligrosos"/>
+            <where>enum_name = 'NATURAL_PHENOMENA'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Información sobre Hielo"/>
+            <where>enum_name = 'ICE'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Avisos de Salud"/>
+            <where>enum_name = 'HEALTH_ADVISORY'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Cambio en el Requisito de Seguridad"/>
+            <where>enum_name = 'SECURITY'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Anomalías Operativas del ECDIS, Incluyendo Problemas de Datos Oficiales"/>
+            <where>enum_name = 'ECDIS_OPERATING_ANOMALIES_INCLUDING_OFFICIAL_DATA_ISSUES'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Boletín en Vigor"/>
+            <where>enum_name = 'IN_FORCE_BULLETIN'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="En curso"/>
+            <where>enum_name = 'IN_PROGRESS'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Hasta nuevo aviso"/>
+            <where>enum_name = 'UNTIL_FURTHER_NOTICE'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Se solicita amplio margen"/>
+            <where>enum_name = 'WIDE_BERTH_REQUESTED'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="--- margen de millas solicitado"/>
+            <where>enum_name = 'MILES_BERTH_REQUESTED'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Se aconseja a las embarcaciones mantenerse alejadas de"/>
+            <where>enum_name = 'VESSELS_KEEP_CLEAR'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Navegue con precaución"/>
+            <where>enum_name = 'NAVIGATE_WITH_CAUTION'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Navegue con precaución y a velocidad reducida"/>
+            <where>enum_name = 'REDUCED_SPEED'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Peligroso para la navegación"/>
+            <where>enum_name = 'HAZARDOUS_TO_NAVIGATION'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Área prohibida"/>
+            <where>enum_name = 'PROHIBITED_AREA'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Área restringida"/>
+            <where>enum_name = 'RESTRICTED_AREA'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Prohibida la pesca, la pesca de arrastre, el dragado, el fondeo y el buceo dentro de esta área"/>
+            <where>enum_name = 'ACTION_WITHIN_THIS_AREA'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Texto completo del decreto de la prefectura disponible en el sitio web de la prefectura marítima"/>
+            <where>enum_name = 'FULL_TEXT_PREFECTORAL'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Se debe respetar el decreto de la prefectura"/>
+            <where>enum_name = 'PREFECTORAL_RESPECTED'</where>
+        </update>
+        <update tableName="warning_type">
+            <column name="translation" value="Reportar cualquier información a"/>
+            <where>enum_name = 'REPORT_INFORMATION'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

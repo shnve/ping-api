@@ -36,7 +36,7 @@
             WHERE id = 'df0d9942-3371-4688-8705-a79ea37e546f';
 
             INSERT INTO public_user(id, keycloak_id, title, firstname, lastname, email, status, creation_date) VALUES
-            ('09d341c9-a509-41bb-9d1d-26cb10caa210', uuid_generate_v4(), 'MR', 'Public', 'User', 'public@user.fr', 'ENABLED', now());
+            ('09d341c9-a509-41bb-9d1d-26cb10caa210', uuid_generate_v4(), 'MR', 'Public', 'User', 'public@local.com', 'ENABLED', now());
 
             INSERT INTO warning_public_comment(id, warning_id, public_user_id, comment) VALUES
             (uuid_generate_v4(), 'df0d9942-3371-4688-8705-a79ea37e546f', '09d341c9-a509-41bb-9d1d-26cb10caa210', 'Ceci est un commentaire ajouté par un utilisateur grand public');

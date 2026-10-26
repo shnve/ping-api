@@ -44,7 +44,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @Component
 @Slf4j
 public final class S124Util {
-    public static final String DEFAULT_LANGUAGE = "fr";
+    public static final String DEFAULT_LANGUAGE = "es";
     public static final String INTERNATIONAL_LANGUAGE = "en";
     private static final GMLWriter GML_WRITER;
     private static final String SRS_NAME = "EPSG:3857";

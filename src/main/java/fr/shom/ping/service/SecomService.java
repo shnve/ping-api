@@ -93,7 +93,7 @@ public class SecomService {
 
     private static final String DEFAULT_S124_ID = "X";
 
-    private static final String DEFAULT_LANG_IDENTIFIER_FR = "F";
+    private static final String DEFAULT_LANG_IDENTIFIER_ES = "S";
 
     private static final String DEFAULT_LANG_IDENTIFIER_EN = "E";
     public static final String ZIP_SHA_256_EXT = ".sha256";
@@ -423,7 +423,7 @@ public class SecomService {
         final String ihoProducerFolderName = getIhoProducerFolderName(warning);
 
         warning.getSerie().getMandatoryLanguages().forEach(lang -> {
-            final String langIdentifier = StringUtils.equalsIgnoreCase(lang, INTERNATIONAL_LANGUAGE) ? DEFAULT_LANG_IDENTIFIER_EN : DEFAULT_LANG_IDENTIFIER_FR;
+            final String langIdentifier = StringUtils.equalsIgnoreCase(lang, INTERNATIONAL_LANGUAGE) ? DEFAULT_LANG_IDENTIFIER_EN : DEFAULT_LANG_IDENTIFIER_ES;
             final String datasetIdentifier = buildDatasetIdentifier(warning, ihoProducerFolderName, langIdentifier);
             final Path issuingAgencyDirPath;
             try {
@@ -695,7 +695,7 @@ public class SecomService {
     }
 
     private Path getExchangeSetFullpath(Warning warning, String lang) {
-        final String langIdentifier = StringUtils.equalsIgnoreCase(lang, INTERNATIONAL_LANGUAGE) ? DEFAULT_LANG_IDENTIFIER_EN : DEFAULT_LANG_IDENTIFIER_FR;
+        final String langIdentifier = StringUtils.equalsIgnoreCase(lang, INTERNATIONAL_LANGUAGE) ? DEFAULT_LANG_IDENTIFIER_EN : DEFAULT_LANG_IDENTIFIER_ES;
         final String ihoProducerFolderName = getIhoProducerFolderName(warning);
         final String datasetIdentifier = buildDatasetIdentifier(warning, ihoProducerFolderName, langIdentifier);
 

@@ -19,15 +19,19 @@ public class NoHtmlValidator implements ConstraintValidator<NoHtml, Object> {
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        return switch (value) {
-            case null -> true;
-            case String string -> checkSanitization(string);
-            case Map map -> map.values().stream()
+        if (value == null) {
+            return true;
+        } else if (value instanceof String string) {
+            return checkSanitization(string);
+        } else if (value instanceof Map map) {
+            return map.values().stream()
                 .allMatch(o -> !(o instanceof String) || checkSanitization((String) o));
-            case Collection list -> list.stream()
+        } else if (value instanceof Collection list) {
+            return list.stream()
                 .allMatch(o -> o instanceof String s && checkSanitization(s));
-            default -> false;
-        };
+        } else {
+            return false;
+        }
 
     }
 

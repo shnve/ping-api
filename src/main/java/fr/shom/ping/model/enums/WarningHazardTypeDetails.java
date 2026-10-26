@@ -325,6 +325,10 @@ public enum WarningHazardTypeDetails {
 
     @Nullable
     public static WarningHazardTypeDetails fromCodes(int natureCode, int cmsCode, int incidentCode) {
+        if (natureCode == 0 && cmsCode == 0 && incidentCode == 0) {
+            return null;
+        }
+
         for (WarningHazardTypeDetails at : WarningHazardTypeDetails.values()) {
             if (Arrays.stream(at.getCmsCode()).boxed().anyMatch(code -> code == cmsCode) && at.getCombinations().hasNatureAndIncident(natureCode,
                 incidentCode)) {

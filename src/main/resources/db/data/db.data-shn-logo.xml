@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.data-shn-logo.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.Rename-Logo-Shom-to-Armada" author="antigravity">
+        <sql stripComments="true">
+            UPDATE static_logo SET logo_key = 'logo-armada' WHERE logo_key = 'logo-shom';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

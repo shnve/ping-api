@@ -39,3 +39,15 @@ build/
 
 ### Python ###
 .venv/
+
+*.zip
+apache-maven-3.9.9/
+jdk-21.0.12+8/
+
+db/geotiff/
+*.tif
+*.tiff
+.env
+db/.env
+*.log
+backend_log.txt

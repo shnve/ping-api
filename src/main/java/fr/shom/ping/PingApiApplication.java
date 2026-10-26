@@ -8,12 +8,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.springframework.boot.SpringApplication.run;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+        org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration.class
+})
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "${ping.shedlock.default-lock-time-at-most-for}")
-@OpenAPIDefinition(servers = {@Server(url = "/", description = "Base Server URL")})
+@OpenAPIDefinition(servers = { @Server(url = "/", description = "Base Server URL") })
 public class PingApiApplication {
-
     public static void main(String[] args) {
         run(PingApiApplication.class, args);
     }

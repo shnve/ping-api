@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="SHN-Traducciones-ES-V3" author="SHN" context="local,qlf,prod">
+        <sql>
+            -- General Hazard Types
+            UPDATE warning_hazard_type_general 
+            SET translation = 'MODIFICACIONES DE AYUDAS A LA NAVEGACION' 
+            WHERE enum_name = 'AIDS_TO_NAVIGATION';
+
+            -- Detailed Hazard Types
+            UPDATE warning_hazard_type_details 
+            SET translation = 'GRABADOR ACUSTICO' 
+            WHERE enum_name = 'ACOUSTIC_RECORDER';
+
+            -- More examples can be added here
+            UPDATE warning_hazard_type_details 
+            SET translation = 'BOYA DE PRUEBA' 
+            WHERE enum_name = 'TEST_BUOY';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -291,7 +291,7 @@ public class GeoregulationService {
     }
 
     public void downloadGeometriesAsGpx(UUID id, String lang, HttpServletResponse response) throws ServiceException {
-        if (!List.of(Locale.FRENCH.getLanguage(), Locale.ENGLISH.getLanguage()).contains(lang)) {
+        if (!List.of("es", Locale.ENGLISH.getLanguage()).contains(lang)) {
             throw new BadRequestException("Invalid language");
         }
         final Georegulation georegulation = repository.findById(id).orElseThrow(NotFoundException::new);

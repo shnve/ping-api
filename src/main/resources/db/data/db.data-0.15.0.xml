@@ -7,7 +7,7 @@
         <sql stripComments="true">
             INSERT INTO public_user
             (id, keycloak_id, title, firstname, lastname, email, status, creation_date, update_date, phone_number, mobile_phone_number, organization, ship_name, home_port, registration_number, preferred_area_id, has_email_notification, has_accepted_tos)
-            VALUES('eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'bffe63d3-eddd-444e-a199-99afd2d1706a'::uuid, 'MR', 'Jean', 'Martin', 'jean.martin@xxx.com', 'ENABLED', '2022-01-10 11:18:56.361', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, false);
+            VALUES('eafece77-bb30-497e-9853-568b5d5dd613'::uuid, 'bffe63d3-eddd-444e-a199-99afd2d1706a'::uuid, 'MR', 'Jean', 'Martin', 'jean.martin@local.com', 'ENABLED', '2022-01-10 11:18:56.361', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, false);
         </sql>
     </changeSet>
 

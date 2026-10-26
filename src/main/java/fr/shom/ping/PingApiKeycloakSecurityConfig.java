@@ -57,7 +57,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@Import(value = {KeycloakProperties.class, SecurityProperties.class, CorsProperties.class})
+@Import(value = { KeycloakProperties.class, SecurityProperties.class, CorsProperties.class })
 @Slf4j
 public class PingApiKeycloakSecurityConfig {
 
@@ -78,7 +78,8 @@ public class PingApiKeycloakSecurityConfig {
 
     private final Map<String, AuthenticationManager> authenticationManagers = new HashMap<>();
 
-    public PingApiKeycloakSecurityConfig(SecurityProperties securityProperties, CorsProperties corsProperties, ProxyProperties proxyProperties) {
+    public PingApiKeycloakSecurityConfig(SecurityProperties securityProperties, CorsProperties corsProperties,
+            ProxyProperties proxyProperties) {
         this.securityProperties = securityProperties;
         this.corsProperties = corsProperties;
         this.proxyProperties = proxyProperties;
@@ -90,32 +91,72 @@ public class PingApiKeycloakSecurityConfig {
         authenticationManagers.put(issuer, authenticationProvider::authenticate);
     }
 
+    /**
+     * @Bean
+     *       public SecurityFilterChain resourceServerFilterChain(HttpSecurity http)
+     *       throws Exception {
+     *       List.of(issuerPingPro, issuerPingPublic).forEach(issuer ->
+     *       addManager(authenticationManagers, issuer));
+     *       JwtIssuerAuthenticationManagerResolver authenticationManagerResolver =
+     *       new
+     *       JwtIssuerAuthenticationManagerResolver(authenticationManagers::get);
+     * 
+     *       http.authorizeHttpRequests(authorize ->
+     *       authorize.anyRequest().permitAll())
+     *       .sessionManagement(sessions -> sessions
+     *       .requireExplicitAuthenticationStrategy(false)
+     *       .sessionCreationPolicy(STATELESS).sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+     *       )
+     *       .exceptionHandling(exceptionHandling ->
+     *       exceptionHandling.authenticationEntryPoint(new
+     *       Http403ForbiddenEntryPoint()))
+     *       .csrf(csrf -> csrf
+     *       .csrfTokenRepository(csrfTokenRepository())
+     *       .ignoringRequestMatchers(
+     *       Arrays.stream(securityProperties.getCsrfAllowedRequestUris()).map(AntPathRequestMatcher::antMatcher).toArray(AntPathRequestMatcher[]::new)
+     *       )
+     *       )
+     *       .cors(cors -> cors
+     *       .configurationSource(corsConfigurationSource())
+     *       )
+     *       .headers(headers -> headers.referrerPolicy(referrer ->
+     *       referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
+     *       /*.httpStrictTransportSecurity(hstsConfig ->
+     *       hstsConfig.includeSubDomains(true)
+     *       .preload(true)
+     *       .maxAgeInSeconds(Duration.ofDays(365).toSeconds()))
+     */
+    /**
+     * );
+     * http.oauth2ResourceServer(oauth2 ->
+     * oauth2.authenticationManagerResolver(authenticationManagerResolver));
+     * return http.build();
+     * }
+     **/
+
     @Bean
     public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
+        // 1. REACTIVAMOS LA CONEXION A KEYCLOAK
         List.of(issuerPingPro, issuerPingPublic).forEach(issuer -> addManager(authenticationManagers, issuer));
-        JwtIssuerAuthenticationManagerResolver authenticationManagerResolver = new JwtIssuerAuthenticationManagerResolver(authenticationManagers::get);
+
+        JwtIssuerAuthenticationManagerResolver authenticationManagerResolver = new JwtIssuerAuthenticationManagerResolver(
+                authenticationManagers::get);
 
         http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
-            .sessionManagement(sessions -> sessions
-                .requireExplicitAuthenticationStrategy(false)
-                .sessionCreationPolicy(STATELESS).sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-            )
-            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(new Http403ForbiddenEntryPoint()))
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(csrfTokenRepository())
-                .ignoringRequestMatchers(
-                    Arrays.stream(securityProperties.getCsrfAllowedRequestUris()).map(AntPathRequestMatcher::antMatcher).toArray(AntPathRequestMatcher[]::new)
-                )
-            )
-            .cors(cors -> cors
-                .configurationSource(corsConfigurationSource())
-            )
-            .headers(headers -> headers.referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
-                /*.httpStrictTransportSecurity(hstsConfig -> hstsConfig.includeSubDomains(true)
-                    .preload(true)
-                    .maxAgeInSeconds(Duration.ofDays(365).toSeconds()))*/
-            );
-        http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
+                .sessionManagement(sessions -> sessions
+                        .requireExplicitAuthenticationStrategy(false)
+                        .sessionCreationPolicy(STATELESS)
+                        .sessionAuthenticationStrategy(sessionAuthenticationStrategy()))
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(new Http403ForbiddenEntryPoint()))
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource()))
+                .headers(headers -> headers.referrerPolicy(
+                        referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)))
+                // Servidor OAuth2 activo
+                .oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
+
         return http.build();
     }
 
@@ -146,8 +187,8 @@ public class PingApiKeycloakSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(
-            Arrays.stream(securityProperties.getIgnoredPaths()).map(AntPathRequestMatcher::antMatcher).toArray(AntPathRequestMatcher[]::new)
-        );
+                Arrays.stream(securityProperties.getIgnoredPaths()).map(AntPathRequestMatcher::antMatcher)
+                        .toArray(AntPathRequestMatcher[]::new));
     }
 
     @Bean
@@ -176,8 +217,8 @@ public class PingApiKeycloakSecurityConfig {
 
                 if (clientAccess != null) {
                     grantedAuthorities = ((List<String>) clientAccess.get("roles")).stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
                 }
             }
             return grantedAuthorities;
@@ -187,7 +228,8 @@ public class PingApiKeycloakSecurityConfig {
     @Bean
     Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
         final JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> realmRolesAuthoritiesConverter().convert(jwt.getClaims()));
+        jwtAuthenticationConverter
+                .setJwtGrantedAuthoritiesConverter(jwt -> realmRolesAuthoritiesConverter().convert(jwt.getClaims()));
         jwtAuthenticationConverter.setPrincipalClaimName(principalNameAttribute);
         return jwtAuthenticationConverter;
     }
@@ -195,7 +237,8 @@ public class PingApiKeycloakSecurityConfig {
     public JwtDecoder jwtDecoder(String issuer) {
         NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withIssuerLocation(issuer);
         if (proxyProperties.isUseProxy()) {
-            final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyProperties.getProxyHost(), proxyProperties.getProxyPort()));
+            final Proxy proxy = new Proxy(Proxy.Type.HTTP,
+                    new InetSocketAddress(proxyProperties.getProxyHost(), proxyProperties.getProxyPort()));
             final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             requestFactory.setProxy(proxy);
             builder.restOperations(new RestTemplate(requestFactory));

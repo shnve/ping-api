@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.Rename_Shom_to_SHN" author="antigravity">
+        <!-- Update static_section -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <where>location = 'Inicio > Mis contribuciones > Transmitir un levantamiento al Shom'</where>
+        </update>
+
+        <update tableName="static_section">
+            <column name="content" value="Accueil > Contribuer > Transmettre un levé au SHN"/>
+            <where>location = 'Accueil > Contribuer > Transmettre un levé au Shom'</where>
+        </update>
+        <!-- Actually cartonaut setting static_sections have location too, let's update location there -->
+        <update tableName="static_section">
+            <column name="location" value="Accueil > Contribuer > Transmettre un levé au SHN"/>
+            <where>location = 'Accueil > Contribuer > Transmettre un levé au Shom'</where>
+        </update>
+
+        <!-- Use replace function to update content and international_content if needed -->
+        <!-- Since we already know the exact text, we can use SQL for REPLACE -->
+        <sql stripComments="true">
+            UPDATE static_section SET content = convert_to(replace(convert_from(content, 'UTF8'), 'Shom', 'SHN'), 'UTF8') WHERE content IS NOT NULL;
+            UPDATE static_section SET international_content = convert_to(replace(convert_from(international_content, 'UTF8'), 'Shom', 'SHN'), 'UTF8') WHERE international_content IS NOT NULL;
+            
+            UPDATE static_page SET content = convert_to(replace(convert_from(content, 'UTF8'), 'Shom', 'SHN'), 'UTF8') WHERE content IS NOT NULL;
+            UPDATE static_page SET international_content = convert_to(replace(convert_from(international_content, 'UTF8'), 'Shom', 'SHN'), 'UTF8') WHERE international_content IS NOT NULL;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
-@Import(value = {KeycloakProperties.class})
+@Import(value = { KeycloakProperties.class })
 public class PingApiMethodSecurityConfig {
 
     private final ServiceUserRepository serviceUserRepository;
@@ -24,7 +24,8 @@ public class PingApiMethodSecurityConfig {
     @Bean
     protected MethodSecurityExpressionHandler createExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(new PingApiPermissionEvaluator(serviceUserRepository, keycloakProperties));
+        expressionHandler
+                .setPermissionEvaluator(new PingApiPermissionEvaluator(serviceUserRepository, keycloakProperties));
         expressionHandler.setApplicationContext(applicationContext);
         return expressionHandler;
     }

@@ -29,16 +29,17 @@ public enum WarningType {
     TEMPORARY_NOTICE_TO_MARINER(13, SerieType.TEMPORARY_NOTICE_TO_MARINER, false),
     PRELIMINARY_NOTICE_TO_MARINER(14, SerieType.PRELIMINARY_NOTICE_TO_MARINER, false),
     TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER_IN_FORCE_BULLETIN(17, SerieType.TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER, true),
-    TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER(200, SerieType.TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER, true);
+    TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER(200, SerieType.TEMPORARY_AND_PRELIMINARY_NOTICE_TO_MARINER, false);
 
     private final int code;
     private final SerieType serieType;
     private final boolean isBulletin;
 
     public static WarningType fromSerieTypeAndWarningHazardTypeGeneral(SerieType serieType, WarningHazardTypeGeneral typeGeneral) {
+        System.out.println("DEBUG WARNINGTYPE: serieType=" + serieType + ", typeGeneral=" + typeGeneral);
         return stream(WarningType.values())
             .filter(type -> type.isBulletin() == typeGeneral.isBulletin())
             .filter(type -> serieType.name().equals(type.getSerieType().name()))
-            .findFirst().orElseThrow(RuntimeException::new);
+            .findFirst().orElseThrow(() -> new IllegalArgumentException("Incompatible SerieType (" + serieType + ") and WarningHazardTypeGeneral (" + typeGeneral + ") combination"));
     }
 }

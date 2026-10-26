@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import static fr.shom.ping.PingApiTranslationsRegistry.isInternationalLanguage;
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.FRENCH;
 
 @Slf4j
 @Component
@@ -37,7 +36,8 @@ public final class NavtexUtil {
     }
 
     public static String getSeriePrefix(String serieName) {
-        return Arrays.stream(serieName.split(" ")).map(s -> s.charAt(0)).map(String::valueOf).map(String::toUpperCase).collect(Collectors.joining());
+        return Arrays.stream(serieName.split(" ")).map(s -> s.charAt(0)).map(String::valueOf).map(String::toUpperCase)
+                .collect(Collectors.joining());
     }
 
     public static String getYearSuffix(Integer year) {
@@ -48,7 +48,8 @@ public final class NavtexUtil {
         final String seriePath = createTargetFolder(targetFolder, warning.getNameOfSeries());
         final String content = generateCancellationNavtex(warning);
         final Path cancellationFile = Path.of(seriePath,
-            String.format("%s%s_%sAD.txt", getSeriePrefix(warning.getNameOfSeries()), getNavtexCommunicationNumber(warning), getYearSuffix(warning.getYear())));
+                String.format("%s%s_%sAD.txt", getSeriePrefix(warning.getNameOfSeries()),
+                        getNavtexCommunicationNumber(warning), getYearSuffix(warning.getYear())));
         Files.writeString(cancellationFile, content);
         return content;
     }
@@ -57,7 +58,8 @@ public final class NavtexUtil {
         final String seriePath = createTargetFolder(targetFolder, warning.getNameOfSeries());
         final String content = warning.getNavtex();
         final Path publishFile = Path.of(seriePath,
-            String.format("%s%s_%s.txt", getSeriePrefix(warning.getNameOfSeries()), getNavtexCommunicationNumber(warning), getYearSuffix(warning.getYear())));
+                String.format("%s%s_%s.txt", getSeriePrefix(warning.getNameOfSeries()),
+                        getNavtexCommunicationNumber(warning), getYearSuffix(warning.getYear())));
         Files.writeString(publishFile, content);
         return content;
     }
@@ -68,7 +70,7 @@ public final class NavtexUtil {
         final Path seriePath = Path.of(rootFolder, escapedSerieName);
         // create serie target folder if doesn't exist
         if (!Files.exists(seriePath)) {
-            Files.createDirectory(seriePath);
+            Files.createDirectories(seriePath);
         }
         return seriePath.toString();
     }
@@ -97,10 +99,12 @@ public final class NavtexUtil {
         final DiffusionNavtexType typeCommunication = warningNavtexConfig.getCommunicationType();
         final DiffusionNavtexEmergencyLevel emergencyLevel = warningNavtexConfig.getEmergencyLevel();
         final String communicationNumber = getNavtexCommunicationNumber(warning);
-        final StringBuilder sbHeader = new StringBuilder(String.format("NAVTEX %s%s%s%s", source, typeCommunication.getSymbol(),
-            emergencyLevel.getLetter(), communicationNumber));
+        final StringBuilder sbHeader = new StringBuilder(
+                String.format("NAVTEX %s%s%s%s", source, typeCommunication.getSymbol(),
+                        emergencyLevel.getLetter(), communicationNumber));
         if (warningNavtexConfig.getEndDay() != null && warningNavtexConfig.getEndHour() != null) {
-            sbHeader.append(String.format("J%sH%s", zeroLeftPad(warningNavtexConfig.getEndDay(), 2), zeroLeftPad(warningNavtexConfig.getEndHour(), 2)));
+            sbHeader.append(String.format("J%sH%s", zeroLeftPad(warningNavtexConfig.getEndDay(), 2),
+                    zeroLeftPad(warningNavtexConfig.getEndHour(), 2)));
         }
         sbHeader.append(LINE_SEPARATOR).append("TXT");
         return sbHeader.toString();
@@ -110,25 +114,25 @@ public final class NavtexUtil {
         final WarningNavtexConfig warningNavtexConfig = warning.getNavtexConfig();
         final DiffusionNavtexEmergencyLevel emergencyLevel = warningNavtexConfig.getEmergencyLevel();
         return new StringBuilder("MESSAGES CATEGORY %s".formatted(emergencyLevel.name()))
-            .append(LINE_SEPARATOR)
-            .append(generateKaFrequencyPart(warning, warningNavtexConfig))
-            .append(LINE_SEPARATOR)
-            .append(generateTaFrequencyPart(warning, warningNavtexConfig))
-            .toString();
+                .append(LINE_SEPARATOR)
+                .append(generateKaFrequencyPart(warning, warningNavtexConfig))
+                .append(LINE_SEPARATOR)
+                .append(generateTaFrequencyPart(warning, warningNavtexConfig))
+                .toString();
     }
 
     private String generateKaFrequencyPart(Warning warning, WarningNavtexConfig warningNavtexConfig) {
         StringBuilder kaBuilder = new StringBuilder(KA_FREQUENCY)
-            .append(LINE_SEPARATOR)
-            .append(String.format("KA %d", warningNavtexConfig.getNitonNumber()))
-            .append(LINE_SEPARATOR)
-            .append(generateTelexForLanguage(warning, ENGLISH.getLanguage(), false))
-            .append(LINE_SEPARATOR);
+                .append(LINE_SEPARATOR)
+                .append(String.format("KA %d", warningNavtexConfig.getNitonNumber()))
+                .append(LINE_SEPARATOR)
+                .append(generateTelexForLanguage(warning, ENGLISH.getLanguage(), false))
+                .append(LINE_SEPARATOR);
 
         if (warningNavtexConfig.getCancelNitonNumber() != null) {
             kaBuilder
-                .append(String.format("- CANCEL KA %d", warningNavtexConfig.getCancelNitonNumber()))
-                .append(LINE_SEPARATOR);
+                    .append(String.format("- CANCEL KA %d", warningNavtexConfig.getCancelNitonNumber()))
+                    .append(LINE_SEPARATOR);
         }
 
         return kaBuilder.toString();
@@ -136,14 +140,14 @@ public final class NavtexUtil {
 
     private String generateTaFrequencyPart(Warning warning, WarningNavtexConfig warningNavtexConfig) {
         StringBuilder taBuilder = new StringBuilder(TA_FREQUENCY)
-            .append(LINE_SEPARATOR)
-            .append(String.format("TA %d", warningNavtexConfig.getNitonNumber()))
-            .append(LINE_SEPARATOR)
-            .append(generateTelexForLanguage(warning, FRENCH.getLanguage(), false))
-            .append(LINE_SEPARATOR);
+                .append(LINE_SEPARATOR)
+                .append(String.format("TA %d", warningNavtexConfig.getNitonNumber()))
+                .append(LINE_SEPARATOR)
+                .append(generateTelexForLanguage(warning, "es", false))
+                .append(LINE_SEPARATOR);
 
         if (warningNavtexConfig.getCancelNitonNumber() != null) {
-            taBuilder.append(String.format("- ANNULER TA %d", warningNavtexConfig.getCancelNitonNumber()));
+            taBuilder.append(String.format("- CANCELAR TA %d", warningNavtexConfig.getCancelNitonNumber()));
         }
 
         return taBuilder.toString();
@@ -151,34 +155,34 @@ public final class NavtexUtil {
 
     private String generateClassicNavtex(Warning warning, DiffusionNavtexSource source) {
         return new StringBuilder()
-            .append(generateHeader(warning, source))
-            .append(LINE_SEPARATOR)
-            .append(generateTelex(warning, true))
-            .append(LINE_SEPARATOR)
-            .append("DDDD")
-            .append(LINE_SEPARATOR)
-            .append("BT")
-            .toString()
-            .replace("\n\nDDDD\n", "\nDDDD\n");
+                .append(generateHeader(warning, source))
+                .append(LINE_SEPARATOR)
+                .append(generateTelex(warning, true))
+                .append(LINE_SEPARATOR)
+                .append("DDDD")
+                .append(LINE_SEPARATOR)
+                .append("BT")
+                .toString()
+                .replace("\n\nDDDD\n", "\nDDDD\n");
     }
 
     private String generateTelex(Warning warning, boolean addHeader) {
         return warning.getSerie().getMandatoryLanguages().stream()
-            .sorted()
-            .map(language -> generateTelexForLanguage(warning, language, addHeader))
-            .collect(Collectors.joining(LINE_SEPARATOR))
-            .replace("\n\nFFFF\n", "\nFFFF\n");
+                .sorted(java.util.Comparator.comparing(lang -> !"es".equalsIgnoreCase(lang)))
+                .map(language -> generateTelexForLanguage(warning, language, addHeader))
+                .collect(Collectors.joining(LINE_SEPARATOR))
+                .replace("\n\nFFFF\n", "\nFFFF\n");
     }
 
     private String generateTelexForLanguage(Warning warning, String language, boolean addHeader) {
         final StringBuilder generatedTelex = new StringBuilder();
         if (addHeader) {
             generatedTelex.append(getLanguageHeader(language))
-                .append(LINE_SEPARATOR);
+                    .append(LINE_SEPARATOR);
         }
         generatedTelex.append(telexUtil.generateTelex(warning, language, null));
         return StringUtils.stripAccents(generatedTelex.toString().toUpperCase())
-            .replaceAll(INTERNATIONAL_TELEGRAPH_ALPHABET_2_NOT_ALLOWED_CHARS_REGEX, "");
+                .replaceAll(INTERNATIONAL_TELEGRAPH_ALPHABET_2_NOT_ALLOWED_CHARS_REGEX, "");
     }
 
     private static String getLanguageHeader(String language) {
@@ -203,6 +207,7 @@ public final class NavtexUtil {
         switch (source) {
             case B:
             case T:
+            case N4:
                 isValid = config.getEmergencyLevel() != null && config.getCommunicationType() != null;
                 break;
             case N:

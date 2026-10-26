@@ -25,8 +25,8 @@ import static fr.shom.ping.utils.SchemaUtil.FEATURE_PART_TABLE;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.FRENCH;
+
+
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -37,7 +37,7 @@ public final class WarningUtil {
     public static Set<LocalizedText> convertGeneralAreaInformationToLocationNames(String generalAreaName, String generalAreaInternationalName) {
         Set<LocalizedText> locationNames = new HashSet<>();
         locationNames.add(LocalizedText.builder()
-            .language(FRANCE.getLanguage())
+            .language("es")
             .text(generalAreaName)
             .build());
 
@@ -80,10 +80,10 @@ public final class WarningUtil {
     }
 
     private static void buildLocalitiesMap(WarningLocalityNamesDto locality, Map<String, Set<String>> localities) {
-        if (localities.containsKey(FRENCH.getLanguage())) {
-            localities.get(FRENCH.getLanguage()).add(locality.getName());
+        if (localities.containsKey("es")) {
+            localities.get("es").add(locality.getName());
         } else {
-            localities.put(FRENCH.getLanguage(), newLinkedHashSet(singletonList(locality.getName())));
+            localities.put("es", newLinkedHashSet(singletonList(locality.getName())));
         }
 
         if (localities.containsKey(ENGLISH.getLanguage())) {

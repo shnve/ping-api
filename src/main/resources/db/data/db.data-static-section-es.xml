@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Data.Static_Section_ES_Translation" author="antigravity">
+        <validCheckSum>ANY</validCheckSum>
+        <!-- 1. Confidencialidad de la transmisión del levantamiento -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Modalidades de confidencialidad de la transmisión de un levantamiento"/>
+            <where>section_key = 'survey-transmission-confidentiality'</where>
+        </update>
+
+        <!-- 2. Detección de sondas menores (alertas) -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Mis levantamientos > Modal de detalles"/>
+            <column name="name" value="Detección de sondas menores"/>
+            <where>section_key = 'survey-analysis-result-alert'</where>
+        </update>
+
+        <!-- 3. Datos batimétricos -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Sus datos batimétricos"/>
+            <where>section_key = 'survey-bathy-data'</where>
+        </update>
+
+        <!-- 4. Metadatos / información técnica -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Metadatos / información técnica"/>
+            <where>section_key = 'survey-technical-metadata'</where>
+        </update>
+
+        <!-- 5. Advertencia sobre el uso (Regulaciones) -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Regulaciones"/>
+            <column name="name" value="Advertencia sobre el uso"/>
+            <where>section_key = 'home-page-global-disclaimer-georegulation'</where>
+        </update>
+
+        <!-- 6. Instrucciones generales para la entrega -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Instrucciones generales para la entrega de un levantamiento"/>
+            <where>section_key = 'survey-transmission-general-instructions'</where>
+        </update>
+
+        <!-- 7. Reportar profundidad peligrosa -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Reportar una profundidad peligrosa"/>
+            <column name="name" value="Reportar una profundidad peligrosa"/>
+            <where>section_key = 'infosource-bathy-new-report'</where>
+        </update>
+
+        <!-- 8. Otros documentos del levantamiento -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Otros documentos del levantamiento"/>
+            <where>section_key = 'survey-other-documents'</where>
+        </update>
+
+        <!-- 9. Instrucciones generales de análisis -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Analizar la información náutica de un levantamiento"/>
+            <column name="name" value="Instrucciones generales para el análisis de un levantamiento"/>
+            <where>section_key = 'survey-analysis-general-instructions'</where>
+        </update>
+
+        <!-- 10. Popup de transmisión -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Mis contribuciones > Transmitir un levantamiento al SHN"/>
+            <column name="name" value="Popup de transmisión de entrega"/>
+            <where>section_key = 'survey-transmission-popup-content'</where>
+        </update>
+
+        <!-- 11. Advertencia sobre el uso (Avisos) -->
+        <update tableName="static_section">
+            <column name="location" value="Inicio > Advertencias y avisos"/>
+            <column name="name" value="Advertencia sobre el uso"/>
+            <where>section_key = 'home-page-global-disclaimer-warning'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

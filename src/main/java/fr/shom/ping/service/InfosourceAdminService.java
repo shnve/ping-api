@@ -161,7 +161,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.FRANCE;
+
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toCollection;
@@ -1043,15 +1043,15 @@ public class InfosourceAdminService extends AbstractInfosourceService {
     }
 
     private String orderMarkField(String markField, String markValue, String lang) {
-        if (lang.equals("fr")) {
+        if (lang.equals("es") || lang.equals("fr")) {
             return markField + " " + markValue;
         }
         return markValue + " " + markField;
     }
 
     private String getTranslatedText(String lang) {
-        if (lang.equals("fr")) {
-            return "Information signalée \n";
+        if (lang.equals("es") || lang.equals("fr")) {
+            return "Información reportada \n";
         }
         return "Reported information \n";
     }
@@ -1478,7 +1478,7 @@ public class InfosourceAdminService extends AbstractInfosourceService {
                         .geometries(newHashSet(part.getFeatures()))
                         .information(newHashSet(asList(
                             LocalizedText.builder()
-                                .language(FRANCE.getLanguage())
+                                .language("es")
                                 .text(Stream.of(typesTranslations, number, part.getInformation())
                                     .filter(StringUtils::isNotBlank)
                                     .collect(joining("\n")))
@@ -1619,7 +1619,7 @@ public class InfosourceAdminService extends AbstractInfosourceService {
                     .geometries(newHashSet(Feature.builder().geometry(featurePart.getGeometry()).properties(featurePart.getProperties()).build()))
                     .information(newHashSet(
                         LocalizedText.builder()
-                            .language(FRANCE.getLanguage())
+                            .language("es")
                             .text(textForInputInformation)
                             .build(),
                         LocalizedText.builder()

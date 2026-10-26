@@ -98,20 +98,24 @@ public class WarningService {
      *
      * @return list of warning summaries
      */
-    public List<WarningMapViewDto> findAllBySearchCriteriaAndApplyMapViewDto(WarningSearchCriteria warningSearchCriteria) {
+    public List<WarningMapViewDto> findAllBySearchCriteriaAndApplyMapViewDto(
+            WarningSearchCriteria warningSearchCriteria) {
         if (isEmpty(warningSearchCriteria.getGlobalWarningType()) && isEmpty(warningSearchCriteria.getSerieType())) {
             return emptyList();
         }
 
         StringBuilder queryStringBuilder = new StringBuilder();
 
-        queryStringBuilder.append("SELECT w.id, w.name_of_series, w.warning_number, w.year, w.warning_hazard_type_general, " +
-            "d.warning_hazard_type_detail as warning_hazard_type_details, s.type as serie_type, w.publication_time, " +
-            "wfpg.properties as geometry_properties, wfpg.geom as geometry, wfpaa.properties as affected_area_properties, wfpaa.geom as affected_area\n");
+        queryStringBuilder
+                .append("SELECT w.id, w.name_of_series, w.warning_number, w.year, w.warning_hazard_type_general, " +
+                        "d.warning_hazard_type_detail as warning_hazard_type_details, s.type as serie_type, w.publication_time, "
+                        +
+                        "wfpg.properties as geometry_properties, wfpg.geom as geometry, wfpaa.properties as affected_area_properties, wfpaa.geom as affected_area\n");
         queryStringBuilder.append("FROM warning w\n");
         queryStringBuilder.append(LEFT_JOIN + FEATURE_PART_TABLE + " fp ON w.id = fp.warning_id\n");
         queryStringBuilder.append(LEFT_JOIN + WARNING_HAZARD_TYPE_DETAILS_TABLE + " d ON fp.id = d.feature_part_id\n");
-        queryStringBuilder.append(LEFT_JOIN + WARNING_FEATURE_PART_GEOMETRY + " wfpg ON fp.id = wfpg.feature_part_id\n");
+        queryStringBuilder
+                .append(LEFT_JOIN + WARNING_FEATURE_PART_GEOMETRY + " wfpg ON fp.id = wfpg.feature_part_id\n");
         queryStringBuilder.append(LEFT_JOIN + AFFECTED_AREA_TABLE + " wfpaa ON fp.id = wfpaa.feature_part_id\n");
         queryStringBuilder.append(INNER_JOIN + SERIE_TABLE + " s ON w.serie_id = s.id\n");
 
@@ -138,7 +142,8 @@ public class WarningService {
         return warnings.values().stream().map(warningMapViewTupleToWarningMapViewDto).collect(toList());
     }
 
-    private void aggregateWarningMapViewTuple(Map<UUID, WarningMapViewAggregatedTuple> warnings, WarningMapViewTuple tuple) {
+    private void aggregateWarningMapViewTuple(Map<UUID, WarningMapViewAggregatedTuple> warnings,
+            WarningMapViewTuple tuple) {
         UUID warningId = tuple.getId();
         if (warnings.containsKey(warningId)) {
             if (tuple.getWarningHazardTypeDetails() != null) {
@@ -154,13 +159,13 @@ public class WarningService {
             }
         } else {
             WarningMapViewAggregatedTuple aggregatedTuple = WarningMapViewAggregatedTuple.builder().id(warningId)
-                .nameOfSeries(tuple.getNameOfSeries())
-                .warningNumber(tuple.getWarningNumber())
-                .year(tuple.getYear())
-                .warningHazardTypeGeneral(tuple.getWarningHazardTypeGeneral())
-                .serieType(tuple.getSerieType())
-                .publicationTime(tuple.getPublicationTime())
-                .build();
+                    .nameOfSeries(tuple.getNameOfSeries())
+                    .warningNumber(tuple.getWarningNumber())
+                    .year(tuple.getYear())
+                    .warningHazardTypeGeneral(tuple.getWarningHazardTypeGeneral())
+                    .serieType(tuple.getSerieType())
+                    .publicationTime(tuple.getPublicationTime())
+                    .build();
             if (tuple.getWarningHazardTypeDetails() != null) {
                 aggregatedTuple.getWarningHazardTypeDetails().add(tuple.getWarningHazardTypeDetails());
             }
@@ -176,11 +181,13 @@ public class WarningService {
         }
     }
 
-    public PageImpl<WarningTableViewDto> findAllBySearchCriteriaAndApplyTableViewDto(WarningSearchCriteria warningSearchCriteria, Pageable pageable) {
+    public PageImpl<WarningTableViewDto> findAllBySearchCriteriaAndApplyTableViewDto(
+            WarningSearchCriteria warningSearchCriteria, Pageable pageable) {
         return WarningSimpleTableUtil.find(this.entityManager, warningSearchCriteria, pageable);
     }
 
-    public PageImpl<WarningDetailDto> findAllBySearchCriteriaAndApplyDetailedTableViewDto(WarningSearchCriteria warningSearchCriteria, Pageable pageable) {
+    public PageImpl<WarningDetailDto> findAllBySearchCriteriaAndApplyDetailedTableViewDto(
+            WarningSearchCriteria warningSearchCriteria, Pageable pageable) {
         return WarningDetailedTableUtil.find(entityManager, warningSearchCriteria, pageable);
     }
 
@@ -192,8 +199,9 @@ public class WarningService {
         WarningShpUtil.generateShp(entityManager, id, pingProperties.getGeneratedShapefileFolder(), response);
     }
 
-    public void downloadGeometriesAsGpx(UUID warningId, String lang, HttpServletResponse response) throws ServiceException {
-        if (!List.of(Locale.FRENCH.getLanguage(), Locale.ENGLISH.getLanguage()).contains(lang)) {
+    public void downloadGeometriesAsGpx(UUID warningId, String lang, HttpServletResponse response)
+            throws ServiceException {
+        if (!List.of("fr", "en", "es").contains(lang)) {
             throw new BadRequestException("Invalid language");
         }
         final Warning warning = repository.findById(warningId).orElseThrow(NotFoundException::new);
@@ -203,8 +211,9 @@ public class WarningService {
         warningGpxUtil.generateGpx(warning, lang, pingProperties.getGeneratedGpxFolder(), response);
     }
 
-    public void downloadGeometriesAsGpxZip(List<UUID> warningIds, String lang, HttpServletResponse response) throws ServiceException {
-        if (!List.of(Locale.FRENCH.getLanguage(), Locale.ENGLISH.getLanguage()).contains(lang)) {
+    public void downloadGeometriesAsGpxZip(List<UUID> warningIds, String lang, HttpServletResponse response)
+            throws ServiceException {
+        if (!List.of("es", Locale.ENGLISH.getLanguage()).contains(lang)) {
             throw new BadRequestException("Invalid language");
         }
         final List<Warning> warnings = repository.findAllById(warningIds);
@@ -212,7 +221,7 @@ public class WarningService {
             throw new NotFoundException();
         }
         if (warnings.stream()
-            .anyMatch(warning -> warning.getStatus() != PUBLISHED)) {
+                .anyMatch(warning -> warning.getStatus() != PUBLISHED)) {
             throw new BadRequestException("Warnings must be in PUBLISHED status");
         }
         warningGpxUtil.generateGpx(warnings, lang, pingProperties.getGeneratedGpxFolder(), response);
@@ -220,12 +229,12 @@ public class WarningService {
 
     public List<WarningHazardTypeGeneralDto> getHazardTypeGenerals() {
         return warningHazardTypeGeneralRepository.findAll(Sort.by("enumName")).stream()
-            .map(WarningHazardTypeGeneralDto::from)
-            .collect(toList());
+                .map(WarningHazardTypeGeneralDto::from)
+                .collect(toList());
     }
 
     public Page<Warning> getPublishedWarnings(Serie serie, int pageNumber, int pageSize) {
         return repository.findAll(QWarning.warning.serie.eq(serie).and(QWarning.warning.status.eq(PUBLISHED)),
-            PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "publicationTime")));
+                PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "publicationTime")));
     }
 }

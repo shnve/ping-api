@@ -98,7 +98,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 @Component
 public final class S124v2Util {
-    public static final String DEFAULT_LANGUAGE = "fr";
+    public static final String DEFAULT_LANGUAGE = "es";
     private static final CustomGMLWriter GML_WRITER;
     public static final String SRS_NAME = "http://www.opengis.net/def/crs/EPSG/0/4326";
     private static final String DATASET_FILE_IDENTIFIER = "ID_FILE_SEE_SECOM.xml";

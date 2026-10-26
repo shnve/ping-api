@@ -64,6 +64,7 @@ public class Area implements Serializable {
 
     @ValidURN(message = "validation.area.urn.invalid")
     @Schema(description = URN_DESCRIPTION)
+    @Column(name = "urn", unique = true, nullable = false)
     private String urn;
 
     @NotEmpty(message = "validation.area.name.not-empty")
@@ -90,10 +91,7 @@ public class Area implements Serializable {
     private Geometry geom;
 
     @OneToMany(fetch = LAZY)
-    @JoinTable(
-        name = "area_border_areas",
-        joinColumns = @JoinColumn(name = "border_areas_id"),
-        inverseJoinColumns = @JoinColumn(name = "area_id"))
+    @JoinTable(name = "area_border_areas", joinColumns = @JoinColumn(name = "border_areas_id"), inverseJoinColumns = @JoinColumn(name = "area_id"))
     @Schema(description = "List of border areas", example = EMPTY_LIST_EXAMPLE)
     @JsonBackReference
     private List<Area> borderAreas;

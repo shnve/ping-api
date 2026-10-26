@@ -10,8 +10,8 @@
         </sql>
 
         <update tableName="static_section">
-            <column name="content"><![CDATA[ La plateforme PING est mise en oeuvre uniquement en France métropolitaine et en Atlantique Nord-Est pour les avertissements de zone NAVAREA II.<br/><br/>La disponibilité des avertissements de navigation sur PING ne dispense pas les capitaines de l'obligation de recevoir à la mer les avertissements de navigation par l'intermédiaire des systèmes de diffusion, conformément aux dispositions de la convention SOLAS. ]]></column>
-            <column name="international_content"><![CDATA[ The platform PING is only available in mainland France and in North-East Atlantic for NAVAREA II area warnings.<br/><br/>The availability of navigational warnings on PING does not relieve Captains of the requirement to receive navigational warnings at sea via broadcasting systems in accordance with the provisions of the SOLAS Convention. ]]></column>
+            <column name="content"><![CDATA[ La plateforme PISAC est mise en oeuvre uniquement en France métropolitaine et en Atlantique Nord-Est pour les avertissements de zone NAVAREA II.<br/><br/>La disponibilité des avertissements de navigation sur PISAC ne dispense pas les capitaines de l'obligation de recevoir à la mer les avertissements de navigation par l'intermédiaire des systèmes de diffusion, conformément aux dispositions de la convention SOLAS. ]]></column>
+            <column name="international_content"><![CDATA[ The platform PISAC is only available in mainland France and in North-East Atlantic for NAVAREA II area warnings.<br/><br/>The availability of navigational warnings on PISAC does not relieve Captains of the requirement to receive navigational warnings at sea via broadcasting systems in accordance with the provisions of the SOLAS Convention. ]]></column>
             <where>section_key = 'home-page-global-disclaimer-warning'</where>
         </update>
     </changeSet>
@@ -23,8 +23,8 @@
         </sql>
 
         <update tableName="static_section">
-            <column name="content"><![CDATA[ La plateforme PING est mise en œuvre uniquement en France métropolitaine. Elle y présente à titre indicatif une sélection d'arrêtés des préfets maritimes. L'exhaustivité des arrêtés n'est pas garantie. PING complète les recueils des actes administratifs des préfectures maritimes pour la diffusion de la réglementation mais ne s'y substitue pas. ]]></column>
-            <column name="international_content"><![CDATA[ The PING platform is only available in mainland France. It presents a selection of maritime prefects' decrees for information only. The completeness of the decrees is not guaranteed. PING complements the collections of administrative acts of the maritime prefectures for the dissemination of regulations but does not replace them. ]]></column>
+            <column name="content"><![CDATA[ La plateforme PISAC est mise en œuvre uniquement en France métropolitaine. Elle y présente à titre indicatif une sélection d'arrêtés des préfets maritimes. L'exhaustivité des arrêtés n'est pas garantie. PISAC complète les recueils des actes administratifs des préfectures maritimes pour la diffusion de la réglementation mais ne s'y substitue pas. ]]></column>
+            <column name="international_content"><![CDATA[ The PISAC platform is only available in mainland France. It presents a selection of maritime prefects' decrees for information only. The completeness of the decrees is not guaranteed. PISAC complements the collections of administrative acts of the maritime prefectures for the dissemination of regulations but does not replace them. ]]></column>
             <where>section_key = 'home-page-global-disclaimer-georegulation'</where>
         </update>
     </changeSet>

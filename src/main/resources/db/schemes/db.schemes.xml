@@ -70,7 +70,14 @@
     <include file="classpath:db/data/db.data-cartonaut-settings-0.35.0-rc8.xml" context="local,qlf,prod"/>
     <include file="classpath:db/data/db.data-0.35.2.xml" context="local,qlf,prod"/>
 
+
     <!-- evolutions 2024 -->
     <include file="classpath:db/schemes/db.schemes-0.36.0-rc1.xml"/>
     <include file="classpath:db/data/db.data-0.36.0-rc1.xml" context="local,qlf,prod"/>
+    <include file="classpath:db/data/db.data-shn-logo.xml" context="local,qlf,prod"/>
+    <include file="classpath:db/data/db.data-shn-logos-binary.xml" context="local,qlf,prod"/>
+    <include file="classpath:db/data/db.data-static-section-es.xml" context="local,qlf,prod"/>
+    <include file="classpath:db/data/db.data-shn-translations.xml" />
+    <include file="classpath:db/data/db.data-shn-s124-spanish-v2.xml" />
+    <include file="classpath:db/data/db.data-shn-shom-rename.xml" />
 </databaseChangeLog>

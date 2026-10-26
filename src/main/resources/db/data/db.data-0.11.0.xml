@@ -18,8 +18,8 @@
         </sql>
 
         <update tableName="static_page">
-            <column name="content"><![CDATA[ <h2>Mise en garde sur l'utilisation</h2><p><br></p><p>Le contenu de PING est fourni, pour l'instant, aux seules fins de tests. Toutes les informations présentées et toutes les fonctions associées sont expérimentales. En aucun cas, le contenu de PING peut être utilisé pour remplacer les sources d'informations et les dispositifs existants. Le contenu de PING est sujet à changement sans préavis. En accédant à PING et ses sous-sites, vous acceptez l'avertissement.</p> ]]></column>
-            <column name="international_content"><![CDATA[ <h2>Warning on use</h2><p><br></p><p>PING content is currently provided for testing purposes only. All information presented and all associated functions are experimental. Under no circumstances can the content of PING be used to replace existing sources of information and devices. PING content is subject to change without notice. By accessing PING and its sub-sites, you accept the disclaimer.</p> ]]></column>
+            <column name="content"><![CDATA[ <h2>Mise en garde sur l'utilisation</h2><p><br></p><p>Le contenu de PISAC est fourni, pour l'instant, aux seules fins de tests. Toutes les informations présentées et toutes les fonctions associées sont expérimentales. En aucun cas, le contenu de PISAC peut être utilisé pour remplacer les sources d'informations et les dispositifs existants. Le contenu de PISAC est sujet à changement sans préavis. En accédant à PISAC et ses sous-sites, vous acceptez l'avertissement.</p> ]]></column>
+            <column name="international_content"><![CDATA[ <h2>Warning on use</h2><p><br></p><p>PISAC content is currently provided for testing purposes only. All information presented and all associated functions are experimental. Under no circumstances can the content of PISAC be used to replace existing sources of information and devices. PISAC content is subject to change without notice. By accessing PISAC and its sub-sites, you accept the disclaimer.</p> ]]></column>
             <where>path = 'accueil'</where>
         </update>
 

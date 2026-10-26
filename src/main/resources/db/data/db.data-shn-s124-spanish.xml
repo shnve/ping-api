@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="DB.Data.Warning_Hazard_Type_Details.Spanish" author="antigravity">
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Contenedor a la Deriva"/>
+            <where>enum_name = 'CONTAINER_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Científica a la Deriva"/>
+            <where>enum_name = 'SCIENTIFIC_BUOY_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación a la Deriva"/>
+            <where>enum_name = 'VESSEL_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación Abandonada a la Deriva"/>
+            <where>enum_name = 'DERELICT_VESSEL_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ballena Muerta a la Deriva"/>
+            <where>enum_name = 'DEAD_WHALE_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Tronco a la Deriva"/>
+            <where>enum_name = 'LOG_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Tronco Muerto a la Deriva"/>
+            <where>enum_name = 'DEAD_HEAD_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Barrera de Troncos a la Deriva"/>
+            <where>enum_name = 'LOG_BOOM_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Muelle a la Deriva"/>
+            <where>enum_name = 'DOCK_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Red de Pesca a la Deriva"/>
+            <where>enum_name = 'FISH_NET_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Escombros Flotantes"/>
+            <where>enum_name = 'FLOATING_DEBRIS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Objeto a la Deriva"/>
+            <where>enum_name = 'OBJECT_ADRIFT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en Barra de Arena o Lengua de Arena"/>
+            <where>enum_name = 'SANDSPIT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Superficial Reportada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_REPORTED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Superficial Confirmada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_CONFIRMED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Red de Pesca Sumergida"/>
+            <where>enum_name = 'SUBMERGED_FISH_NET'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Roca No Cartografiada"/>
+            <where>enum_name = 'UNCHARTED_ROCK'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Naufragio Peligroso"/>
+            <where>enum_name = 'DANGEROUS_WRECK'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Amarre Subacuático"/>
+            <where>enum_name = 'SUBSURFACE_MOORING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Objeto Sumergido"/>
+            <where>enum_name = 'SUBMERGED_OBJECT'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Grabador Acústico"/>
+            <where>enum_name = 'ACOUSTIC_RECORDER'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Equipo Científico"/>
+            <where>enum_name = 'SCIENTIFIC_BUOY_APPARATUS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Amarres Científicos"/>
+            <where>enum_name = 'SCIENTIFIC_MOORING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio de Mareógrafo"/>
+            <where>enum_name = 'TIDE_GAUGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre de Vías Navegables"/>
+            <where>enum_name = 'OPEN_CLOSE_WATERWAY'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Vía Navegable Recomendada o No Recomendada Para Embarcaciones"/>
+            <where>enum_name = 'WATERWAY_RECOMMENDED_NOT_RECOMMENDED_FOR_SHIPPING'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio VTS"/>
+            <where>enum_name = 'VTS_CHANGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambio en el Servicio del Sistema de Vigilancia Radar"/>
+            <where>enum_name = 'RADAR_SURVEILLANCE_SYSTEM'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Regulación Nueva o Modificada"/>
+            <where>enum_name = 'REGULATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en el Área Restringida"/>
+            <where>enum_name = 'RESTRICTED_AREA'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Zona de Exclusión"/>
+            <where>enum_name = 'EXCLUSION_ZONES'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Regata o Carrera"/>
+            <where>enum_name = 'REGATTA_RACE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nadadores"/>
+            <where>enum_name = 'SWIMMERS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Presencia de Mamíferos Marinos"/>
+            <where>enum_name = 'MARINE_MAMMALS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Fuegos Artificiales"/>
+            <where>enum_name = 'FIREWORKS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Agrupación de Barcos de Pesca"/>
+            <where>enum_name = 'CLUSTER_OF_FISHING_VESSELS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Congestión de Tráfico"/>
+            <where>enum_name = 'TRAFFIC_CONGESTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Embarcación Desactivada"/>
+            <where>enum_name = 'VESSEL_DISABLED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre del Puerto"/>
+            <where>enum_name = 'OPEN_CLOSE_HARBOUR'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Apertura o Cierre del Puente Giratorio"/>
+            <where>enum_name = 'OPEN_CLOSE_SWING_BRIDGE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Espacio Libre Vertical Reducido"/>
+            <where>enum_name = 'VERTICAL_CLEARANCE_REDUCED'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Dragado"/>
+            <where>enum_name = 'DREDGING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Construcción de Rompeolas"/>
+            <where>enum_name = 'BREAKWATER_CONSTRUCTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Construcción de Muelle"/>
+            <where>enum_name = 'WHARF_CONSTRUCTION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones de Buceo"/>
+            <where>enum_name = 'DIVING_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Tendido de Cables"/>
+            <where>enum_name = 'CABLE_LAYING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Cables"/>
+            <where>enum_name = 'OPERATION_ON_CABLE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Tendido de Tuberías"/>
+            <where>enum_name = 'PIPE_LAYING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Tuberías"/>
+            <where>enum_name = 'OPERATION_ON_PIPE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Obras en Curso"/>
+            <where>enum_name = 'WORKS_IN_PROGRESS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Pruebas en el Mar"/>
+            <where>enum_name = 'SEA_TRIALS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operaciones con Hidroaviones"/>
+            <where>enum_name = 'SEAPLANE_OPERATIONS'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio Militar"/>
+            <where>enum_name = 'MILITARY_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio de Tiro"/>
+            <where>enum_name = 'FIRING_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio de Interferencia (Jamming)"/>
+            <where>enum_name = 'JAMMING_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación Militar"/>
+            <where>enum_name = 'MILITARY_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación de Voladura"/>
+            <where>enum_name = 'BLASTING_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio Anticontaminación"/>
+            <where>enum_name = 'ANTI_POLLUTION_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación Anticontaminación"/>
+            <where>enum_name = 'ANTI_POLLUTION_OPERATION'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Ejercicio SAR"/>
+            <where>enum_name = 'SAR_EXERCISE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Operación SAR"/>
+            <where>enum_name = 'SAR_OPERATION'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

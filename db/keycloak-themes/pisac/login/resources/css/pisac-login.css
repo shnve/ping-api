@@ -1,0 +1,300 @@
+/* ==========================================================================
+   PISAC - TEMA PERSONALIZADO KEYCLOAK (SHN - VENEZUELA)
+   ========================================================================== */
+
+/* Fondo general de la página de login */
+body.login-pf,
+body {
+  background: radial-gradient(circle at 50% 20%, #163d72 0%, #0c2344 60%, #051020 100%) !important;
+  min-height: 100vh !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 1.5rem !important;
+}
+
+.login-pf-page {
+  width: 100% !important;
+  max-width: 460px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.login-pf {
+  background: transparent !important;
+}
+
+/* Contenedor general */
+#kc-container {
+  width: 100% !important;
+  max-width: 460px !important;
+  margin: 0 auto !important;
+}
+
+/* Encabezado: Logos y texto institucional */
+#kc-header {
+  margin: 0 0 1.25rem 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+#kc-header-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0 !important; /* Oculta texto plano de realm */
+  color: transparent !important;
+}
+
+/* Placa con Logos Institucionales SHN y OCHINA */
+#kc-header-wrapper::before {
+  content: "" !important;
+  display: block !important;
+  width: 220px !important;
+  height: 125px !important;
+  background: #ffffff url('../img/logo-shn-ochina.png') no-repeat center center !important;
+  background-size: 92% auto !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+  margin: 0 auto 0.85rem auto !important;
+}
+
+/* Texto institucional debajo de los logos */
+#kc-header-wrapper::after {
+  content: "República Bolivariana de Venezuela\A PISAC - Plataforma de Información de Seguridad Acuática" !important;
+  white-space: pre-wrap !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+  letter-spacing: 0.3px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Tarjeta de login principal */
+.card-pf {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
+  border-top: 5px solid #1a4a8d !important;
+  padding: 2.25rem 2rem 2rem 2rem !important;
+  max-width: 460px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Eliminar cajas/bordes duplicados en contenedores internos */
+#kc-content,
+#kc-content-wrapper,
+#kc-form,
+#kc-form-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* Cabecera interna de la tarjeta */
+header.login-pf-header {
+  margin-bottom: 1.5rem !important;
+  position: relative !important;
+}
+
+/* Título de la página */
+#kc-page-title {
+  color: #0b2244 !important;
+  font-weight: 700 !important;
+  font-size: 1.35rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1.25rem !important;
+  text-align: center !important;
+}
+
+/* Selector de idioma: botón compacto en la esquina superior derecha */
+#kc-locale {
+  position: absolute !important;
+  top: -1.25rem !important;
+  right: -0.75rem !important;
+  margin: 0 !important;
+  z-index: 100 !important;
+}
+
+#kc-locale-wrapper {
+  position: relative !important;
+}
+
+#kc-current-locale-link {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 0.3rem 0.65rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  transition: all 0.2s ease-in-out !important;
+  text-decoration: none !important;
+}
+
+#kc-current-locale-link:hover {
+  background: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+  color: #0f3261 !important;
+}
+
+#kc-current-locale-link::after {
+  content: " \25BE" !important;
+  font-size: 0.75rem !important;
+  margin-left: 2px !important;
+}
+
+/* Menú desplegable de idiomas: oculto por defecto para evitar redundancia */
+#kc-locale .pf-c-dropdown__menu,
+#language-switch1 {
+  display: none !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  min-width: 130px !important;
+  padding: 0.25rem 0 !important;
+  list-style: none !important;
+  margin: 4px 0 0 0 !important;
+  z-index: 1000 !important;
+}
+
+/* Mostrar solo cuando el botón esté activo / desplegado */
+#kc-current-locale-link[aria-expanded="true"] + #language-switch1,
+#kc-locale-dropdown.open .pf-c-dropdown__menu,
+#kc-locale.open .pf-c-dropdown__menu {
+  display: block !important;
+}
+
+#kc-locale .pf-c-dropdown__menu-item {
+  display: block !important;
+  padding: 0.45rem 0.85rem !important;
+  color: #1e293b !important;
+  font-size: 0.82rem !important;
+  text-decoration: none !important;
+  transition: background 0.15s !important;
+}
+
+#kc-locale .pf-c-dropdown__menu-item:hover {
+  background: #f1f5f9 !important;
+  color: #0f3261 !important;
+  font-weight: 600 !important;
+}
+
+/* Etiquetas del formulario */
+label.control-label,
+label.pf-c-form__label {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 0.35rem !important;
+  display: block !important;
+}
+
+/* Grupos de formulario */
+.form-group {
+  margin-bottom: 1.15rem !important;
+}
+
+/* Campos de entrada */
+.form-control,
+.pf-c-form-control {
+  border-radius: 6px !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 0.65rem 0.85rem !important;
+  font-size: 0.95rem !important;
+  height: auto !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.form-control:focus,
+.pf-c-form-control:focus {
+  border-color: #1a4a8d !important;
+  box-shadow: 0 0 0 3px rgba(26, 74, 141, 0.18) !important;
+  outline: none !important;
+}
+
+/* Botón de alternar ver contraseña */
+.pf-c-input-group {
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+
+.pf-c-button.pf-m-control {
+  border: 1px solid #cbd5e1 !important;
+  border-left: none !important;
+  background: #f8fafc !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  padding: 0 0.85rem !important;
+  cursor: pointer !important;
+  color: #64748b !important;
+  transition: color 0.15s !important;
+}
+
+.pf-c-button.pf-m-control:hover {
+  color: #0f3261 !important;
+}
+
+/* Botón de inicio de sesión */
+.btn-primary,
+#kc-login,
+.pf-c-button.pf-m-primary {
+  background-color: #0f3261 !important;
+  border: 1px solid #0f3261 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  color: #ffffff !important;
+  letter-spacing: 0.3px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease-in-out !important;
+  box-shadow: 0 4px 10px rgba(15, 50, 97, 0.3) !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+.btn-primary:hover,
+#kc-login:hover,
+.pf-c-button.pf-m-primary:hover {
+  background-color: #1a4a8d !important;
+  border-color: #1a4a8d !important;
+  box-shadow: 0 6px 16px rgba(15, 50, 97, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-primary:active,
+#kc-login:active,
+.pf-c-button.pf-m-primary:active {
+  transform: translateY(0) !important;
+}

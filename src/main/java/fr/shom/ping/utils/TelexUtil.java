@@ -40,7 +40,7 @@ import static fr.shom.ping.utils.S124v2Util.getLocalitiesOrderedByGeneralAreas;
 import static fr.shom.ping.utils.WarningUtil.generateUsualNumber;
 import static java.util.Comparator.comparing;
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.FRENCH;
+
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 @Component
@@ -65,7 +65,7 @@ public final class TelexUtil {
         return Stream.concat(
                 warning.getSerie().getMandatoryLanguages().stream(),
                 warning.getSerie().getOptionalLanguages().stream())
-            .sorted()
+            .sorted(comparing(lang -> !"es".equalsIgnoreCase(lang)))
             .map(language -> generateTelex(warning, language, usualNumberLink))
             .map(StringUtils::stripAccents)
             .map(String::toUpperCase)
@@ -102,13 +102,13 @@ public final class TelexUtil {
         final Predicate<WarningLocalityNames> predicateHasNoInternationalName = v -> Objects.isNull(v.getInternationalName());
 
         final BiFunction<WarningLocalityNames, String, String> getLangLocalizedText = (list, langToFilter) ->
-            FRENCH.getLanguage().equals(langToFilter) ? list.getName() : list.getInternationalName();
+            "es".equals(langToFilter) ? list.getName() : list.getInternationalName();
 
         getLocalitiesOrderedByGeneralAreas(warning)
             .forEach(value -> {
                 // handle case when no international text is available
                 if (internationalLanguage && predicateEnglishLanguage.test(lang) && predicateHasNoInternationalName.test(value)) {
-                    localityNames.add(getLangLocalizedText.apply(value, FRENCH.getLanguage()));
+                    localityNames.add(getLangLocalizedText.apply(value, "es"));
                 } else {
                     localityNames.add(getLangLocalizedText.apply(value, lang));
                 }
@@ -185,7 +185,7 @@ public final class TelexUtil {
         FixedDateRange dateRange = SerializationUtils.clone(fixedDateRange);
         convertDateRangeToUtc(dateRange);
 
-        final Locale chosenLocale = internationalLanguage ? ENGLISH : FRENCH;
+        final Locale chosenLocale = internationalLanguage ? ENGLISH : Locale.forLanguageTag("es");
         final Predicate<FixedDateRange> hasStartTime = p -> p.getDateStart() != null && p.getTimeOfDayStart() != null;
         final Predicate<FixedDateRange> hasEndTime = p -> p.getDateEnd() != null && p.getTimeOfDayEnd() != null;
         final Predicate<FixedDateRange> hasStartDate = p -> p.getDateStart() != null;
@@ -207,10 +207,10 @@ public final class TelexUtil {
 
         final BiFunction<LocalDate, LocalTime, String> formatDateHour = getFormatterDateHour(chosenLocale);
 
-        final String prefixForDateStartOnly = internationalLanguage ? "from" : "à partir du";
-        final String prefixForDateEndOnly = internationalLanguage ? "until" : "jusqu'au";
-        final String prefixForStartDate = internationalLanguage ? "from" : "du";
-        final String prefixForEndDate = START_DATE_END_DATE_SEPARATOR + (internationalLanguage ? "to" : "au");
+        final String prefixForDateStartOnly = internationalLanguage ? "from" : "desde el";
+        final String prefixForDateEndOnly = internationalLanguage ? "until" : "hasta el";
+        final String prefixForStartDate = internationalLanguage ? "from" : "del";
+        final String prefixForEndDate = START_DATE_END_DATE_SEPARATOR + (internationalLanguage ? "to" : "al");
 
         final Function<FixedDateRange, String> formatDateStartOnly = p -> prefixForDateStartOnly + formatDateOnly.apply(p.getDateStart());
 
@@ -289,7 +289,7 @@ public final class TelexUtil {
     }
 
     private String formatCancelledUsualNumber(final String usualNumber, final boolean internationalLanguage, int itemCounter) {
-        final String prefix = internationalLanguage ? "CANCEL" : "ANNULE";
+        final String prefix = internationalLanguage ? "CANCEL" : "CANCELA";
         final String format = itemCounter > 0 ? "%d. %s %s" : "%s %s";
         return itemCounter > 0 ? format.formatted(itemCounter, prefix, usualNumber) : format.formatted(prefix, usualNumber);
     }
@@ -298,11 +298,11 @@ public final class TelexUtil {
         if (warning.getCancellationDate() == null) {
             return "";
         }
-        final String prefix = internationalLanguage ? "CANCEL THIS MSG" : "ANNULER CE MSG";
-        final Locale chosenLocale = internationalLanguage ? ENGLISH : FRENCH;
+        final String prefix = internationalLanguage ? "CANCEL THIS MSG" : "CANCELAR ESTE MENSAJE";
+        final Locale chosenLocale = internationalLanguage ? ENGLISH : Locale.forLanguageTag("es");
         final BiFunction<LocalDate, LocalTime, String> formatDateHour = getFormatterDateHour(chosenLocale);
         final ZoneOffset zoneUtc = ZoneOffset.UTC;
-        String formatCancellationDateTime = (!internationalLanguage && warning.isAddCancellationTimeToTelex() ? " LE" : "") +
+        String formatCancellationDateTime = (!internationalLanguage && warning.isAddCancellationTimeToTelex() ? " EL" : "") +
             (warning.isAddCancellationTimeToTelex() ? formatDateHour.apply(LocalDate.ofInstant(warning.getCancellationDate(), zoneUtc),
                 LocalTime.ofInstant(warning.getCancellationDate(), zoneUtc)) : "");
         return (itemCounter.get() > 1 ? (itemCounter.getAndIncrement() + ". ") : "") + prefix + formatCancellationDateTime;

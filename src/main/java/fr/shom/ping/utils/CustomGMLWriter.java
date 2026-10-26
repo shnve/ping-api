@@ -181,16 +181,24 @@ public class CustomGMLWriter {
 
     private void write(Geometry geom, Writer writer, int level) throws IOException {
         isRootTag = true;
-        switch (geom) {
-            case Point point -> writePoint(point, writer, level);
-            case LineString lineString -> writeLineString(lineString, writer, level);
-            case Polygon polygon -> writePolygon(polygon, writer, level);
-            case MultiPoint multiPoint -> writeMultiPoint(multiPoint, writer, level);
-            case MultiLineString multiLineString -> writeMultiLineString(multiLineString, writer, level);
-            case MultiPolygon multiPolygon -> writeMultiPolygon(multiPolygon, writer, level);
-            case GeometryCollection geometryCollection -> writeGeometryCollection(geometryCollection, writer,
-                startingIndentIndex);
-            case null, default -> throw new IllegalArgumentException("Unhandled geometry type: " + ofNullable(geom).orElseThrow(NullPointerException::new).getGeometryType());
+        if (geom == null) {
+            throw new IllegalArgumentException("Unhandled geometry type: " + ofNullable(geom).orElseThrow(NullPointerException::new).getGeometryType());
+        } else if (geom instanceof Point point) {
+            writePoint(point, writer, level);
+        } else if (geom instanceof LineString lineString) {
+            writeLineString(lineString, writer, level);
+        } else if (geom instanceof Polygon polygon) {
+            writePolygon(polygon, writer, level);
+        } else if (geom instanceof MultiPoint multiPoint) {
+            writeMultiPoint(multiPoint, writer, level);
+        } else if (geom instanceof MultiLineString multiLineString) {
+            writeMultiLineString(multiLineString, writer, level);
+        } else if (geom instanceof MultiPolygon multiPolygon) {
+            writeMultiPolygon(multiPolygon, writer, level);
+        } else if (geom instanceof GeometryCollection geometryCollection) {
+            writeGeometryCollection(geometryCollection, writer, startingIndentIndex);
+        } else {
+            throw new IllegalArgumentException("Unhandled geometry type: " + ofNullable(geom).orElseThrow(NullPointerException::new).getGeometryType());
         }
         writer.flush();
     }
