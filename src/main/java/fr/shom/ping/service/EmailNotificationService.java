@@ -57,6 +57,9 @@ public class EmailNotificationService {
         "<p style=\"margin: 0 0 12px 0; font-size: 11px; color: #64748b; line-height: 1.45;\">" +
         "La disponibilidad de las advertencias de navegación en esta plataforma no exime a los capitanes de la obligación de recibir en el mar las advertencias de navegación a través de los sistemas de difusión oficiales, de conformidad con las disposiciones del Convenio SOLAS." +
         "</p>" +
+        "<p style=\"margin: 0 0 12px 0; font-size: 11px; color: #64748b; line-height: 1.45;\">" +
+        "La plataforma PISAC presenta una selección de decretos marítimos. Para mayor información consultar las publicaciones de las autoridades competentes." +
+        "</p>" +
         "<div style=\"margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-size: 11px; color: #94a3b8;\">" +
         "No responda o reenvíe correos a esta cuenta. Esta es una cuenta no monitoreada.<br/>" +
         "Para cualquier consulta adicional, por favor enviar un correo electrónico a <a href=\"mailto:shnser@shn.gob.ve\" style=\"color: #0066cc; text-decoration: none;\">shnser@shn.gob.ve</a>" +
