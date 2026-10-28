@@ -1020,6 +1020,9 @@ public class WarningAdminService {
         warning.setPublicationTime(now);
         warning.setLastUpdateUser(proUser);
         warning.setStatus(PUBLISHED);
+        if (serie.getName() != null) {
+            warning.setNameOfSeries(serie.getName().trim());
+        }
 
         Integer warningNumber = warning.getWarningNumber();
         if (warningNumber == null) {

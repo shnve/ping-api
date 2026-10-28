@@ -36,7 +36,7 @@ public final class NavtexUtil {
     }
 
     public static String getSeriePrefix(String serieName) {
-        return Arrays.stream(serieName.split(" ")).map(s -> s.charAt(0)).map(String::valueOf).map(String::toUpperCase)
+        return Arrays.stream(StringUtils.trimToEmpty(serieName).split("\\s+")).filter(StringUtils::isNotBlank).map(s -> s.charAt(0)).map(String::valueOf).map(String::toUpperCase)
                 .collect(Collectors.joining());
     }
 

@@ -149,7 +149,7 @@ public class Serie implements Serializable {
 
     public Serie(SerieCreateDto dto, MaritimeService maritimeService, List<SubArea> subAreaList) {
         urn = dto.getUrn();
-        name = dto.getName();
+        name = dto.getName() != null ? dto.getName().trim() : null;
         internationalName = dto.getInternationalName();
         information = dto.getInformation();
         localizedInformation = dto.getLocalizedInformation();

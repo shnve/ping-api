@@ -28,7 +28,7 @@ ping:
     name: "Servicio de Hidrografía y Navegación (SHN)"
     address: "Observatorio Naval Cagigal, La Planicie, Caracas"
     country: Venezuela
-    electronic-mail-address: "shn@armada.mil.ve"
+    electronic-mail-address: ${SHN_CONTACT_EMAIL:}
     function: information
     linkage: ${ping.portal-url}
     resource-name: PISAC - Plataforma de información de seguridad acuática
@@ -110,7 +110,7 @@ ping:
 
   georegulations-cron-check-links:
     cron-value: 0 0 7,19 * * *
-    email-recipient: XXX
+    email-recipient: ${GEOREGULATIONS_ALERT_EMAIL:}
     email-subject: Regulaciones con enlaces externos inválidos
     email-body-start: 'Los enlaces externos de las regulaciones listadas a continuación son inválidos :'
 
