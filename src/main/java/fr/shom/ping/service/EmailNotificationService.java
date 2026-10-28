@@ -44,6 +44,25 @@ public class EmailNotificationService {
     private static final String EMAIL_LINE_SEPARATOR = "<br/>";
     public static final String A_HREF = "<a href=\"";
 
+    public static final String INSTITUTIONAL_SIGNATURE_HTML =
+        "<br/><br/><div style=\"margin-top: 24px; padding-top: 16px; border-top: 2px solid #e2e8f0; font-size: 12px; color: #475569; line-height: 1.5; font-family: 'Segoe UI', Arial, sans-serif;\">" +
+        "<p style=\"margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #0b3152;\">" +
+        "Atentamente,<br/>" +
+        "PISAC - Plataforma de Información de Seguridad Acuática<br/>" +
+        "<span style=\"font-size: 12px; font-weight: normal; color: #334155;\">Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN - Venezuela)</span>" +
+        "</p>" +
+        "<p style=\"margin: 0 0 8px 0; font-size: 11px; color: #64748b; line-height: 1.45;\">" +
+        "La plataforma PISAC está implementada únicamente para las aguas jurisdiccionales de la República Bolivariana de Venezuela." +
+        "</p>" +
+        "<p style=\"margin: 0 0 12px 0; font-size: 11px; color: #64748b; line-height: 1.45;\">" +
+        "La disponibilidad de las advertencias de navegación en esta plataforma no exime a los capitanes de la obligación de recibir en el mar las advertencias de navegación a través de los sistemas de difusión oficiales, de conformidad con las disposiciones del Convenio SOLAS." +
+        "</p>" +
+        "<div style=\"margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-size: 11px; color: #94a3b8;\">" +
+        "No responda o reenvíe correos a esta cuenta. Esta es una cuenta no monitoreada.<br/>" +
+        "Para cualquier consulta adicional, por favor enviar un correo electrónico a <a href=\"mailto:shnser@shn.gob.ve\" style=\"color: #0066cc; text-decoration: none;\">shnser@shn.gob.ve</a>" +
+        "</div>" +
+        "</div>";
+
     private final KafkaService kafkaService;
 
     private final SubscriptionNotificationProperties subscriptionNotificationProperties;
@@ -82,7 +101,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(body))
+                .body(xssSanitizerService.sanitize(body + INSTITUTIONAL_SIGNATURE_HTML))
                 .build()
         );
     }
@@ -97,7 +116,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(recipients)
                 .subject(surveyExternalAnalysisMailProperties.getEmailSubject())
-                .body(getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType))
+                .body(getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType) + INSTITUTIONAL_SIGNATURE_HTML)
                 .build()
         );
     }
@@ -260,7 +279,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(body))
+                .body(xssSanitizerService.sanitize(body + INSTITUTIONAL_SIGNATURE_HTML))
                 .build()
         );
     }
