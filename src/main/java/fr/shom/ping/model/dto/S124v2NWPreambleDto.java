@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import fr.shom.ping.model.enums.WarningHazardTypeGeneral;
+import fr.shom.ping.utils.S124FeatureCatalogue;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
@@ -22,7 +23,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Builder
 @JsonPropertyOrder({"S124:generalArea", "S124:locality", "S124:messageSeriesIdentifier", "S124:cancellationDate", "S124:intService", "S124:navwarnTypeGeneral"
-    , "S124:publicationTime", "S124:theReferences", "S124:theWarningPart"})
+    , "S124:publicationTime", "S124:theReferences"})
 public class S124v2NWPreambleDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 4119530959722652605L;
@@ -62,10 +63,8 @@ public class S124v2NWPreambleDto implements Serializable {
     @Default
     private List<S124Link> theReferences = new ArrayList<>();
 
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "S124:theWarningPart")
-    @Default
-    private List<S124Link> theWarningPart = new ArrayList<>();
+    // S-124 2.0.0: the preamble/part association (navwarnPreambleContent) is encoded only from the part side (S124:header).
+    // NavwarnPreambleType has no theWarningPart element, so it must not be serialized.
 
     @ToString
     @EqualsAndHashCode
@@ -84,6 +83,8 @@ public class S124v2NWPreambleDto implements Serializable {
         public static S124NavwarnTypeGeneral from(WarningHazardTypeGeneral warningHazardTypeGeneral) {
             return S124NavwarnTypeGeneral.builder()
                 .code(warningHazardTypeGeneral.getS124Code())
+                // the XSD requires the normative Feature Catalogue label as element text
+                .value(S124FeatureCatalogue.label(S124FeatureCatalogue.NAVWARN_TYPE_GENERAL, warningHazardTypeGeneral.getS124Code()))
                 .build();
         }
     }

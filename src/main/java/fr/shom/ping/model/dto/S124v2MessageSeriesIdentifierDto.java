@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
-import fr.shom.ping.model.enums.WarningType;
+import fr.shom.ping.model.enums.S124v2OhiWarningType;
 import java.io.Serial;
 import java.io.Serializable;
 import lombok.Builder;
@@ -17,12 +17,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @EqualsAndHashCode
 @Builder
 @JsonInclude(NON_NULL)
-@JsonPropertyOrder({"S124:agencyResponsibleForProduction", "S124:countryName", "S124:nameOfSeries", "S124:warningNumber", "S124:warningType", "S124:year"})
+// Element order imposed by S-124 2.0.0 messageSeriesIdentifierType (xs:sequence)
+@JsonPropertyOrder({"S124:agencyResponsibleForProduction", "S124:nameOfSeries", "S124:nationality", "S124:warningNumber", "S124:warningType", "S124:year"})
 public class S124v2MessageSeriesIdentifierDto implements Serializable {
     @Serial
     private static final long serialVersionUID = -7123684198633048450L;
 
-    @JacksonXmlProperty(localName = "S124:countryName")
+    // S-124 2.0.0 has no countryName element: the country is encoded as "nationality"
+    @JacksonXmlProperty(localName = "S124:nationality")
     private String country;
 
     @JacksonXmlProperty(localName = "S124:nameOfSeries")
@@ -55,8 +57,13 @@ public class S124v2MessageSeriesIdentifierDto implements Serializable {
         @JacksonXmlText
         private String value;
 
-        public static S124WarningType from(WarningType warningType) {
-            return S124WarningType.builder().code(warningType.getCode())
+        /**
+         * Builds the S-124 2.0.0 warningType element: OHI code (1..12) and its normative label as element text.
+         */
+        public static S124WarningType from(S124v2OhiWarningType warningType) {
+            return S124WarningType.builder()
+                .code(warningType.getCode())
+                .value(warningType.getLabel())
                 .build();
         }
     }

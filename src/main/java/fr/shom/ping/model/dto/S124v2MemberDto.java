@@ -19,16 +19,17 @@ public class S124v2MemberDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 6585992849419929494L;
 
-    @JacksonXmlProperty(localName = "S124:NAVWARNPreamble")
+    // S-124 2.0.0 XSD element names are case-sensitive: NavwarnPreamble / NavwarnPart / NavwarnAreaAffected
+    @JacksonXmlProperty(localName = "S124:NavwarnPreamble")
     private S124v2NWPreambleDto preamble;
 
     @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "S124:NAVWARNPart")
+    @JacksonXmlProperty(localName = "S124:NavwarnPart")
     @Builder.Default
     private List<S124v2NWPartDto> part = new ArrayList<>();
 
     @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "S124:NAVWARNAreaAffected")
+    @JacksonXmlProperty(localName = "S124:NavwarnAreaAffected")
     @Builder.Default
     private List<S124NWAreaAffectedDto> affectedArea = new ArrayList<>();
 

@@ -8,6 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import fr.shom.ping.utils.S124FeatureCatalogue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -39,7 +40,7 @@ public class S124v2DataSetDto implements Serializable {
 
     @Default
     @JacksonXmlProperty(isAttribute = true, localName = "xmlns:S124")
-    private String s124Ns = "http://www.iho.int/S124/1.5";
+    private String s124Ns = S124FeatureCatalogue.NAMESPACE;
 
     @Default
     @JacksonXmlProperty(isAttribute = true, localName = "xmlns:xlink")

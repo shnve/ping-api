@@ -3,11 +3,14 @@ package fr.shom.ping.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,7 +23,8 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 @EqualsAndHashCode
 @Builder
 @JsonInclude(NON_NULL)
-@JsonPropertyOrder({"S124:dateEnd", "S124:timeOfDayEnd", "S124:dateStart", "S124:timeOfDayStart"})
+// Element order imposed by S-124 2.0.0 fixedDateRangeType (xs:sequence)
+@JsonPropertyOrder({"S124:dateEnd", "S124:dateStart", "S124:timeOfDayEnd", "S124:timeOfDayStart"})
 public class S124v2FixedDateRange implements Serializable {
     @Serial
     private static final long serialVersionUID = -6860502307078459681L;
@@ -55,6 +59,9 @@ public class S124v2FixedDateRange implements Serializable {
         }
     }
 
+    /**
+     * S-124 2.0.0 timeOfDayStart / timeOfDayEnd are simple xs:time values (e.g. {@code 18:00:00Z}), not complex elements.
+     */
     @ToString
     @EqualsAndHashCode
     @Builder
@@ -63,12 +70,17 @@ public class S124v2FixedDateRange implements Serializable {
         @Serial
         private static final long serialVersionUID = -3167999324937647628L;
 
-        @JsonFormat(pattern = "HH:mm:ssXXX", timezone = "UTC")
-        @JacksonXmlProperty(localName = "S100:Time")
+        private static final DateTimeFormatter XS_TIME_UTC = DateTimeFormatter.ofPattern("HH:mm:ssXXX");
+
         private ZonedDateTime time;
 
         public static S124Time buildTime(ZonedDateTime time) {
             return S124Time.builder().time(time).build();
+        }
+
+        @JsonValue
+        public String toXsTime() {
+            return time == null ? null : XS_TIME_UTC.format(time.withZoneSameInstant(ZoneOffset.UTC));
         }
     }
 }

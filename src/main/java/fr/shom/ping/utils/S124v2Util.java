@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.shom.ping.PingApiTranslationsRegistry;
+import fr.shom.ping.exception.S124Exception;
 import fr.shom.ping.exception.ServiceException;
 import fr.shom.ping.model.Feature;
 import fr.shom.ping.model.FeaturePart;
@@ -38,6 +39,8 @@ import fr.shom.ping.model.dto.S124v2WarningInformation;
 import fr.shom.ping.model.enums.S100DatasetPurposeType;
 import fr.shom.ping.model.enums.S100TopicCategoryCode;
 import fr.shom.ping.model.enums.S124ReferenceCategoryCode;
+import fr.shom.ping.model.enums.S124v2OhiWarningType;
+import fr.shom.ping.model.enums.WarningType;
 import fr.shom.ping.model.enums.WarningReferenceCategoryEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -58,6 +61,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -112,6 +116,12 @@ public final class S124v2Util {
         GML_WRITER.setSrsName(SRS_NAME);
         XML_MAPPER = new XmlMapper();
         XML_MAPPER.registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        // every internal hazard code must have its normative S-124 2.0.0 label, otherwise the GML would be invalid
+        final List<String> missingLabels = S124FeatureCatalogue.checkCoverage();
+        if (!missingLabels.isEmpty()) {
+            log.error("S-124 {} Feature Catalogue labels missing for: {}", S124FeatureCatalogue.PRODUCT_EDITION, missingLabels);
+        }
     }
 
     @Autowired
@@ -127,7 +137,7 @@ public final class S124v2Util {
 
     public void writeGmlFile(S124v2DataSetDto dataSetDto, String filePath) throws ServiceException {
         try (FileOutputStream fos = new FileOutputStream(Path.of(FilenameUtils.getFullPath(filePath), FilenameUtils.getName(filePath)).toString())) {
-            fos.write(prettyPrintByTransformer(XML_MAPPER.writeValueAsString(dataSetDto), 4, false).getBytes());
+            fos.write(prettyPrintByTransformer(XML_MAPPER.writeValueAsString(dataSetDto), 4, false).getBytes(StandardCharsets.UTF_8));
         } catch (IOException | XmlException exception) {
             log.error("Failed to create dataset file : {}", exception.getMessage());
             throw new ServiceException("Failed to create dataset file : " + exception.getMessage());
@@ -135,7 +145,9 @@ public final class S124v2Util {
     }
 
     public S124V2ExchangeSetDto buildS124ExchangeSetDtoFromWarnings(List<Warning> warnings, String lang) {
+        // Scenario B: only Navigational Warnings are S-124 products; notices (NOTICE / NOTICE_TP) are never exported
         List<S124v2DataSetDto> dataSet = warnings.stream()
+            .filter(S124v2OhiWarningType::isS124Exportable)
             .map(warning -> mapWarningToS124DataSet(lang, warning))
             .toList();
 
@@ -156,6 +168,9 @@ public final class S124v2Util {
         // add S100:DatasetIdentificationInformation
         dataSet.setIdentificationInformation(
             S100DatasetIdentificationInformation.builder()
+                .productEdition(S124FeatureCatalogue.PRODUCT_EDITION)
+                // ISO 639-2 code of the dataset language (was always "eng", even for the Spanish dataset)
+                .datasetLanguage(getLanguageCode(lang))
                 .datasetFileIdentifier(fileIdentifier)
                 .datasetTitle(warning.formattedWarningFullNumber() + " - " + getLanguageCode(lang))
                 .datasetReferenceDate(LocalDate.ofInstant(warning.getPublicationTime(), ZoneId.of("UTC")))
@@ -252,10 +267,7 @@ public final class S124v2Util {
                 .build())
             .build()
         );
-
-        memberDto.getPreamble().getTheWarningPart().add(S124Link.builder()
-            .href("#" + partId)
-            .build());
+        // S-124 2.0.0: the preamble/part association is only encoded through the part header (no theWarningPart in the preamble)
     }
 
     private static S124v2FixedDateRange.S124Time buildTimePeriod(LocalDate date, LocalTime time) {
@@ -342,13 +354,16 @@ public final class S124v2Util {
 
     private S124v2NWReferencesDto buildNWReferencesDto(List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode,
         String referencesGmlId) {
+        final List<S124v2MessageSeriesIdentifierDto> messageSeries = buildMessageSeriesIdentifierList(warnings);
         return S124v2NWReferencesDto.builder()
             .gmlId(referencesGmlId)
-            .messageSeries(buildMessageSeriesIdentifierList(warnings))
-            .noMessageOnHand(warnings.isEmpty())
+            .messageSeries(messageSeries)
+            .noMessageOnHand(messageSeries.isEmpty())
             .referenceCategory(
                 S124v2NWReferencesDto.S124ReferenceCategory.builder()
                     .code(referenceCategoryCode.getCode())
+                    // the XSD requires the normative Feature Catalogue label as element text
+                    .value(referenceCategoryCode.getFcLabel())
                     .build()
             )
             .build();
@@ -386,10 +401,7 @@ public final class S124v2Util {
         return S124v2MessageSeriesIdentifierDto.builder()
             .nameOfSeries(warning.getNameOfSeries())
             .warningNumber(warning.getWarningNumber())
-            .warningType(
-                S124v2MessageSeriesIdentifierDto.S124WarningType.from(fromSerieTypeAndWarningHazardTypeGeneral(warning.getSerie().getType(),
-                    warning.getWarningHazardTypeGeneral()))
-            )
+            .warningType(S124v2MessageSeriesIdentifierDto.S124WarningType.from(toOhiWarningType(warning)))
             .year(warning.getYear())
             .productionAgency(warning.getMaritimeServiceihoProducerCode())
             .country(warning.getCountry())
@@ -600,7 +612,23 @@ public final class S124v2Util {
     }
 
     private List<S124v2MessageSeriesIdentifierDto> buildMessageSeriesIdentifierList(List<Warning> warnings) {
-        return warnings.stream().map(this::buildMessageSeriesIdentifier).toList();
+        // notices referenced by a warning are not S-124 products and cannot be identified with an OHI warningType
+        return warnings.stream()
+            .filter(S124v2OhiWarningType::isS124Exportable)
+            .map(this::buildMessageSeriesIdentifier)
+            .toList();
+    }
+
+    /**
+     * Maps the internal warning type (serie type + bulletin flag) to the S-124 2.0.0 warningType (codes 1..12).
+     *
+     * @throws S124Exception if the warning is not a Navigational Warning (notices are managed outside S-124)
+     */
+    private static S124v2OhiWarningType toOhiWarningType(Warning warning) {
+        final WarningType internalType = fromSerieTypeAndWarningHazardTypeGeneral(warning.getSerie().getType(), warning.getWarningHazardTypeGeneral());
+        return S124v2OhiWarningType.fromInternal(internalType)
+            .orElseThrow(() -> new S124Exception("Serie type " + warning.getSerie().getType()
+                + " is not a Navigational Warning and cannot be encoded in S-124 " + S124FeatureCatalogue.PRODUCT_EDITION));
     }
 
     public static <T> Consumer<T> withCounter(BiConsumer<Integer, T> consumer) {

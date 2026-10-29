@@ -27,6 +27,7 @@ import fr.shom.ping.model.dto.WarningReferenceDto;
 import fr.shom.ping.model.dto.WarningUpdateDto;
 import fr.shom.ping.model.dto.WarningUpdatePublishedDto;
 import fr.shom.ping.model.enums.DiffusionNavtexEmergencyLevel;
+import fr.shom.ping.model.enums.S124v2OhiWarningType;
 import fr.shom.ping.model.enums.WarningReferenceCategoryEnum;
 import fr.shom.ping.model.enums.WarningStatus;
 import fr.shom.ping.model.mapper.WarningCreateDtoToWarningMapper;
@@ -1075,6 +1076,14 @@ public class WarningAdminService {
 
     private static boolean checkWarningS124Capability(Warning warning) {
         if (!warning.getSerie().getMaritimeService().isS124DataProducer() || StringUtils.isBlank(warning.getSerieS124Identifier())) {
+            return false;
+        }
+
+        // Scenario B: S-124 only encodes Navigational Warnings (S-53). Notices to mariners and T&P notices are national
+        // products published by PISAC but never exported as S-124, even if an S-124 identifier is configured on their serie.
+        if (!S124v2OhiWarningType.isS124Exportable(warning)) {
+            log.info("S-124 exchange set not generated for warning {}: serie type {} is not a Navigational Warning",
+                warning.getId(), warning.getSerie().getType());
             return false;
         }
 

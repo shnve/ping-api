@@ -7,6 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import fr.shom.ping.utils.S124FeatureCatalogue;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,7 +27,7 @@ public class S124V2ExchangeSetDto extends AbstractS124ExchangeSetBaseDto impleme
 
     @Default
     @JacksonXmlProperty(isAttribute = true, localName = "xmlns:S124")
-    private String s124Ns = "http://www.iho.int/S124/1.5";
+    private String s124Ns = S124FeatureCatalogue.NAMESPACE;
 
     @Default
     @JacksonXmlElementWrapper(useWrapping = false)

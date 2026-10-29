@@ -36,7 +36,6 @@ public enum WarningType {
     private final boolean isBulletin;
 
     public static WarningType fromSerieTypeAndWarningHazardTypeGeneral(SerieType serieType, WarningHazardTypeGeneral typeGeneral) {
-        System.out.println("DEBUG WARNINGTYPE: serieType=" + serieType + ", typeGeneral=" + typeGeneral);
         return stream(WarningType.values())
             .filter(type -> type.isBulletin() == typeGeneral.isBulletin())
             .filter(type -> serieType.name().equals(type.getSerieType().name()))

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import fr.shom.ping.model.enums.WarningHazardTypeDetails;
+import fr.shom.ping.utils.S124FeatureCatalogue;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,6 +54,8 @@ public class S124v2WarningInformation implements Serializable {
         public static S124v2WarningInformation.S124NavwarnTypeDetails from(WarningHazardTypeDetails warningHazardTypeDetails) {
             return S124v2WarningInformation.S124NavwarnTypeDetails.builder()
                 .code(warningHazardTypeDetails.getS124Code())
+                // the XSD requires the normative Feature Catalogue label as element text
+                .value(S124FeatureCatalogue.label(S124FeatureCatalogue.NAVWARN_TYPE_DETAILS, warningHazardTypeDetails.getS124Code()))
                 .build();
         }
     }

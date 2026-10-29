@@ -16,6 +16,7 @@ import fr.shom.ping.repository.WarningRepository;
 import fr.shom.ping.utils.DigitalSignatureUtils;
 import fr.shom.ping.utils.NavtexUtil;
 import fr.shom.ping.utils.S100Util;
+import fr.shom.ping.utils.S124FeatureCatalogue;
 import fr.shom.ping.utils.S124v2Util;
 import fr.shom.ping.utils.ZipUtil;
 import java.io.File;
@@ -125,7 +126,7 @@ public class SecomService {
     private static final URL PRODUCT_SCHEMA_URL;
     private static final String PRODUCT_SCHEMA_URI = "https://registry.iho.int/productspec/list.do";
     public static final String SERVICE_VERSION = "1.0.0";
-    public static final String PRODUCT_VERSION = "1.5.0";
+    public static final String PRODUCT_VERSION = S124FeatureCatalogue.PRODUCT_EDITION;
 
     static {
         try {
