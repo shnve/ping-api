@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -28,6 +29,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KeycloakService {
     private final KeycloakProperties keycloakProperties;
     private final RealmResource publicRealmResource;
@@ -83,6 +85,13 @@ public class KeycloakService {
             .roles()
             .clientLevel(pingApiClient.getId())
             .add(singletonList(roleRepresentation));
+
+        try {
+            sendUpdatePasswordEmail(UUID.fromString(keycloakId));
+            log.info("Correo de configuracion de contrasena enviado automaticamente al usuario profesional: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("No se pudo enviar el correo de configuracion de contrasena al usuario profesional {}: {}", user.getEmail(), e.getMessage());
+        }
 
         return UUID.fromString(keycloakId);
     }

@@ -108,6 +108,13 @@ public class ProUserController {
         service.resetPassword(principal.getName());
     }
 
+    @PostMapping("/{id}/reset-password")
+    @Operation(summary = "Send reset password email to a pro user", tags = "User (Pro)")
+    @PreAuthorize("hasAuthority('functional-admin')")
+    public void resetPasswordForUser(@PathVariable UUID id) {
+        service.resetPasswordForUser(id);
+    }
+
     @PutMapping("{id}/disable")
     @SuppressWarnings("squid:S4834")
     @Operation(summary = "Disable pro user", tags = "User (Pro)")

@@ -312,4 +312,9 @@ public class ProUserService extends AbstractProUserService {
         ProUser proUser = findByEmail(username);
         keycloakService.sendUpdatePasswordEmail(proUser.getKeycloakId());
     }
+
+    public void resetPasswordForUser(UUID id) {
+        ProUser proUser = proUserRepository.findById(id).orElseThrow(NotFoundException::new);
+        keycloakService.sendUpdatePasswordEmail(proUser.getKeycloakId());
+    }
 }
