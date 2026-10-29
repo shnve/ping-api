@@ -43,6 +43,7 @@ public class KeycloakService {
         userRepresentation.setEmail(user.getEmail());
         userRepresentation.setEmailVerified(false);
         userRepresentation.setEnabled(true);
+        userRepresentation.singleAttribute("locale", "es");
         userRepresentation.setRequiredActions(singletonList("VERIFY_EMAIL"));
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
@@ -63,6 +64,7 @@ public class KeycloakService {
         userRepresentation.setEmail(user.getEmail());
         userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
+        userRepresentation.singleAttribute("locale", "es");
         Response response = proRealmResource.users().create(userRepresentation);
         if (response.getStatus() != CREATED.value()) {
             KeycloakError keycloakError = response.readEntity(KeycloakError.class);
@@ -172,6 +174,15 @@ public class KeycloakService {
 
     public void sendUpdatePasswordEmail(UUID keycloakId) {
         UserResource userResource = proRealmResource.users().get(keycloakId.toString());
+        try {
+            UserRepresentation rep = userResource.toRepresentation();
+            if (rep.getAttributes() == null || !rep.getAttributes().containsKey("locale")) {
+                rep.singleAttribute("locale", "es");
+                userResource.update(rep);
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo asegurar locale es para usuario {}: {}", keycloakId, e.getMessage());
+        }
         userResource.executeActionsEmail(singletonList("UPDATE_PASSWORD"));
     }
 
@@ -187,6 +198,7 @@ public class KeycloakService {
         userRepresentation.setUsername(newEmail);
         userRepresentation.setEmailVerified(false);
         userRepresentation.setEnabled(true);
+        userRepresentation.singleAttribute("locale", "es");
         userRepresentation.setRequiredActions(singletonList("VERIFY_EMAIL"));
         userResource.update(userRepresentation);
     }

@@ -1,5 +1,6 @@
 <#ftl output_format="plainText">
-${msg("passwordResetBody",link, linkExpiration, realmName, linkExpirationFormatter(linkExpiration))}
+<#assign linkWithLocale = link + (link?contains("?")?then("&kc_locale=es", "?kc_locale=es"))>
+${msg("passwordResetBody",linkWithLocale, linkExpiration, realmName, linkExpirationFormatter(linkExpiration))}
 
 Atentamente,
 

@@ -1,5 +1,6 @@
 <#ftl output_format="plainText">
-${msg("executeActionsBody",link, linkExpiration, realmName, linkExpirationFormatter(linkExpiration))}
+<#assign linkWithLocale = link + (link?contains("?")?then("&kc_locale=es", "?kc_locale=es"))>
+${msg("executeActionsBody",linkWithLocale, linkExpiration, realmName, linkExpirationFormatter(linkExpiration))}
 
 Atentamente,
 
