@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!--
+        Eliminación de textos en francés heredados del proyecto PING (SHOM) visibles en PISAC.
+        Todo el contenido visible debe estar en español (translation / content) e inglés
+        (international_translation / international_content).
+    -->
+
+    <!-- ===================== Catálogos (translation) ===================== -->
+    <changeSet id="DB.Data.SHN.Remove_French.Catalogs" author="SHN">
+        <update tableName="georegulation_activities"><column name="translation" value="Navegación"/><where>enum_name = 'NAVIGATION'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Fondeo"/><where>enum_name = 'ANCHORING'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Pesca"/><where>enum_name = 'FISHING'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Buceo"/><where>enum_name = 'DIVING'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Deportes náuticos y actividades de playa"/><where>enum_name = 'WATER_SPORTS_AND_SEASIDE_ACTIVITIES'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Pilotaje"/><where>enum_name = 'PILOTAGE'</where></update>
+        <update tableName="georegulation_activities"><column name="translation" value="Otras actividades"/><where>enum_name = 'OTHER_ACTIVITIES'</where></update>
+
+        <update tableName="georegulation_types"><column name="translation" value="Navegación"/><where>enum_name = 'NAVIGATION'</where></update>
+        <update tableName="georegulation_types">
+            <column name="translation" value="Ocupación del dominio público marítimo"/>
+            <column name="international_translation" value="Maritime public domain occupancy"/>
+            <where>enum_name = 'MARITIME_PUBLIC_DOMAIN_OCCUPANCY'</where>
+        </update>
+        <update tableName="georegulation_types"><column name="translation" value="Otros"/><where>enum_name = 'OTHERS'</where></update>
+
+        <update tableName="warning_reference_category"><column name="translation" value="cancelación"/><where>enum_name = 'CANCELLATION'</where></update>
+        <update tableName="warning_reference_category"><column name="translation" value="en vigor"/><where>enum_name = 'IN_FORCE'</where></update>
+        <update tableName="warning_reference_category"><column name="translation" value="reemplazo"/><where>enum_name = 'REPLACEMENT'</where></update>
+        <update tableName="warning_reference_category"><column name="translation" value="referencia de la fuente"/><where>enum_name = 'SOURCE_REFERENCE'</where></update>
+    </changeSet>
+
+    <!-- ===================== Páginas y archivos estáticos ===================== -->
+    <changeSet id="DB.Data.SHN.Remove_French.Static_Pages_Files" author="SHN">
+        <update tableName="static_page"><column name="title" value="Ayuda sobre los servicios de datos y flujos OGC"/><where>path = 'data-services'</where></update>
+        <update tableName="static_page">
+            <column name="title" value="Leyenda de sondas detectadas y geometrías batimétricas con significado de las anotaciones"/>
+            <column name="international_title" value="Legend of detected soundings and bathymetric geometries with meaning of annotations"/>
+            <where>path = 'survey-map-legend'</where>
+        </update>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_page SET content = convert_to($txt$<p>La herramienta de asistencia para la detección de información náutica batimétrica constituye una ayuda a la decisión para el reporte de información crítica para la navegación.</p><p><br></p><p>La herramienta detecta las sondas del levantamiento que son menores que las indicadas en las cartas náuticas electrónicas (ENC) del SHN (desviación muy importante, importante o comprobada)*.</p><p><br></p><p>La herramienta también ofrece información sintética sobre la existencia de estas sondas detectadas, ya sea mediante sondas representativas de las desviaciones o mediante zonas de menor profundidad con indicación de la desviación máxima. Estos elementos se muestran en color azul. Pueden servirle de base para realizar un reporte sintético a las autoridades encargadas de la información náutica (advertencias de navegación, avisos a los navegantes). El botón&nbsp;<strong>Reportar profundidades peligrosas</strong>&nbsp;lo llevará a la redacción del reporte con base en la información sintética propuesta por la herramienta.</p><p><br></p><p>&nbsp;(*)&nbsp;: la herramienta se basa en los criterios matemáticos del capítulo B-620 de la norma S-4 de la Organización Hidrográfica Internacional, aplicados a la comparación entre los resultados del levantamiento batimétrico y las ENC oficiales correspondientes del SHN.</p><p><br></p><p>Se detecta una desviación cuando la nueva sonda es menor que las existentes en la ENC en al menos:</p><ul><li>0,5 m para profundidades de 0 a 10 m;</li><li>1 m para profundidades de 10 a 31 m;</li><li>5 % de la profundidad hasta 200 m;</li><li>10 % de la profundidad hasta 800 m.</li></ul><p><br></p><p>Estas desviaciones representan posiblemente un peligro para la navegación.</p><p><br></p><p>Aunque la herramienta brinda asistencia, se recuerda que es responsabilidad del contribuyente identificar la información náutica pertinente que debe ponerse en conocimiento de las autoridades encargadas de procesar y difundir la información náutica. En ningún caso las detecciones propuestas podrán considerarse exhaustivas de todo peligro revelado por un levantamiento.</p><p><br></p><p>En caso de dificultad, contactar&nbsp;<a href="mailto:bri@shn.mil.ve" target="_blank" style="color:rgb( 0 , 82 , 204 )" rel="noopener noreferrer nofollow">bri@shn.mil.ve</a></p>$txt$, 'UTF8') WHERE path = 'survey-map-legend'
+        ]]></sql>
+        <update tableName="static_file"><column name="description" value="Condiciones generales de uso"/><where>path = 'cgu'</where></update>
+        <update tableName="static_file"><column name="description" value="Aviso de confidencialidad de los datos del levantamiento"/><where>path = 'confidentialite-leves'</where></update>
+    </changeSet>
+
+    <!-- ===================== Secciones estáticas (content en español) ===================== -->
+    <changeSet id="DB.Data.SHN.Remove_French.Static_Sections" author="SHN">
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$<a href="/static-file/confidentiality-choice-information" target="_blank" rel="noopener noreferrer">Más información sobre la política de uso de datos del SHN</a>$txt$, 'UTF8') WHERE section_key = 'survey-transmission-confidentiality'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$El análisis detectó sondas menores.$txt$, 'UTF8') WHERE section_key = 'survey-analysis-result-alert'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$Deposite aquí los archivos batimétricos más actualizados y de mayor resolución, en particular para la asistencia en la detección de información náutica batimétrica. Formatos aceptados: extensiones de tipo ASCII, eventualmente comprimidas. Volumen: 10 GB máximo.$txt$, 'UTF8') WHERE section_key = 'survey-bathy-data'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$Metadatos técnicos (archivo PDF, máx. 10 GB)$txt$, 'UTF8') WHERE section_key = 'survey-technical-metadata'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$Instrucciones generales para la entrega de un levantamiento$txt$, 'UTF8') WHERE section_key = 'survey-transmission-general-instructions'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$<p><em>A continuación se explica cómo reportar una profundidad peligrosa</em></p>$txt$, 'UTF8') WHERE section_key = 'infosource-bathy-new-report'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$Deposite aquí cualquier otro documento o archivo de datos que complemente la transmisión del levantamiento al SHN (p. ej., planos realizados, archivos batimétricos que no se utilizan para el análisis de la información náutica, otros tipos de medición). Formatos aceptados: extensiones de tipo ASCII, eventualmente comprimidas. Volumen: 10 GB máximo.$txt$, 'UTF8') WHERE section_key = 'survey-other-documents'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$Instrucciones generales para el análisis de un levantamiento$txt$, 'UTF8') WHERE section_key = 'survey-analysis-general-instructions'
+        ]]></sql>
+        <sql splitStatements="false"><![CDATA[
+UPDATE static_section SET content = convert_to($txt$¡Gracias por su contribución!<br/><br/>La herramienta de asistencia para la detección de información náutica batimétrica constituye una ayuda a la decisión para el reporte de información crítica para la navegación.<br/><br/>La herramienta detecta las sondas del levantamiento que son menores que las indicadas en las cartas náuticas electrónicas (ENC) del SHN (desviación muy importante, importante o comprobada).<br/><br/>La herramienta también ofrece información sintética sobre la existencia de estas sondas detectadas, ya sea mediante sondas representativas de las desviaciones o mediante zonas de menor profundidad con indicación de la desviación máxima. Esta información sintética puede servirle de base para realizar un reporte a las autoridades encargadas de la información náutica (advertencias de navegación, avisos a los navegantes).<br/><br/>Aunque la herramienta brinda asistencia, se recuerda que es responsabilidad del contribuyente identificar la información náutica pertinente que debe ponerse en conocimiento de las autoridades encargadas de procesar y difundir la información náutica. En ningún caso las detecciones propuestas podrán considerarse exhaustivas de todo peligro revelado por un levantamiento.$txt$, 'UTF8') WHERE section_key = 'survey-transmission-popup-content'
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

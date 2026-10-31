@@ -118,7 +118,7 @@ public class SurveyArchiveDownloadService {
         PdfWriter writer = new PdfWriter(pdfFile);
         PdfDocument pdf = new PdfDocument(writer);
         try (Document document = new Document(pdf, PageSize.A4, false)) {
-            final Text title = new Text(survey.getIdentifier() + " (Transmis)");
+            final Text title = new Text(survey.getIdentifier() + " (Transmitido)");
             final PdfFont h2Font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
             final Paragraph paragraphTitle = new Paragraph(title).setFont(h2Font).setFontSize(12);
 
@@ -126,8 +126,8 @@ public class SurveyArchiveDownloadService {
             final List list = new List();
 
             // Add elements to the list
-            list.add("Nom du levé et localisation : " + survey.getNameAndLocation());
-            list.add("Région : " + survey.getArea().getName());
+            list.add("Nombre y ubicación del levantamiento: " + survey.getNameAndLocation());
+            list.add("Región: " + survey.getArea().getName());
 
             // Adding paragraph to the document
             document.add(paragraphTitle);
@@ -138,23 +138,23 @@ public class SurveyArchiveDownloadService {
             document.add(new Paragraph(" "));
 
             // metadata
-            final Text metadataText = new Text("Description des métadonnées générales");
+            final Text metadataText = new Text("Descripción de los metadatos generales");
             final Paragraph metadataParagraph = new Paragraph(metadataText).setFont(h2Font).setFontSize(12);
 
             document.add(metadataParagraph);
 
             final List metadataList = new List();
 
-            metadataList.add("Objectif du levé : " + survey.getGoal());
-            metadataList.add("Date de début du levé : " + LocalDate.ofInstant(survey.getStartDate(), UTC).format(NUMBER_DATE_PATTERN2));
-            metadataList.add("Date de fin du levé : " + LocalDate.ofInstant(survey.getEndDate(), UTC).format(NUMBER_DATE_PATTERN2));
-            metadataList.add("Nom de l'organisme maîtrise d'ouvrage : " + survey.getOwnerOrganization());
-            metadataList.add("Nom de l'organisme maîtrise d'oeuvre : " + survey.getProducerOrganization());
+            metadataList.add("Objetivo del levantamiento: " + survey.getGoal());
+            metadataList.add("Fecha de inicio del levantamiento: " + LocalDate.ofInstant(survey.getStartDate(), UTC).format(NUMBER_DATE_PATTERN2));
+            metadataList.add("Fecha de fin del levantamiento: " + LocalDate.ofInstant(survey.getEndDate(), UTC).format(NUMBER_DATE_PATTERN2));
+            metadataList.add("Organismo propietario del proyecto: " + survey.getOwnerOrganization());
+            metadataList.add("Organismo gestor del proyecto: " + survey.getProducerOrganization());
             if (isNotBlank(survey.getOwnerEmail())) {
-                metadataList.add("Contact propriétaire : " + survey.getOwnerEmail());
+                metadataList.add("Contacto del propietario: " + survey.getOwnerEmail());
             }
             if (isNotBlank(survey.getTechnicalManagerEmail())) {
-                metadataList.add("Contact producteur : " + survey.getTechnicalManagerEmail());
+                metadataList.add("Contacto del gestor: " + survey.getTechnicalManagerEmail());
             }
 
             document.add(metadataList);
@@ -162,36 +162,36 @@ public class SurveyArchiveDownloadService {
             document.add(new Paragraph(" "));
 
             // confidentiality
-            final Text confidentialityText = new Text("Confidentialité");
+            final Text confidentialityText = new Text("Confidencialidad");
             final Paragraph confidentialityParagraph = new Paragraph(confidentialityText).setFont(h2Font).setFontSize(12);
 
             document.add(confidentialityParagraph);
 
             final List confidentialityList = new List();
 
-            confidentialityList.add("Activité sélectionnée : " + getActivity(survey.getActivityChoice()));
-            confidentialityList.add("Restriction de diffusion : " + getBroadcastRestrictionForPdf(survey.getBroadcastRestriction()));
-            confidentialityList.add("Commentaire facultatif : " + survey.getConfidentialityInformation());
+            confidentialityList.add("Actividad seleccionada: " + getActivity(survey.getActivityChoice()));
+            confidentialityList.add("Restricción de difusión: " + getBroadcastRestrictionForPdf(survey.getBroadcastRestriction()));
+            confidentialityList.add("Comentario opcional: " + survey.getConfidentialityInformation());
 
             document.add(confidentialityList);
 
             document.add(new Paragraph(" "));
 
             // bathy data description
-            final Text bathyDataText = new Text("Description des données bathymétriques");
+            final Text bathyDataText = new Text("Descripción de los datos batimétricos");
             final Paragraph bathyDataParagraph = new Paragraph(bathyDataText).setFont(h2Font).setFontSize(12);
 
             document.add(bathyDataParagraph);
 
             final List bathyDataList = new List();
 
-            bathyDataList.add("Type de coordonnées : " + survey.getEpsg());
-            bathyDataList.add("Ordre des coordonnées : " + getCoordinatesOrder(survey.getCoordinatesOrder()));
-            bathyDataList.add("Sens du Z : " + getZDirection(survey.getZDirection()));
-            bathyDataList.add("Séparateur de fichier : " + getFileSeparator(survey.getFileSeparator()));
-            bathyDataList.add("Référence verticale : " + getVerticalRef(survey.getVerticalRef()));
-            bathyDataList.add("Souhaitez-vous solliciter l'assistance à la détection de l'information nautique bathymétrique ? "
-                + (survey.getExternalAnalysisEnabled() ? "oui" : "non"));
+            bathyDataList.add("Tipo de coordenadas: " + survey.getEpsg());
+            bathyDataList.add("Orden de las coordenadas: " + getCoordinatesOrder(survey.getCoordinatesOrder()));
+            bathyDataList.add("Sentido de Z: " + getZDirection(survey.getZDirection()));
+            bathyDataList.add("Separador de archivo: " + getFileSeparator(survey.getFileSeparator()));
+            bathyDataList.add("Referencia vertical: " + getVerticalRef(survey.getVerticalRef()));
+            bathyDataList.add("¿Desea solicitar la asistencia para la detección de información náutica batimétrica? "
+                + (survey.getExternalAnalysisEnabled() ? "sí" : "no"));
 
             document.add(bathyDataList);
         }
@@ -217,16 +217,16 @@ public class SurveyArchiveDownloadService {
 
     public void writeCsvFile(File csvFile, Survey survey) throws IOException {
         final String[] headers = {
-            "Nom",
-            "Objectif",
-            "Date_debut",
-            "Date_fin",
-            "producteur",
-            "proprietaire",
-            "contact_proprietaire",
-            "contact_producteur",
-            "confidentialite",
-            "commentaire_confidentialite",
+            "Nombre",
+            "Objetivo",
+            "Fecha_inicio",
+            "Fecha_fin",
+            "gestor",
+            "propietario",
+            "contacto_propietario",
+            "contacto_gestor",
+            "confidencialidad",
+            "comentario_confidencialidad",
             "EPSG"
         };
 
@@ -260,12 +260,12 @@ public class SurveyArchiveDownloadService {
         }
         switch (broadcastRestriction) {
             case TEN_YEARS:
-                return "10ans";
+                return "10anios";
             case THREE_YEARS:
-                return "3ans";
+                return "3anios";
             case WITHOUT_BROADCAST_RESTRICTION:
             default:
-                return "sans_restriction";
+                return "sin_restriccion";
         }
     }
 
@@ -275,12 +275,12 @@ public class SurveyArchiveDownloadService {
         }
         switch (broadcastRestriction) {
             case TEN_YEARS:
-                return "10 ans";
+                return "10 años";
             case THREE_YEARS:
-                return "3 ans";
+                return "3 años";
             case WITHOUT_BROADCAST_RESTRICTION:
             default:
-                return "Sans restriction de diffusion";
+                return "Sin restricción de difusión";
         }
     }
 
@@ -307,16 +307,16 @@ public class SurveyArchiveDownloadService {
 
         switch (activity) {
             case EXCAVATION_GEOPHYSICAL:
-                return "Activités de fouille et levé géophysique (article L413-1 du code minier)";
+                return "Actividades de excavación y estudios geofísicos";
             case MARINE_SCIENTIFIC_RESEARCH:
-                return "Activités de recherche scientifique marine (article L251-3 du code de la recherche)";
+                return "Actividades de investigación científica marina";
             case PUBLIC_SERVICE:
-                return "Activités de service public (CRPA)";
+                return "Actividades de servicio público";
             case PARTICIPATORY_BATHYMETRY:
-                return "Bathymétrie participative";
+                return "Batimetría participativa";
             case OTHER:
             default:
-                return "Autres activités";
+                return "Otras actividades";
         }
     }
 
@@ -327,9 +327,9 @@ public class SurveyArchiveDownloadService {
 
         switch (zDirection) {
             case ALTITUDE:
-                return "Altitude (positif vers le haut)";
+                return "Altitud (positivo hacia arriba)";
             case DEPTH:
-                return "Profondeur (positif vers le bas)";
+                return "Profundidad (positivo hacia abajo)";
             default:
                 return "";
         }
@@ -341,13 +341,13 @@ public class SurveyArchiveDownloadService {
         }
         switch (separator) {
             case "SPACE":
-                return "Espace";
+                return "Espacio";
             case "TAB":
-                return "Tabulation";
+                return "Tabulación";
             case "COMMA":
-                return "Virgule";
+                return "Coma";
             case "SEMICOLON":
-                return "Point-virgule";
+                return "Punto y coma";
             default:
                 return separator;
         }
@@ -359,16 +359,16 @@ public class SurveyArchiveDownloadService {
         }
         switch (verticalRef) {
             case AVERAGE_LEVEL:
-                return "Niveau moyen";
+                return "Nivel medio";
             case INSTANT_SEA_LEVEL:
-                return "Niveau instantané de la mer (non réduit de la marée)";
+                return "Nivel instantáneo del mar (no reducido por la marea)";
             case ZERO_ALTI:
-                return "Zéro altimétrique";
+                return "Cero altimétrico";
             case ZERO_HYDRO:
-                return "Zéro hydrographique";
+                return "Cero hidrográfico";
             case OTHER:
             default:
-                return "Autre";
+                return "Otro";
         }
     }
 

@@ -81,4 +81,5 @@
     <include file="classpath:db/data/db.data-shn-s124-spanish-v2.xml" />
     <include file="classpath:db/data/db.data-shn-s124-spanish-rev31oct26.xml" />
     <include file="classpath:db/data/db.data-shn-shom-rename.xml" />
+    <include file="classpath:db/data/db.data-shn-remove-french.xml" />
 </databaseChangeLog>

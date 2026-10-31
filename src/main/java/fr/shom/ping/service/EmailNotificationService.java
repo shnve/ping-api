@@ -179,7 +179,7 @@ public class EmailNotificationService {
         if (subscription.getService() != null) {
             title = (internationalLanguage ?
                 "Maritime service subscriber: " + subscription.getService().getInternationalName() :
-                "Service maritime abonné : " + subscription.getService().getName())
+                "Servicio mar&iacute;timo suscrito: " + subscription.getService().getName())
                 + EMAIL_LINE_SEPARATOR;
         }
 
@@ -190,19 +190,19 @@ public class EmailNotificationService {
         final String upperAccessLinkStart = "<A HREF=\"" + accessLink.toUpperCase() + "\">";
         final String upperAccessLinkEnd = "</A>";
         return title +
-            (internationalLanguage ? "Subscription title: " : "Titre de l'abonnement : ") +
+            (internationalLanguage ? "Subscription title: " : "T&iacute;tulo de la suscripci&oacute;n: ") +
             subscription.getTitle() +
             EMAIL_LINE_SEPARATOR +
             telexUtil.generateTelex(warning, accessLink).replace(upperAccessLinkStart, upperAccessLinkStart.toLowerCase()).replace(upperAccessLinkEnd
                 , upperAccessLinkEnd.toLowerCase()).replace("\n", EMAIL_LINE_SEPARATOR) +
             EMAIL_LINE_SEPARATOR +
             A_HREF + deleteSubscriptionLink + "\">" +
-            (internationalLanguage ? "Delete subscription" : "Supprimer l'abonnement") +
+            (internationalLanguage ? "Delete subscription" : "Eliminar suscripci&oacute;n") +
             "</a>";
     }
 
     private String getSubject(Georegulation georegulation) {
-        return new StringBuilder("Géo-règlement ")
+        return new StringBuilder("Georregulación ")
             .append(GeoregulationUtil.getNumber(georegulation))
             .toString();
     }
@@ -212,19 +212,19 @@ public class EmailNotificationService {
             subscriptionNotificationProperties.getEmailFrontLinkRoot() + subscriptionNotificationProperties.getEmailAccessGeoregulationLink() + georegulation.getId();
         final String deleteSubscriptionLink =
             subscriptionNotificationProperties.getEmailFrontLinkRoot() + subscriptionNotificationProperties.getEmailDeleteSubscriptionLink() + subscription.getId();
-        final StringBuilder result = new StringBuilder("Service maritime abonné : " + subscription.getService().getName())
+        final StringBuilder result = new StringBuilder("Servicio mar&iacute;timo suscrito: " + subscription.getService().getName())
             .append(EMAIL_LINE_SEPARATOR)
-            .append("Titre de l'abonnement : ")
+            .append("T&iacute;tulo de la suscripci&oacute;n: ")
             .append(subscription.getTitle())
             .append(EMAIL_LINE_SEPARATOR)
-            .append("Géo-règlement ")
+            .append("Georregulaci&oacute;n ")
             .append(A_HREF + accessLink + "\">")
             .append(GeoregulationUtil.getNumber(georegulation))
             .append("</a>")
             .append(EMAIL_LINE_SEPARATOR);
 
         if (StringUtils.isNotBlank(georegulation.getTitle())) {
-            result.append("Objet : ")
+            result.append("Asunto: ")
                 .append(georegulation.getTitle());
         }
 
@@ -232,7 +232,7 @@ public class EmailNotificationService {
             .append(getStatusLine(georegulation, notificationType))
             .append(EMAIL_LINE_SEPARATOR)
             .append(A_HREF + deleteSubscriptionLink + "\">")
-            .append("Supprimer l'abonnement")
+            .append("Eliminar suscripci&oacute;n")
             .append("</a>")
             .toString();
     }
@@ -242,22 +242,22 @@ public class EmailNotificationService {
         Instant eventDate = Instant.now();
         switch (notificationType) {
             case GEOREGULATION_PUBLISHED:
-                prefix = "Publié";
+                prefix = "Publicada";
                 eventDate = georegulation.getPublicationDate();
                 break;
             case GEOREGULATION_UPDATED:
-                prefix = "Modifié";
+                prefix = "Modificada";
                 eventDate = georegulation.getLastUpdate();
                 break;
             case GEOREGULATION_REPEALED:
-                prefix = "Abrogé";
+                prefix = "Derogada";
                 eventDate = georegulation.getRepealDate();
                 break;
             default:
                 break;
         }
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.systemDefault());
-        return prefix + " dans PING le " + formatter.format(eventDate);
+        return prefix + " en PISAC el " + formatter.format(eventDate);
     }
 
     public void sendInfosourceReceivedNotification(Infosource infosource, String email) {
@@ -268,10 +268,10 @@ public class EmailNotificationService {
         final String accessLink =
             emailNotificationProperties.getEmailFrontLinkRoot() + emailNotificationProperties.getEmailAccessInfosourceLink() + infosource.getId();
 
-        final String subject = "Infosource " + infosource.getNumber();
-        final String body = new StringBuilder("Infosource reçue :")
+        final String subject = "Contribución " + infosource.getNumber();
+        final String body = new StringBuilder("Contribuci&oacute;n recibida:")
             .append(EMAIL_LINE_SEPARATOR)
-            .append("Infosource ")
+            .append("Contribuci&oacute;n ")
             .append(A_HREF + accessLink + "\">")
             .append(infosource.getNumber())
             .append("</a>")
