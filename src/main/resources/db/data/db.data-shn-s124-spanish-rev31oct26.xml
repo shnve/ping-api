@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!--
+        Correcciones de terminología náutica en español aprobadas por el funcional
+        (Guia_Series_Categorias_PISAC_Rev31OCT26.xlsx).
+        Mantener sincronizado con ping-web/src/assets/i18n/es.json.
+    -->
+    <changeSet id="DB.Data.Warning_Hazard_Types.Spanish.Rev31OCT26" author="SHN">
+        <!-- Cat R13: "Marca Superior de Boya Desaparecida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca de Tope de Boya Desaparecida"/>
+            <where>enum_name = 'BUOY_TOPMARK_MISSING'</where>
+        </update>
+        <!-- Cat R14: "Marca Superior de Boya Dañada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca de Tope de Boya Dañada"/>
+            <where>enum_name = 'BUOY_TOPMARK_DAMAGED'</where>
+        </update>
+        <!-- Cat R18: "Boya Ciega Luminosa - Luz Apagada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Luminosa - Luz Apagada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_UNLIT'</where>
+        </update>
+        <!-- Cat R19: "Boya Ciega Luminosa - Luz Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Luminosa - Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_UNRELIABLE'</where>
+        </update>
+        <!-- Cat R20: "Boya Ciega Luminosa - Luz No Sincronizada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Luminosa - Luz No Sincronizada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <!-- Cat R21: "Boya Ciega Luminosa - Luz Dañada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Luminosa - Luz Dañada"/>
+            <where>enum_name = 'LIGHT_SPAR_BUOY_LIGHT_DAMAGED'</where>
+        </update>
+        <!-- Cat R22: "Boya Ciega Desaparecida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Desaparecida"/>
+            <where>enum_name = 'SPAR_BUOY_MISSING'</where>
+        </update>
+        <!-- Cat R23: "Boya Ciega Fuera de Posición" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Fuera de Posición"/>
+            <where>enum_name = 'SPAR_BUOY_OFF_POSITION'</where>
+        </update>
+        <!-- Cat R24: "Boya Ciega a la Deriva" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque a la Deriva"/>
+            <where>enum_name = 'SPAR_BUOY_ADRIFT'</where>
+        </update>
+        <!-- Cat R25: "Boya Ciega Dañada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Dañada"/>
+            <where>enum_name = 'SPAR_BUOY_DAMAGED'</where>
+        </update>
+        <!-- Cat R26: "Boya Ciega Destruida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Destruida"/>
+            <where>enum_name = 'SPAR_BUOY_DESTROYED'</where>
+        </update>
+        <!-- Cat R27: "Marca Superior de Boya Ciega Desaparecida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca de Tope de Boya Espeque Desaparecida"/>
+            <where>enum_name = 'SPAR_BUOY_TOPMARK_MISSING'</where>
+        </update>
+        <!-- Cat R28: "Boya Ciega Restablecida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Restablecida"/>
+            <where>enum_name = 'SPAR_BUOY_RE_ESTABLISMENT'</where>
+        </update>
+        <!-- Cat R29: "Boya Ciega Restaurada a la Normalidad" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Restaurada a la Normalidad"/>
+            <where>enum_name = 'SPAR_BUOY_RESTORED_TO_NORMAL'</where>
+        </update>
+        <!-- Cat R30: "Marcador de Canal - Luz Apagada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya de Aguas Seguras - Luz Apagada"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_UNLIT'</where>
+        </update>
+        <!-- Cat R31: "Marcador de Canal - Luz Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya de Aguas Seguras - Luz Poco Fiable"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_UNRELIABLE'</where>
+        </update>
+        <!-- Cat R32: "Marcador de Canal - Luz No Sincronizada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya de Aguas Seguras - Luz No Sincronizada"/>
+            <where>enum_name = 'FAIRWAY_MARKER_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <!-- Cat R33: "Marcador de Canal Dañado" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya de Aguas Seguras Dañada"/>
+            <where>enum_name = 'FAIRWAY_MARKER_DAMAGED'</where>
+        </update>
+        <!-- Cat R34: "Marcador de Canal Destruido" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya de Aguas Seguras Destruida"/>
+            <where>enum_name = 'FAIRWAY_MARKER_DESTROYED'</where>
+        </update>
+        <!-- Cat R46: "Baliza Iluminada - Luz Apagada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Luminosa - Luz Apagada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_UNLIT'</where>
+        </update>
+        <!-- Cat R47: "Baliza Iluminada - Luz Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Luminosa - Luz Poco Fiable"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_UNRELIABLE'</where>
+        </update>
+        <!-- Cat R48: "Baliza Iluminada - Luz No Sincronizada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Luminosa - Luz No Sincronizada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_NOT_SYNCHRONIZED'</where>
+        </update>
+        <!-- Cat R49: "Baliza Iluminada - Luz Dañada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Luminosa - Luz Dañada"/>
+            <where>enum_name = 'LIGHTED_BEACON_LIGHT_DAMAGED'</where>
+        </update>
+        <!-- Cat R50: "Marca Superior de Baliza Desaparecida" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca de Tope de Baliza Desaparecida"/>
+            <where>enum_name = 'BEACON_TOPMARK_MISSING'</where>
+        </update>
+        <!-- Cat R51: "Marca Superior de Baliza Dañada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marca de Tope de Baliza Dañada"/>
+            <where>enum_name = 'BEACON_TOPMARK_DAMAGED'</where>
+        </update>
+        <!-- Cat R55: "Luz Anterior Apagada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Frontal de Enfilación Apagada"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_LIGHT_UNLIT'</where>
+        </update>
+        <!-- Cat R57: "Luz Anterior Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Frontal de Enfilación Poco Fiable"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_UNRELIABLE'</where>
+        </update>
+        <!-- Cat R59: "Alcance de la Luz Anterior Reducido" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Alcance de la Luz Frontal Reducido"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED'</where>
+        </update>
+        <!-- Cat R61: "Luz Anterior Sin Ritmo" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Frontal Sin Ritmo"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM'</where>
+        </update>
+        <!-- Cat R63: "Luces Anterior y Posterior Fuera de Sincronización" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luces Frontal y Posterior Fuera de Sincronización"/>
+            <where>enum_name = 'LEADING_RANGE_LIGHTS_OUT_OF_SYNCHRONIZATION'</where>
+        </update>
+        <!-- Cat R64: "Baliza Anterior Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Frontal Poco Fiable"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_BEACON_UNRELIABLE'</where>
+        </update>
+        <!-- Cat R66: "La Luz Anterior Funciona Correctamente" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Frontal Funciona Correctamente"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'</where>
+        </update>
+        <!-- Cat R68: "Baliza Anterior Restaurada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Frontal Restaurada a Normal"/>
+            <where>enum_name = 'FRONT_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'</where>
+        </update>
+        <!-- Cat R69: "Baliza Posterior Restaurada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Baliza Posterior Restaurada a Normal"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'</where>
+        </update>
+        <!-- Cat R138: "Eliminación de Boya" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Boya"/>
+            <where>enum_name = 'BUOY_REMOVAL'</where>
+        </update>
+        <!-- Cat R139: "Eliminación Temporal de Boya" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Boya"/>
+            <where>enum_name = 'BUOY_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R140: "Desmantelamiento Estacional en Progreso" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Desactivación Estacional en Progreso"/>
+            <where>enum_name = 'SEASONAL_DECOMMISSIONING_IN_PROGRESS'</where>
+        </update>
+        <!-- Cat R141: "Desmantelamiento Estacional Completo" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Desactivación Estacional Completada"/>
+            <where>enum_name = 'SEASONAL_DECOMMISSIONING_COMPLETE'</where>
+        </update>
+        <!-- Cat R142: "Boya Levantada por Invierno" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Removida por Invierno"/>
+            <where>enum_name = 'BUOY_LIFTED_FOR_WINTER'</where>
+        </update>
+        <!-- Cat R143: "Boya Reemplazada por Boya Ciega de Invierno" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Reemplazada por Boya Espeque de Invierno"/>
+            <where>enum_name = 'BUOY_REPLACED_BY_WINTER_SPAR'</where>
+        </update>
+        <!-- Cat R144: "Boya Retirada por Invierno" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Desactivada por Invierno"/>
+            <where>enum_name = 'BUOY_DECOMMISSIONED_FOR_WINTER'</where>
+        </update>
+        <!-- Cat R145: "Eliminación de Luz" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Luz"/>
+            <where>enum_name = 'LIGHT_REMOVAL'</where>
+        </update>
+        <!-- Cat R146: "Retiro Temporal de Luz" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Luz"/>
+            <where>enum_name = 'LIGHT_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R147: "Eliminación de Baliza" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Baliza"/>
+            <where>enum_name = 'BEACON_REMOVAL'</where>
+        </update>
+        <!-- Cat R148: "Eliminación Temporal de Baliza" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Baliza"/>
+            <where>enum_name = 'BEACON_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R149: "Eliminación de Señal de Niebla" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_REMOVAL'</where>
+        </update>
+        <!-- Cat R150: "Retiro Temporal de Señal de Niebla" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Señal de Niebla"/>
+            <where>enum_name = 'FOG_SIGNAL_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R151: "Eliminación de Señal Sonora" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_REMOVAL'</where>
+        </update>
+        <!-- Cat R152: "Eliminación Temporal de Señal Sonora" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Señal Sonora"/>
+            <where>enum_name = 'AUDIBLE_SIGNAL_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R153: "Retirada de Transmisor AIS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRANSMITTER_REMOVAL'</where>
+        </update>
+        <!-- Cat R154: "Retirada Temporal de Transmisor AIS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de Transmisor AIS"/>
+            <where>enum_name = 'AIS_TRANSMITTER_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R155: "Eliminación de V-AIS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de V-AIS"/>
+            <where>enum_name = 'V_AIS_REMOVAL'</where>
+        </update>
+        <!-- Cat R156: "Retiro Temporal de V-AIS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de V-AIS"/>
+            <where>enum_name = 'V_AIS_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R157: "Eliminación de RACON" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de RACON"/>
+            <where>enum_name = 'RACON_REMOVAL'</where>
+        </update>
+        <!-- Cat R158: "Retiro Temporal de RACON" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de RACON"/>
+            <where>enum_name = 'RACON_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R159: "Eliminación de RAMARK" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de RAMARK"/>
+            <where>enum_name = 'RAMARKREMOVAL'</where>
+        </update>
+        <!-- Cat R160: "Retiro Temporal de RAMARK" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de RAMARK"/>
+            <where>enum_name = 'RAMARK_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R161: "Retirada de la Estación DGPS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación DGPS"/>
+            <where>enum_name = 'DGPS_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R162: "Retirada Temporal de la Estación DGPS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación DGPS"/>
+            <where>enum_name = 'DGPS_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R163: "Retirada de la Estación LORAN C" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación LORAN C"/>
+            <where>enum_name = 'LORAN_C_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R164: "Retirada Temporal de la Estación LORAN C" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación LORAN C"/>
+            <where>enum_name = 'LORAN_C_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R165: "Retirada de la Estación ELORAN" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación ELORAN"/>
+            <where>enum_name = 'ELORAN_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R166: "Retirada Temporal de la Estación ELORAN" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación ELORAN"/>
+            <where>enum_name = 'ELORAN_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R167: "Retirada de la Estación Chayka" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación Chayka"/>
+            <where>enum_name = 'CHAYKA_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R168: "Retirada Temporal de la Estación Chayka" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación Chayka"/>
+            <where>enum_name = 'CHAYKA_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R169: "Retirada de la Estación E-Chayka" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación E-Chayka"/>
+            <where>enum_name = 'E_CHAYKA_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R170: "Retirada Temporal de la Estación E-Chayka" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación E-Chayka"/>
+            <where>enum_name = 'E_CHAYKA_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R171: "Retirada de la Estación EGNOS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción de la Estación EGNOS"/>
+            <where>enum_name = 'EGNOS_STATION_REMOVAL'</where>
+        </update>
+        <!-- Cat R172: "Retirada Temporal de la Estación EGNOS" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remoción Temporal de la Estación EGNOS"/>
+            <where>enum_name = 'EGNOS_STATION_TEMPORARY_REMOVAL'</where>
+        </update>
+        <!-- Cat R173: "Boya Ciega Retirada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Boya Espeque Removida"/>
+            <where>enum_name = 'SPAR_BUOY_WITHDRAWN'</where>
+        </update>
+        <!-- Cat R205: "Tronco Muerto a la Deriva" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Tronco Semi Sumergido a la Deriva"/>
+            <where>enum_name = 'DEAD_HEAD_ADRIFT'</where>
+        </update>
+        <!-- Cat R227: "Nivel Bajo de Agua" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nivel de Bajamar"/>
+            <where>enum_name = 'LOW_WATER_LEVEL'</where>
+        </update>
+        <!-- Cat R228: "Nivel Alto de Agua" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Nivel de Pleamar"/>
+            <where>enum_name = 'HIGH_WATER_LEVEL'</where>
+        </update>
+        <!-- Cat R229: "Marea de Tempestad" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Marejada Ciclónica"/>
+            <where>enum_name = 'STORM_SURGE'</where>
+        </update>
+        <!-- Cat R231: "Profundidad Superficial Reportada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Somera Reportada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_REPORTED'</where>
+        </update>
+        <!-- Cat R232: "Profundidad Superficial Confirmada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Profundidad Somera Confirmada"/>
+            <where>enum_name = 'SHALLOW_DEPTH_CONFIRMED'</where>
+        </update>
+        <!-- Cat R240: "Cambios en Plataformas o Equipos en Alta Mar" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Cambios en Plataformas o Equipos Costa Afuera"/>
+            <where>enum_name = 'OFFSHORE_RIGS_PLATFORM_CHG'</where>
+        </update>
+        <!-- Cat R279: "Pruebas en el Mar" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Pruebas de Mar"/>
+            <where>enum_name = 'SEA_TRIALS'</where>
+        </update>
+        <!-- Cat R294: "Remolque Difícil de Manejar" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Remolque Difícil de Maniobrar"/>
+            <where>enum_name = 'UNWIELDY_TOW'</where>
+        </update>
+        <!-- Rev R33: "Luz Posterior Apagada" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior de Enfilación Apagada"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_LIGHT_UNLIT'</where>
+        </update>
+        <!-- Rev R35: "Luz Posterior Poco Fiable" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior de Enfilación Poco Fiable"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_UNRELIABLE'</where>
+        </update>
+        <!-- Rev R44: "La Luz Posterior Funciona Correctamente" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Luz Posterior Funciona Correctamente"/>
+            <where>enum_name = 'REAR_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'</where>
+        </update>
+        <!-- Rev R54: "Movimiento de Boya Ciega" -->
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Movimiento de Boya Espeque"/>
+            <where>enum_name = 'SPAR_BUOY_MOVE'</where>
+        </update>
+        <!-- Guía R12 / Rev R68: "Infraestructura Offshore" -->
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Infraestructura Costa Afuera"/>
+            <where>enum_name = 'OFFSHORE_STRUCTURES'</where>
+        </update>
+        <!-- Rev R110: "Avisos de Salud" -->
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Avisos Sanitarios"/>
+            <where>enum_name = 'HEALTH_ADVISORY'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
