@@ -77,6 +77,8 @@ public class CartographyProperties {
      * Escala a partir de la cual se muestra cada banda (MaxScaleDenominator del estilo estilo_bandaN).
      * Sólo se usa al crear un estilo que no existe; los estilos ya creados en GeoServer no se modifican.
      * Valores según la tabla de bandas del área funcional; banda1/banda2 sin límite (fondo siempre visible).
+     * Zoom web en que aparece cada banda (latitud de Venezuela): banda3 11, banda4 13, banda5 15, banda6 18
+     * (banda6 = 1:4.000 por norma; en zoom 17 la escala real es ~1:4.190).
      */
     @Builder.Default
     private Map<String, Integer> bandMaxScale = new HashMap<>(Map.of(
