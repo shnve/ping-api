@@ -4,6 +4,7 @@ import fr.shom.ping.model.dto.CartographyLayerStatusDto;
 import fr.shom.ping.model.dto.CartographyReloadRequest;
 import fr.shom.ping.model.dto.CartographyUploadResponse;
 import fr.shom.ping.service.CartographyService;
+import fr.shom.ping.service.GeoserverSyncService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
@@ -55,14 +56,15 @@ public class CartographyAdminController {
         String band = request != null ? request.getBand() : null;
         log.info("Solicitud manual de recarga de capa GeoServer para banda: {}", band);
 
-        boolean success = cartographyService.reloadBandLayer(band);
-        String msg = success
-                ? "Capa para " + band + " sincronizada exitosamente con GeoServer."
-                : "No se pudo sincronizar automáticamente la capa de " + band + " en GeoServer (verifique el log).";
+        GeoserverSyncService.PublishResult result = cartographyService.reloadBandLayer(band);
+        String msg = result.isSuccess()
+                ? "Capa para " + band + " sincronizada con GeoServer. " + result.getMessage()
+                : "No se pudo sincronizar la capa de " + band + " en GeoServer: " + result.getMessage();
 
         return ResponseEntity.ok(Map.of(
-                "success", success,
-                "message", msg
+                "success", result.isSuccess(),
+                "message", msg,
+                "steps", result.getSteps()
         ));
     }
 

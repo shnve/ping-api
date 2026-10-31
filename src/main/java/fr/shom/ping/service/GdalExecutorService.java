@@ -58,6 +58,22 @@ public class GdalExecutorService {
     }
 
     /**
+     * Devuelve "uid:gid" del dueño de la carpeta de trabajo en sistemas Unix; null en Windows o si no se puede leer.
+     */
+    private String resolveHostUserSpec(Path workDir) {
+        if (System.getProperty("os.name", "").toLowerCase().contains("win")) {
+            return null;
+        }
+        try {
+            Object uid = Files.getAttribute(workDir, "unix:uid");
+            Object gid = Files.getAttribute(workDir, "unix:gid");
+            return uid + ":" + gid;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Ejecuta un comando GDAL (nativamente o mediante contenedor Docker).
      * Todos los archivos referenciados deben encontrarse en el directorio workDir.
      */
@@ -73,6 +89,13 @@ public class GdalExecutorService {
             fullCommand.add("docker");
             fullCommand.add("run");
             fullCommand.add("--rm");
+            // En Linux, ejecutar GDAL con el mismo usuario dueño de la carpeta de trabajo (el de ping-api)
+            // para que los COG no queden como root y se puedan ajustar sus permisos para GeoServer.
+            String userSpec = resolveHostUserSpec(workDir);
+            if (userSpec != null) {
+                fullCommand.add("--user");
+                fullCommand.add(userSpec);
+            }
             fullCommand.add("-v");
             fullCommand.add(hostWorkPath + ":/work");
             fullCommand.add(properties.getDockerImage());

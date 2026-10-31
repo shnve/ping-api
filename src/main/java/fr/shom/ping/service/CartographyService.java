@@ -11,11 +11,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,51 +163,96 @@ public class CartographyService {
             }
 
             long convertedSize = Files.size(cogGeneratedPath);
+            boolean isSingleChart = "banda1".equals(cleanBand) || "banda2".equals(cleanBand);
 
-            // 3. Mover archivo COG al directorio final de la banda, REEMPLAZANDO cualquier versión previa de la carta
+            // 3. Preparar la carpeta de la banda con permisos que GeoServer (otro usuario) pueda leer y escribir
             Path targetBandDir = resolveStorageBandDir(cleanBand);
             Files.createDirectories(targetBandDir);
+            String permissionProblem = ensureGeoserverCanWrite(targetBandDir);
+            if (permissionProblem != null) {
+                return CartographyUploadResponse.builder()
+                        .success(false)
+                        .fileName(originalFilename)
+                        .band(cleanBand)
+                        .isGeoreferenced(true)
+                        .srsDetected(validation.getSrs())
+                        .geoserverPublished(false)
+                        .message(permissionProblem)
+                        .error(permissionProblem)
+                        .build();
+            }
 
-            if ("banda1".equals(cleanBand) || "banda2".equals(cleanBand)) {
-                // Para Banda 1 y Banda 2 (carta única), limpiar cualquier carta previa de la banda
-                cleanAllRastersInDir(targetBandDir);
+            // Cartas que la nueva reemplaza (misma carta con otro sufijo, o la carta única de banda1/banda2)
+            List<Path> replaced = isSingleChart
+                    ? listRasters(targetBandDir)
+                    : findPreviousVariantsOfChart(targetBandDir, canonicalChartId, outputCogName);
+            if (!isSingleChart) {
+                replaced.addAll(findSyntheticTestRasters(targetBandDir));
+                if (!replaced.isEmpty()) {
+                    // Retirar del índice del mosaico sólo esas cartas (no se borra el índice completo)
+                    geoserverSyncService.removeGranules(cleanBand, fileNames(replaced));
+                }
+                deleteFiles(replaced, targetBandDir);
             } else {
-                // Para ImageMosaic (Banda 3 a Banda 6), eliminar cualquier carta previa u obsoleta
-                // con este mismo identificador (ej. 101_cog.tif, 101__2__cog.tif, etc.) para que sólo quede la recién procesada
-                cleanPreviousVariantsOfChart(targetBandDir, canonicalChartId, outputCogName);
+                // banda1/banda2: el archivo anterior se borra sólo después de publicar bien el nuevo
+                replaced.removeIf(p -> p.getFileName().toString().equalsIgnoreCase(outputCogName));
+            }
+
+            if (!isSingleChart && !hasMosaicIndex(targetBandDir, cleanBand)) {
+                // Primera carta de la banda: configurar el mosaico heterogéneo ANTES de crear el almacén
+                writeIndexerProperties(targetBandDir, cleanBand);
             }
 
             Path finalDestination = targetBandDir.resolve(outputCogName);
+            boolean overwritesExisting = Files.exists(finalDestination);
             Files.move(cogGeneratedPath, finalDestination, StandardCopyOption.REPLACE_EXISTING);
+            makeReadableByGeoserver(finalDestination);
             log.info("Archivo COG movido exitosamente a: {}", finalDestination.toAbsolutePath());
 
-            if (!"banda1".equals(cleanBand) && !"banda2".equals(cleanBand)) {
-                prepareMosaicDirectoryForSync(targetBandDir, cleanBand);
-            }
-
-            // 4. Actualizar / sincronizar GeoServer si se solicitó
-            boolean geoserverReloaded = false;
+            // 4. Publicar en GeoServer (almacén, capa, estilo, grupo y verificación)
+            GeoserverSyncService.PublishResult publish = null;
             if (reloadGeoserver) {
-                geoserverReloaded = geoserverSyncService.syncBandStore(cleanBand, outputCogName);
-                if (!"banda1".equals(cleanBand) && !"banda2".equals(cleanBand)) {
-                    ensureHeterogeneousMosaicProperties(targetBandDir, cleanBand);
+                publish = isSingleChart
+                        ? geoserverSyncService.publishSingleChart(cleanBand, outputCogName)
+                        : geoserverSyncService.publishMosaicGranule(cleanBand, outputCogName);
+                if (isSingleChart) {
+                    if (publish.isSuccess()) {
+                        deleteFiles(replaced, targetBandDir);
+                    } else if (!overwritesExisting) {
+                        Files.deleteIfExists(finalDestination);
+                    }
                 }
+            } else if (isSingleChart) {
+                deleteFiles(replaced, targetBandDir);
             }
 
             long totalTimeMs = System.currentTimeMillis() - startTime;
+            boolean published = publish == null || publish.isSuccess();
+            String message;
+            if (publish == null) {
+                message = "Archivo convertido a COG EPSG:3395. No se solicitó publicar en GeoServer.";
+            } else if (publish.isSuccess()) {
+                message = "Carta convertida y publicada. " + publish.getMessage();
+            } else {
+                message = "La carta se convirtió, pero NO se publicó en GeoServer: " + publish.getMessage();
+            }
 
             return CartographyUploadResponse.builder()
-                    .success(true)
+                    .success(published)
                     .fileName(outputCogName)
                     .band(cleanBand)
                     .isGeoreferenced(true)
                     .srsDetected(validation.getSrs())
                     .outputFilePath(finalDestination.toAbsolutePath().toString())
-                    .geoserverReloaded(geoserverReloaded)
+                    .geoserverReloaded(publish != null && publish.isSuccess())
+                    .geoserverPublished(publish != null ? publish.isSuccess() : null)
+                    .geoserverMessage(publish != null ? publish.getMessage() : null)
+                    .geoserverSteps(publish != null ? publish.getSteps() : null)
                     .convertedSizeBytes(convertedSize)
                     .processingTimeMs(totalTimeMs)
                     .pixelSize(validation.getPixelSize())
-                    .message("¡Archivo procesado y convertido exitosamente a COG EPSG:3395!")
+                    .message(message)
+                    .error(published ? null : publish.getMessage())
                     .build();
 
         } catch (Exception e) {
@@ -223,35 +273,38 @@ public class CartographyService {
     }
 
     /**
-     * Recarga la capa en GeoServer para la banda solicitada (GeoTIFF o ImageMosaic).
+     * Resincroniza la capa en GeoServer para la banda solicitada (GeoTIFF o ImageMosaic): crea lo que falte,
+     * cosecha las cartas que no estén en el índice, asegura estilo y grupo, y verifica el resultado.
      */
-    public boolean reloadBandLayer(String band) {
+    public GeoserverSyncService.PublishResult reloadBandLayer(String band) {
         String cleanBand = band != null ? band.toLowerCase().trim() : "";
-        String singleFileName = null;
+        if (!VALID_BANDS.contains(cleanBand)) {
+            return new GeoserverSyncService.PublishResult().failWith("Banda no válida: " + cleanBand);
+        }
         Path bandDir = resolveStorageBandDir(cleanBand);
 
         if ("banda1".equals(cleanBand) || "banda2".equals(cleanBand)) {
-            if (Files.exists(bandDir)) {
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(bandDir)) {
-                    for (Path p : stream) {
-                        String n = p.getFileName().toString().toLowerCase();
-                        if (n.endsWith(".tif") || n.endsWith(".tiff")) {
-                            singleFileName = p.getFileName().toString();
-                            break;
-                        }
-                    }
-                } catch (Exception ignored) {}
-            }
-        } else if (Files.exists(bandDir)) {
-            prepareMosaicDirectoryForSync(bandDir, cleanBand);
-            normalizeExistingMosaicRasters(bandDir);
+            List<Path> rasters = Files.exists(bandDir) ? listRasters(bandDir) : new ArrayList<>();
+            String singleFileName = rasters.isEmpty() ? null : rasters.get(0).getFileName().toString();
+            return geoserverSyncService.resyncSingleChart(cleanBand, singleFileName);
         }
 
-        boolean synced = geoserverSyncService.syncBandStore(cleanBand, singleFileName);
-        if (!"banda1".equals(cleanBand) && !"banda2".equals(cleanBand) && Files.exists(bandDir)) {
-            ensureHeterogeneousMosaicProperties(bandDir, cleanBand);
+        List<String> files = new ArrayList<>();
+        if (Files.exists(bandDir)) {
+            String permissionProblem = ensureGeoserverCanWrite(bandDir);
+            if (permissionProblem != null) {
+                return new GeoserverSyncService.PublishResult().failWith(permissionProblem);
+            }
+            normalizeExistingMosaicRasters(bandDir);
+            for (Path p : listRasters(bandDir)) {
+                makeReadableByGeoserver(p);
+                files.add(p.getFileName().toString());
+            }
+            if (!hasMosaicIndex(bandDir, cleanBand)) {
+                writeIndexerProperties(bandDir, cleanBand);
+            }
         }
-        return synced;
+        return geoserverSyncService.resyncMosaic(cleanBand, files);
     }
 
     /**
@@ -346,47 +399,135 @@ public class CartographyService {
     }
 
     /**
-     * Limpia archivos sintéticos de prueba (georeferenced_cog.tif) cuando ya existen cartas reales en la banda
-     * y purga los archivos de índice antiguos de GeoTools ImageMosaic (.shp, .dbf, .shx, .fix, .qix, .properties, sample_image.dat)
-     * para forzar a GeoServer a reconstruir el índice con todas las cartas reales y sus resoluciones verdaderas.
+     * Comprueba que GeoServer (que corre con otro usuario dentro de su contenedor) pueda escribir el índice del
+     * mosaico en la carpeta de la banda. En Linux intenta dejar la carpeta con permisos 777 (como banda2..banda4).
+     * Devuelve un mensaje de error si no es posible; null si todo está bien o si el sistema no es POSIX (Windows).
      */
-    private void prepareMosaicDirectoryForSync(Path targetBandDir, String band) {
+    private String ensureGeoserverCanWrite(Path bandDir) {
+        PosixFileAttributeView view = Files.getFileAttributeView(bandDir, PosixFileAttributeView.class);
+        if (view == null) {
+            return null;
+        }
         try {
-            boolean hasRealCharts = false;
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetBandDir)) {
-                for (Path entry : stream) {
-                    String name = entry.getFileName().toString().toLowerCase();
-                    if ((name.endsWith(".tif") || name.endsWith(".tiff"))
-                            && !name.equals("georeferenced_cog.tif")
-                            && !name.equals("georeferenced_carta_cog.tif")) {
-                        hasRealCharts = true;
-                        break;
-                    }
+            Set<PosixFilePermission> perms = view.readAttributes().permissions();
+            if (perms.contains(PosixFilePermission.OTHERS_WRITE) && perms.contains(PosixFilePermission.OTHERS_EXECUTE)
+                    && perms.contains(PosixFilePermission.OTHERS_READ)) {
+                return null;
+            }
+            view.setPermissions(PosixFilePermissions.fromString("rwxrwxrwx"));
+            log.info("Permisos de {} ajustados a 777 para que GeoServer pueda escribir el índice", bandDir);
+            return null;
+        } catch (Exception e) {
+            String msg = "GeoServer no puede escribir en la carpeta " + bandDir + " y no fue posible ajustar sus permisos ("
+                    + e.getMessage() + "). Solicite al administrador: chmod 777 " + bandDir;
+            log.error(msg);
+            return msg;
+        }
+    }
+
+    /** Deja el archivo legible por GeoServer (664). Sin efecto en Windows o si el archivo no es del usuario actual. */
+    private void makeReadableByGeoserver(Path file) {
+        try {
+            if (Files.getFileAttributeView(file, PosixFileAttributeView.class) != null) {
+                Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw-r--"));
+            }
+        } catch (Exception e) {
+            log.warn("No se pudieron ajustar los permisos de {}: {}", file, e.getMessage());
+        }
+    }
+
+    /** Indica si GeoServer ya creó el índice del mosaico (banda.properties o banda.shp). */
+    private boolean hasMosaicIndex(Path bandDir, String band) {
+        return Files.exists(bandDir.resolve(band + ".properties")) || Files.exists(bandDir.resolve(band + ".shp"));
+    }
+
+    /**
+     * Escribe indexer.properties ANTES de crear el almacén para que GeoServer construya el mosaico como
+     * heterogéneo desde el inicio (cartas de distinta resolución en una misma banda). Elimina restos de índices
+     * de intentos anteriores que no correspondan a un almacén existente.
+     */
+    private void writeIndexerProperties(Path bandDir, String band) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(bandDir)) {
+            for (Path entry : stream) {
+                String name = entry.getFileName().toString().toLowerCase();
+                if (name.equals("sample_image.dat") || name.endsWith(".shp") || name.endsWith(".shx")
+                        || name.endsWith(".dbf") || name.endsWith(".fix") || name.endsWith(".qix")
+                        || name.endsWith(".prj") || name.equals(band + ".properties")) {
+                    Files.deleteIfExists(entry);
                 }
             }
+            Path indexer = bandDir.resolve("indexer.properties");
+            Files.writeString(indexer, "Heterogeneous=true\nCaching=false\nAbsolutePath=false\nName=" + band + "\n");
+            makeReadableByGeoserver(indexer);
+            log.info("indexer.properties (Heterogeneous=true) creado en {}", bandDir);
+        } catch (Exception e) {
+            log.warn("No se pudo preparar indexer.properties en {}: {}", bandDir, e.getMessage());
+        }
+    }
 
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetBandDir)) {
-                for (Path entry : stream) {
-                    String name = entry.getFileName().toString().toLowerCase();
-                    if (hasRealCharts && (name.equals("georeferenced_cog.tif") || name.equals("georeferenced_carta_cog.tif"))) {
-                        log.info("Eliminando raster sintético de prueba {} en {}", name, targetBandDir);
-                        Files.deleteIfExists(entry);
-                        continue;
-                    }
-                    if (name.equals("sample_image.dat")
-                            || name.endsWith(".shp")
-                            || name.endsWith(".shx")
-                            || name.endsWith(".dbf")
-                            || name.endsWith(".fix")
-                            || name.endsWith(".qix")
-                            || name.endsWith(".prj")
-                            || name.endsWith(".properties")) {
-                        Files.deleteIfExists(entry);
-                    }
+    /** Lista los .tif/.tiff de la carpeta (excluye archivos temporales de normalización). */
+    private List<Path> listRasters(Path dir) {
+        List<Path> list = new ArrayList<>();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path entry : stream) {
+                String name = entry.getFileName().toString().toLowerCase();
+                if ((name.endsWith(".tif") || name.endsWith(".tiff")) && !name.startsWith("norm_")) {
+                    list.add(entry);
                 }
             }
         } catch (Exception e) {
-            log.warn("Advertencia preparando directorio ImageMosaic para {}: {}", band, e.getMessage());
+            log.warn("Error listando cartas en {}: {}", dir, e.getMessage());
+        }
+        list.sort(null);
+        return list;
+    }
+
+    /**
+     * Versiones previas u obsoletas de la misma carta (ej. 101_cog.tif, 101__2__cog.tif) que la nueva reemplaza.
+     */
+    private List<Path> findPreviousVariantsOfChart(Path targetBandDir, String canonicalChartId, String newCogName) {
+        List<Path> variants = new ArrayList<>();
+        String lowerId = canonicalChartId.toLowerCase();
+        for (Path entry : listRasters(targetBandDir)) {
+            String name = entry.getFileName().toString().toLowerCase();
+            boolean isExact = name.equals(newCogName.toLowerCase());
+            boolean isVariant = name.startsWith(lowerId + "_") || name.startsWith(lowerId + "-");
+            if (isExact || isVariant) {
+                variants.add(entry);
+            }
+        }
+        return variants;
+    }
+
+    /** Rasters sintéticos de prueba que deben desaparecer cuando la banda ya tiene cartas reales. */
+    private List<Path> findSyntheticTestRasters(Path targetBandDir) {
+        List<Path> synthetic = new ArrayList<>();
+        for (Path entry : listRasters(targetBandDir)) {
+            String name = entry.getFileName().toString().toLowerCase();
+            if (name.equals("georeferenced_cog.tif") || name.equals("georeferenced_carta_cog.tif")) {
+                synthetic.add(entry);
+            }
+        }
+        return synthetic;
+    }
+
+    private static List<String> fileNames(List<Path> paths) {
+        List<String> names = new ArrayList<>();
+        for (Path p : paths) {
+            names.add(p.getFileName().toString());
+        }
+        return names;
+    }
+
+    private void deleteFiles(List<Path> files, Path dir) {
+        for (Path f : files) {
+            try {
+                if (Files.deleteIfExists(f)) {
+                    log.info("Eliminando versión previa u obsoleta de la carta en {}: {}", dir, f.getFileName());
+                }
+            } catch (Exception ex) {
+                log.warn("No se pudo eliminar archivo previo {}: {}", f.getFileName(), ex.getMessage());
+            }
         }
     }
 
@@ -426,59 +567,4 @@ public class CartographyService {
         }
     }
 
-    /**
-     * Asegura que el archivo <banda>.properties generado por GeoServer tenga Heterogeneous=true
-     * para admitir cartas náuticas de distintas escalas dentro de una misma banda (ej. 1:50.000 y 1:150.000 en Banda 4).
-     */
-    private void ensureHeterogeneousMosaicProperties(Path targetBandDir, String band) {
-        try {
-            Path propsFile = targetBandDir.resolve(band + ".properties");
-            if (Files.exists(propsFile)) {
-                String content = Files.readString(propsFile);
-                if (content.contains("Heterogeneous=false")) {
-                    content = content.replace("Heterogeneous=false", "Heterogeneous=true");
-                    Files.writeString(propsFile, content);
-                }
-            }
-        } catch (Exception e) {
-            log.debug("No se pudo ajustar Heterogeneous=true en {}.properties: {}", band, e.getMessage());
-        }
-    }
-
-    private void cleanPreviousVariantsOfChart(Path targetBandDir, String canonicalChartId, String newCogName) {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetBandDir)) {
-            String lowerId = canonicalChartId.toLowerCase();
-            for (Path entry : stream) {
-                String name = entry.getFileName().toString().toLowerCase();
-                if (!name.endsWith(".tif") && !name.endsWith(".tiff")) {
-                    continue;
-                }
-                boolean isExact = name.equals(newCogName.toLowerCase());
-                boolean isVariant = name.startsWith(lowerId + "_") || name.startsWith(lowerId + "-");
-                if (isExact || isVariant) {
-                    log.info("Eliminando versión previa u obsoleta de la carta en {}: {}", targetBandDir, name);
-                    try {
-                        Files.deleteIfExists(entry);
-                    } catch (Exception ex) {
-                        log.warn("No se pudo eliminar archivo previo {}: {}", name, ex.getMessage());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Error escaneando cartas previas en {}: {}", targetBandDir, e.getMessage());
-        }
-    }
-
-    private void cleanAllRastersInDir(Path targetBandDir) {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetBandDir)) {
-            for (Path oldFile : stream) {
-                String oldName = oldFile.getFileName().toString().toLowerCase();
-                if (oldName.endsWith(".tif") || oldName.endsWith(".tiff")) {
-                    Files.deleteIfExists(oldFile);
-                }
-            }
-        } catch (Exception ex) {
-            log.warn("Advertencia limpiando cartas previas en {}: {}", targetBandDir, ex.getMessage());
-        }
-    }
 }

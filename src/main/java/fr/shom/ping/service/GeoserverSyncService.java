@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.shom.ping.properties.CartographyProperties;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -11,610 +12,660 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * Publicación de las bandas cartográficas en GeoServer.
+ *
+ * <p>Procedimiento por banda (equivalente al manual):
+ * <ol>
+ *   <li>Almacén con el nombre de la banda (GeoTIFF para banda1/banda2, ImageMosaic para banda3..banda6).</li>
+ *   <li>Cobertura/capa publicada con el estilo de escala {@code estilo_bandaN} (se crea si no existe).</li>
+ *   <li>Capa agregada al grupo {@code cartografia_ve} en orden de banda (banda2 abajo ... banda6 arriba).</li>
+ *   <li>Verificación con GetMap de la capa y del grupo; si el grupo deja de funcionar se revierte.</li>
+ * </ol>
+ *
+ * <p>No se usa {@code /rest/reload}: recarga todo el catálogo y descarta cualquier elemento con errores
+ * (fue lo que tumbó el grupo en desarrollo el 28/10). Sólo se vacía la caché de teselas de la banda y del grupo.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class GeoserverSyncService {
 
+    private static final Pattern BAND_PATTERN = Pattern.compile("banda(\\d+)$");
+    private static final String MOUNT_BASE = "file:///mnt/geotiff/";
+
     private final CartographyProperties properties;
     private final ObjectMapper objectMapper;
 
-    private HttpClient getHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
-    }
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
 
-    private String getAuthHeader() {
-        String auth = properties.getGeoserverUser() + ":" + properties.getGeoserverPassword();
-        return "Basic " + Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-    }
+    /** Resultado de una publicación en GeoServer, con el motivo legible en caso de fallo. */
+    @Getter
+    public static class PublishResult {
+        private boolean success = true;
+        private String message;
+        private final List<String> steps = new ArrayList<>();
 
-    /**
-     * Resetea todos los almacenes y caches en memoria de GeoServer (gránulos raster, esquemas).
-     */
-    public boolean resetCache() {
-        try {
-            String url = properties.getGeoserverUrl().replaceAll("/+$", "") + "/rest/reset";
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .timeout(Duration.ofSeconds(20))
-                    .build();
+        void step(String text) {
+            steps.add(text);
+            log.info("[GeoServer] {}", text);
+        }
 
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("GeoServer reset cache response status: {}", response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("No se pudo resetear el cache de GeoServer: {}", e.getMessage());
-            return false;
+        PublishResult fail(String reason) {
+            this.success = false;
+            this.message = reason;
+            log.warn("[GeoServer] Publicación fallida: {}", reason);
+            return this;
+        }
+
+        PublishResult ok(String text) {
+            this.success = true;
+            this.message = text;
+            return this;
+        }
+
+        /** Resultado fallido sin llegar a GeoServer (validaciones previas). */
+        public PublishResult failWith(String reason) {
+            return fail(reason);
         }
     }
 
-    /**
-     * Recarga el catálogo global de GeoServer (relee cambios en disco y renueva configuraciones).
-     */
-    public boolean reloadCatalog() {
-        try {
-            String url = properties.getGeoserverUrl().replaceAll("/+$", "") + "/rest/reload";
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .timeout(Duration.ofSeconds(20))
-                    .build();
+    private record Resp(int status, String body) {
+        boolean ok() {
+            return status >= 200 && status < 300;
+        }
 
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("GeoServer catalog reload response status: {}", response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("No se pudo recargar el catálogo de GeoServer: {}", e.getMessage());
-            return false;
+        String shortBody() {
+            if (body == null) {
+                return "";
+            }
+            String b = body.replaceAll("\\s+", " ").trim();
+            return b.length() > 300 ? b.substring(0, 300) + "..." : b;
         }
     }
 
-    /**
-     * Sincroniza la capa náutica en GeoServer.
-     * Para Banda 1 y Banda 2: Es un almacén de tipo GeoTIFF (carta única).
-     * Para Banda 3 a Banda 6: Es un almacén de tipo ImageMosaic (mosaico de cartas).
-     */
-    public boolean syncBandStore(String band, String outputCogFilename) {
-        String cleanBand = band != null ? band.toLowerCase().trim() : "";
-        boolean isSingleChart = "banda1".equals(cleanBand) || "banda2".equals(cleanBand);
+    private record Bounds(double minx, double miny, double maxx, double maxy, String crs) {
+    }
 
-        if (isSingleChart) {
-            return syncSingleGeoTiffStore(cleanBand, outputCogFilename);
+    // =====================================================================================
+    // API pública
+    // =====================================================================================
+
+    /**
+     * Banda 1 / Banda 2 (GeoTIFF de carta única): apunta el almacén al nuevo archivo, o lo crea.
+     * Si la verificación falla, restaura la URL anterior del almacén.
+     */
+    public synchronized PublishResult publishSingleChart(String band, String cogFileName) {
+        PublishResult result = new PublishResult();
+        String ws = workspace();
+        String fileUrl = MOUNT_BASE + band + "/" + cogFileName;
+        List<String[]> groupBefore = readGroupEntries(ws);
+
+        String previousUrl = null;
+        JsonNode store = getJson(storePath(ws, band));
+        if (store != null) {
+            previousUrl = store.path("coverageStore").path("url").asText(null);
+            Resp r = call("PUT", storePath(ws, band), storeXml(band, ws, "GeoTIFF", fileUrl), "application/xml");
+            if (!r.ok()) {
+                return result.fail("No se pudo actualizar el almacén " + band + " (" + r.status() + "): " + r.shortBody());
+            }
+            result.step("Almacén " + band + " apuntado a " + fileUrl);
         } else {
-            return syncMosaicStore(cleanBand);
+            Resp r = call("POST", "/rest/workspaces/" + ws + "/coveragestores", storeXml(band, ws, "GeoTIFF", fileUrl), "application/xml");
+            if (!r.ok()) {
+                return result.fail("No se pudo crear el almacén " + band + " (" + r.status() + "): " + r.shortBody());
+            }
+            String nativeName = cogFileName.contains(".") ? cogFileName.substring(0, cogFileName.lastIndexOf('.')) : cogFileName;
+            r = call("POST", storePath(ws, band) + "/coverages",
+                    "<coverage><name>" + band + "</name><title>" + band + "</title><nativeName>" + nativeName
+                            + "</nativeName><nativeCoverageName>" + nativeName + "</nativeCoverageName><enabled>true</enabled></coverage>",
+                    "application/xml");
+            if (!r.ok()) {
+                call("DELETE", storePath(ws, band) + "?recurse=true", null, null);
+                return result.fail("No se pudo publicar la capa " + band + " (" + r.status() + "): " + r.shortBody());
+            }
+            result.step("Almacén y capa " + band + " creados");
         }
+
+        recalculateBBox(ws, band, result);
+        finishPublication(ws, band, result);
+
+        if (!verifyLayer(ws, band, result) || !verifyGroupOrRollback(ws, band, groupBefore, result)) {
+            if (previousUrl != null) {
+                call("PUT", storePath(ws, band), storeXml(band, ws, "GeoTIFF", previousUrl), "application/xml");
+                result.step("Restaurada la URL anterior del almacén: " + previousUrl);
+            }
+            truncateGwc(ws, band);
+            return result;
+        }
+        return result.ok("Publicada en GeoServer (" + ws + ":" + band + ") y visible en el grupo " + group() + ".");
     }
 
     /**
-     * Sincronización para Banda 1 y Banda 2 (GeoTIFF de carta única).
+     * Banda 3 a 6 (ImageMosaic): crea el mosaico la primera vez (con {@code Heterogeneous=true} desde el inicio)
+     * o agrega la carta nueva al índice existente cosechando sólo ese archivo.
      */
-    private boolean syncSingleGeoTiffStore(String band, String outputCogFilename) {
-        try {
-            String baseUrl = properties.getGeoserverUrl().replaceAll("/+$", "");
-            List<String> workspaces = resolveTargetWorkspaces(baseUrl);
+    public synchronized PublishResult publishMosaicGranule(String band, String cogFileName) {
+        PublishResult result = new PublishResult();
+        String ws = workspace();
+        List<String[]> groupBefore = readGroupEntries(ws);
 
-            if (outputCogFilename == null || outputCogFilename.trim().isEmpty()) {
-                resetCache();
-                boolean reloaded = reloadCatalog();
-                for (String ws : workspaces) {
-                    truncateGwcForBandAndGroup(baseUrl, ws, band);
-                }
-                return reloaded;
+        boolean storeExists = getJson(storePath(ws, band)) != null;
+        if (!storeExists) {
+            if (!createMosaic(ws, band, result)) {
+                return result;
             }
-
-            String fileUrl = "file:///mnt/geotiff/" + band + "/" + outputCogFilename;
-            boolean anySuccess = false;
-
-            for (String workspace : workspaces) {
-                boolean storeExists = checkCoverageStoreExists(baseUrl, workspace, band);
-                if (storeExists) {
-                    log.info("Actualizando almacén GeoTIFF {}:{} para apuntar a: {}", workspace, band, fileUrl);
-                    boolean updated = updateGeoTiffStoreUrl(baseUrl, workspace, band, fileUrl);
-                    recalculateStoreCoveragesBBox(baseUrl, workspace, band);
-                    truncateGwcForBandAndGroup(baseUrl, workspace, band);
-                    anySuccess |= updated;
-                } else if (workspace.equals(properties.getGeoserverWorkspace()) || "pisac_shn".equals(workspace)) {
-                    if (checkWorkspaceExists(baseUrl, workspace)) {
-                        log.info("Creando nuevo almacén GeoTIFF {}:{} apuntando a: {}", workspace, band, fileUrl);
-                        boolean created = createGeoTiffStore(baseUrl, workspace, band, fileUrl);
-                        if (created) {
-                            publishCoverage(baseUrl, workspace, band, outputCogFilename);
-                            recalculateStoreCoveragesBBox(baseUrl, workspace, band);
-                            truncateGwcForBandAndGroup(baseUrl, workspace, band);
-                        }
-                        anySuccess |= created;
-                    }
-                }
+        } else if (listCoverageNames(ws, band).isEmpty()) {
+            if (!publishMosaicCoverage(ws, band, result)) {
+                return result;
             }
-
-            resetCache();
-            reloadCatalog();
-            return anySuccess;
-        } catch (Exception e) {
-            log.error("Error sincronizando almacén GeoTIFF (carta única) para {}: {}", band, e.getMessage(), e);
-            return false;
+        } else {
+            Resp r = harvestFile(ws, band, cogFileName);
+            if (!r.ok()) {
+                return result.fail("GeoServer no pudo agregar " + cogFileName + " al mosaico " + band
+                        + " (" + r.status() + "): " + r.shortBody());
+            }
+            result.step("Carta " + cogFileName + " agregada al mosaico " + band);
         }
+
+        recalculateBBox(ws, band, result);
+        finishPublication(ws, band, result);
+
+        if (!verifyLayer(ws, band, result) || !verifyGroupOrRollback(ws, band, groupBefore, result)) {
+            truncateGwc(ws, band);
+            return result;
+        }
+        return result.ok("Publicada en GeoServer (" + ws + ":" + band + ") y visible en el grupo " + group() + ".");
     }
 
     /**
-     * Sincronización para Banda 3 a Banda 6 (ImageMosaic de múltiples cartas).
+     * Resincroniza un mosaico completo: lo crea si no existe; si existe, cosecha los archivos que falten en el
+     * índice y retira del índice los que ya no estén en disco. Luego asegura estilo, grupo y verifica.
      */
-    private boolean syncMosaicStore(String band) {
-        try {
-            String baseUrl = properties.getGeoserverUrl().replaceAll("/+$", "");
-            List<String> workspaces = resolveTargetWorkspaces(baseUrl);
+    public synchronized PublishResult resyncMosaic(String band, Collection<String> filesOnDisk) {
+        PublishResult result = new PublishResult();
+        String ws = workspace();
+        List<String[]> groupBefore = readGroupEntries(ws);
 
-            // Resetear primero para que GeoTools suelte cualquier bloqueo sobre archivos .shp / sample_image.dat previos
-            resetCache();
-
-            boolean success = false;
-            for (String workspace : workspaces) {
-                if (!checkWorkspaceExists(baseUrl, workspace)) {
-                    continue;
-                }
-
-                List<String> matchingStores = findMatchingStores(baseUrl, workspace, band);
-                if (matchingStores.isEmpty()
-                        && (workspace.equals(properties.getGeoserverWorkspace()) || "pisac_shn".equals(workspace))) {
-                    log.info("No se encontró almacén ImageMosaic existente para {}:{}. Intentando crearlo...", workspace, band);
-                    boolean created = createMosaicStore(baseUrl, workspace, band);
-                    if (created) {
-                        matchingStores.add(band);
+        if (getJson(storePath(ws, band)) == null) {
+            if (filesOnDisk.isEmpty()) {
+                return result.fail("La banda " + band + " no tiene cartas en disco ni almacén en GeoServer.");
+            }
+            if (!createMosaic(ws, band, result)) {
+                return result;
+            }
+        } else if (listCoverageNames(ws, band).isEmpty()) {
+            if (!publishMosaicCoverage(ws, band, result)) {
+                return result;
+            }
+        } else {
+            Set<String> indexed = listGranuleLocations(ws, band);
+            List<String> failed = new ArrayList<>();
+            for (String f : filesOnDisk) {
+                if (!indexed.contains(f)) {
+                    Resp r = harvestFile(ws, band, f);
+                    result.step("Cosecha de " + f + ": " + r.status());
+                    if (!r.ok()) {
+                        failed.add(f);
                     }
-                }
-
-                for (String storeName : matchingStores) {
-                    // Refrescar configuración del almacén ImageMosaic para regenerar el índice si fue limpiado
-                    updateMosaicStoreUrl(baseUrl, workspace, storeName, band);
-
-                    boolean hasCoverage = hasAnyCoverage(baseUrl, workspace, storeName);
-                    if (!hasCoverage) {
-                        log.info("Almacén ImageMosaic {}:{} no tiene cobertura configurada. Publicando cobertura...", workspace, storeName);
-                        boolean published = publishMosaicCoverage(baseUrl, workspace, storeName, band);
-                        harvestMosaicStore(baseUrl, workspace, storeName, band);
-                        recalculateStoreCoveragesBBox(baseUrl, workspace, storeName);
-                        success |= published;
-                    } else {
-                        log.info("Cosechando (harvesting) gránulos y recalculando BBox en ImageMosaic {}:{}...", workspace, storeName);
-                        boolean harvested = harvestMosaicStore(baseUrl, workspace, storeName, band);
-                        recalculateStoreCoveragesBBox(baseUrl, workspace, storeName);
-                        success |= harvested;
-                    }
-
-                    truncateGwcForBandAndGroup(baseUrl, workspace, storeName);
                 }
             }
-
-            resetCache();
-            reloadCatalog();
-            return success;
-        } catch (Exception e) {
-            log.error("Error sincronizando almacén ImageMosaic para {}: {}", band, e.getMessage(), e);
-            return false;
+            for (String loc : indexed) {
+                if (!filesOnDisk.contains(loc)) {
+                    removeGranules(band, List.of(loc));
+                    result.step("Retirada del índice la carta inexistente en disco: " + loc);
+                }
+            }
+            if (!failed.isEmpty()) {
+                truncateGwc(ws, band);
+                return result.fail("GeoServer no pudo agregar al mosaico " + band + ": " + String.join(", ", failed));
+            }
         }
+
+        recalculateBBox(ws, band, result);
+        finishPublication(ws, band, result);
+        if (!verifyLayer(ws, band, result) || !verifyGroupOrRollback(ws, band, groupBefore, result)) {
+            truncateGwc(ws, band);
+            return result;
+        }
+        return result.ok("Banda " + band + " sincronizada y visible en el grupo " + group() + ".");
     }
 
     /**
-     * Obtiene la lista de workspaces candidatos en GeoServer (priorizando pisac_shn y el configurado).
+     * Resincroniza una banda de carta única (GeoTIFF) apuntando al archivo indicado.
      */
-    private List<String> resolveTargetWorkspaces(String baseUrl) {
-        List<String> workspaces = new ArrayList<>();
-        String configured = properties.getGeoserverWorkspace();
-        if (configured != null && !configured.trim().isEmpty()) {
-            workspaces.add(configured.trim());
+    public PublishResult resyncSingleChart(String band, String fileName) {
+        if (fileName == null) {
+            return new PublishResult().fail("La banda " + band + " no tiene ninguna carta en disco.");
         }
-        if (!workspaces.contains("pisac_shn")) {
-            workspaces.add("pisac_shn");
-        }
-        if (!workspaces.contains("shn_s124")) {
-            workspaces.add("shn_s124");
-        }
+        return publishSingleChart(band, fileName);
+    }
 
-        try {
-            String url = baseUrl + "/rest/workspaces.json";
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 && response.body() != null) {
-                JsonNode root = objectMapper.readTree(response.body());
-                JsonNode wsArray = root.path("workspaces").path("workspace");
-                if (wsArray.isArray()) {
-                    for (JsonNode ws : wsArray) {
-                        String name = ws.path("name").asText("");
-                        if (!name.isEmpty() && !workspaces.contains(name)) {
-                            workspaces.add(name);
-                        }
-                    }
+    /**
+     * Retira del índice del mosaico los elementos cuyos archivos se van a reemplazar o borrar,
+     * sin tocar el resto del índice (reemplaza el borrado completo del índice en cada subida).
+     */
+    public void removeGranules(String band, Collection<String> fileNames) {
+        String ws = workspace();
+        if (fileNames == null || fileNames.isEmpty() || getJson(storePath(ws, band)) == null) {
+            return;
+        }
+        List<String> coverages = listCoverageNames(ws, band);
+        if (coverages.isEmpty()) {
+            return;
+        }
+        for (String name : fileNames) {
+            String filter = URLEncoder.encode("location = '" + name.replace("'", "''") + "'", StandardCharsets.UTF_8);
+            Resp r = call("DELETE", storePath(ws, band) + "/coverages/" + coverages.get(0) + "/index/granules?filter=" + filter, null, null);
+            log.info("[GeoServer] Retiro del elemento {} del mosaico {}: {}", name, band, r.status());
+        }
+    }
+
+    // =====================================================================================
+    // Pasos de publicación
+    // =====================================================================================
+
+    /** Crea el almacén ImageMosaic y su cobertura. El directorio ya debe contener indexer.properties. */
+    private boolean createMosaic(String ws, String band, PublishResult result) {
+        Resp r = call("POST", "/rest/workspaces/" + ws + "/coveragestores",
+                storeXml(band, ws, "ImageMosaic", MOUNT_BASE + band), "application/xml");
+        if (!r.ok()) {
+            result.fail("No se pudo crear el almacén " + band + " (" + r.status() + "): " + r.shortBody());
+            return false;
+        }
+        result.step("Almacén ImageMosaic " + band + " creado");
+        return publishMosaicCoverage(ws, band, result);
+    }
+
+    private boolean publishMosaicCoverage(String ws, String band, PublishResult result) {
+        Resp r = call("POST", storePath(ws, band) + "/coverages",
+                "<coverage><name>" + band + "</name><title>" + bandTitle(band) + "</title><nativeName>" + band
+                        + "</nativeName><srs>EPSG:3395</srs><projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
+                        + "<enabled>true</enabled></coverage>",
+                "application/xml");
+        if (!r.ok()) {
+            // No dejar un almacén vacío que confunda a la siguiente subida
+            call("DELETE", storePath(ws, band) + "?recurse=true", null, null);
+            String reason = "GeoServer no pudo crear el mosaico " + band + " (" + r.status() + "): " + r.shortBody();
+            if (r.status() == 500) {
+                reason += " Verifique que GeoServer pueda escribir el índice en la carpeta de la banda.";
+            }
+            result.fail(reason);
+            return false;
+        }
+        result.step("Capa " + ws + ":" + band + " publicada");
+        return true;
+    }
+
+    /** Estilo, estilo por defecto, grupo y caché de teselas. */
+    private void finishPublication(String ws, String band, PublishResult result) {
+        String style = ensureStyle(ws, band, result);
+        if (style != null) {
+            Resp r = call("PUT", "/rest/layers/" + ws + ":" + band,
+                    "<layer><defaultStyle><name>" + style + "</name><workspace>" + ws + "</workspace></defaultStyle>"
+                            + "<enabled>true</enabled></layer>",
+                    "application/xml");
+            result.step("Estilo por defecto " + style + " en " + band + ": " + r.status());
+        }
+        ensureInGroup(ws, band, style, result);
+        truncateGwc(ws, band);
+    }
+
+    /**
+     * Devuelve el nombre del estilo de la banda, creándolo si no existe con la escala configurada.
+     * Nunca asigna un estilo inexistente (un layer.xml con estilo inexistente se descarta al recargar).
+     */
+    private String ensureStyle(String ws, String band, PublishResult result) {
+        String style = "estilo_" + band;
+        if (getJson("/rest/workspaces/" + ws + "/styles/" + style + ".json") != null) {
+            return style;
+        }
+        Integer maxScale = properties.getBandMaxScale() != null ? properties.getBandMaxScale().get(band) : null;
+        String scaleRule = maxScale != null && maxScale > 0
+                ? "<!-- Visible desde 1:" + maxScale + " hacia adentro; no se apaga al acercarse -->"
+                + "<MaxScaleDenominator>" + maxScale + "</MaxScaleDenominator>"
+                : "<!-- Sin límite de escala: siempre visible -->";
+        String sld = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<StyledLayerDescriptor version=\"1.0.0\" xmlns=\"http://www.opengis.net/sld\" "
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
+                + "<NamedLayer><Name>" + style + "</Name><UserStyle><Title>" + bandTitle(band) + "</Title>"
+                + "<FeatureTypeStyle><Rule>" + scaleRule
+                + "<RasterSymbolizer><Opacity>1.0</Opacity></RasterSymbolizer>"
+                + "</Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>";
+        Resp r = call("POST", "/rest/workspaces/" + ws + "/styles?name=" + style, sld, "application/vnd.ogc.sld+xml");
+        if (!r.ok()) {
+            result.step("No se pudo crear el estilo " + style + " (" + r.status() + "); la capa queda con el estilo por defecto");
+            return null;
+        }
+        result.step("Estilo " + style + " creado" + (maxScale != null ? " (visible desde 1:" + maxScale + ")" : ""));
+        return style;
+    }
+
+    /** Agrega la capa al grupo en orden de banda (banda menor abajo). No hace nada si ya está. */
+    private void ensureInGroup(String ws, String band, String style, PublishResult result) {
+        List<String[]> entries = readGroupEntries(ws);
+        if (entries == null) {
+            result.step("El grupo " + group() + " no existe; la capa no se agregó a ningún grupo");
+            return;
+        }
+        String qualified = ws + ":" + band;
+        for (String[] e : entries) {
+            if (qualified.equals(e[0]) || band.equals(e[0])) {
+                return;
+            }
+        }
+        int newOrder = bandNumber(band);
+        int insertAt = entries.size();
+        for (int i = 0; i < entries.size(); i++) {
+            int n = bandNumber(entries.get(i)[0]);
+            if (n > newOrder) {
+                insertAt = i;
+                break;
+            }
+        }
+        List<String[]> updated = new ArrayList<>(entries);
+        updated.add(insertAt, new String[]{qualified, style != null ? ws + ":" + style : ""});
+        Resp r = writeGroupEntries(ws, updated);
+        if (r.ok()) {
+            result.step("Capa " + qualified + " agregada al grupo " + group() + " (posición " + (insertAt + 1) + ")");
+        } else {
+            result.step("No se pudo agregar " + qualified + " al grupo (" + r.status() + "): " + r.shortBody());
+        }
+    }
+
+    private boolean verifyLayer(String ws, String band, PublishResult result) {
+        Bounds b = coverageBounds(ws, band);
+        if (b == null) {
+            result.fail("La capa " + ws + ":" + band + " no quedó publicada en GeoServer.");
+            return false;
+        }
+        // Estilo "raster" para no depender de los límites de escala del estilo de la banda
+        Resp r = getMap(ws + ":" + band, "raster", b);
+        if (r == null) {
+            result.fail("GeoServer no puede dibujar la capa " + band + " (GetMap con error).");
+            return false;
+        }
+        result.step("Verificación GetMap de " + band + ": correcta");
+        return true;
+    }
+
+    private boolean verifyGroupOrRollback(String ws, String band, List<String[]> groupBefore, PublishResult result) {
+        if (groupBefore == null) {
+            return true;
+        }
+        Bounds gb = groupBounds(ws);
+        if (gb != null && getMap(ws + ":" + group(), "", gb) != null) {
+            result.step("Verificación GetMap del grupo " + group() + ": correcta");
+            return true;
+        }
+        Resp r = writeGroupEntries(ws, groupBefore);
+        truncateGwc(ws, group());
+        result.fail("La capa " + band + " impedía dibujar el grupo " + group()
+                + "; se restauró el grupo anterior para no afectar el mapa (" + r.status() + ").");
+        return false;
+    }
+
+    // =====================================================================================
+    // Grupo de capas
+    // =====================================================================================
+
+    /** Lee las capas del grupo como pares [capa, estilo]. Devuelve null si el grupo no existe. */
+    private List<String[]> readGroupEntries(String ws) {
+        JsonNode root = getJson("/rest/workspaces/" + ws + "/layergroups/" + group() + ".json");
+        if (root == null) {
+            return null;
+        }
+        JsonNode lg = root.path("layerGroup");
+        List<String> layers = new ArrayList<>();
+        for (JsonNode p : items(lg.path("publishables").path("published"))) {
+            if (p.isObject()) {
+                layers.add(p.path("name").asText(""));
+            }
+        }
+        List<String> styles = new ArrayList<>();
+        for (JsonNode s : items(lg.path("styles").path("style"))) {
+            styles.add(s.isObject() ? s.path("name").asText("") : s.asText(""));
+        }
+        List<String[]> entries = new ArrayList<>();
+        for (int i = 0; i < layers.size(); i++) {
+            entries.add(new String[]{layers.get(i), i < styles.size() ? styles.get(i) : ""});
+        }
+        return entries;
+    }
+
+    private Resp writeGroupEntries(String ws, List<String[]> entries) {
+        StringBuilder xml = new StringBuilder("<layerGroup><name>").append(group()).append("</name><publishables>");
+        for (String[] e : entries) {
+            xml.append("<published type=\"layer\"><name>").append(e[0]).append("</name></published>");
+        }
+        xml.append("</publishables><styles>");
+        for (String[] e : entries) {
+            xml.append(e[1] == null || e[1].isEmpty() ? "<style/>" : "<style><name>" + e[1] + "</name></style>");
+        }
+        xml.append("</styles></layerGroup>");
+        return call("PUT", "/rest/workspaces/" + ws + "/layergroups/" + group(), xml.toString(), "application/xml");
+    }
+
+    // =====================================================================================
+    // Utilidades REST
+    // =====================================================================================
+
+    private Resp harvestFile(String ws, String band, String fileName) {
+        // external.imagemosaic espera la ruta del archivo dentro del contenedor, sin el prefijo file://
+        // (con file:// responde 400 "Failed to locate the input file")
+        return call("POST", storePath(ws, band) + "/external.imagemosaic", "/mnt/geotiff/" + band + "/" + fileName, "text/plain");
+    }
+
+    private void recalculateBBox(String ws, String band, PublishResult result) {
+        for (String cov : listCoverageNames(ws, band)) {
+            Resp r = call("PUT", storePath(ws, band) + "/coverages/" + cov + ".xml?recalculate=nativebbox,latlonbbox",
+                    "<coverage><name>" + cov + "</name><enabled>true</enabled></coverage>", "application/xml");
+            result.step("Recálculo de extensión de " + cov + ": " + r.status());
+        }
+    }
+
+    private List<String> listCoverageNames(String ws, String store) {
+        List<String> names = new ArrayList<>();
+        JsonNode root = getJson(storePath(ws, store) + "/coverages.json");
+        if (root == null) {
+            return names;
+        }
+        for (JsonNode c : items(root.path("coverages").path("coverage"))) {
+            if (c.isObject() && !c.path("name").asText("").isEmpty()) {
+                names.add(c.path("name").asText());
+            }
+        }
+        return names;
+    }
+
+    private Set<String> listGranuleLocations(String ws, String band) {
+        Set<String> locations = new LinkedHashSet<>();
+        List<String> coverages = listCoverageNames(ws, band);
+        if (coverages.isEmpty()) {
+            return locations;
+        }
+        JsonNode root = getJson(storePath(ws, band) + "/coverages/" + coverages.get(0) + "/index/granules.json?limit=10000");
+        if (root != null) {
+            for (JsonNode f : root.path("features")) {
+                String loc = f.path("properties").path("location").asText("");
+                if (!loc.isEmpty()) {
+                    locations.add(loc.replace("\\", "/").replaceAll("^.*/", ""));
                 }
             }
-        } catch (Exception ignored) {}
-
-        return workspaces;
-    }
-
-    private boolean checkWorkspaceExists(String baseUrl, String workspace) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s.json", baseUrl, workspace);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            return response.statusCode() == 200;
-        } catch (Exception e) {
-            return false;
         }
+        return locations;
     }
 
-    private boolean checkCoverageStoreExists(String baseUrl, String workspace, String storeName) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s.json", baseUrl, workspace, storeName);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            return response.statusCode() == 200;
-        } catch (Exception e) {
-            return false;
+    private Bounds coverageBounds(String ws, String band) {
+        List<String> coverages = listCoverageNames(ws, band);
+        if (coverages.isEmpty()) {
+            return null;
         }
-    }
-
-    private boolean updateGeoTiffStoreUrl(String baseUrl, String workspace, String storeName, String fileUrl) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s", baseUrl, workspace, storeName);
-            String xml = String.format(
-                    "<coverageStore><name>%s</name><workspace>%s</workspace><enabled>true</enabled><type>GeoTIFF</type><url>%s</url></coverageStore>",
-                    storeName, workspace, fileUrl);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .PUT(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Actualización de almacén GeoTIFF {}:{} retornó status: {}", workspace, storeName, response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("Error actualizando almacén GeoTIFF {}:{}: {}", workspace, storeName, e.getMessage());
-            return false;
+        JsonNode root = getJson(storePath(ws, band) + "/coverages/" + coverages.get(0) + ".json");
+        if (root == null) {
+            return null;
         }
-    }
-
-    private boolean updateMosaicStoreUrl(String baseUrl, String workspace, String storeName, String band) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s", baseUrl, workspace, storeName);
-            String xml = String.format(
-                    "<coverageStore><name>%s</name><workspace>%s</workspace><enabled>true</enabled><type>ImageMosaic</type><url>file:///mnt/geotiff/%s</url></coverageStore>",
-                    storeName, workspace, band);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .PUT(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(20))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Actualización de almacén ImageMosaic {}:{} retornó status: {}", workspace, storeName, response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("Error actualizando almacén ImageMosaic {}:{}: {}", workspace, storeName, e.getMessage());
-            return false;
+        JsonNode bb = root.path("coverage").path("latLonBoundingBox");
+        if (bb.isMissingNode()) {
+            return null;
         }
+        return new Bounds(bb.path("minx").asDouble(), bb.path("miny").asDouble(),
+                bb.path("maxx").asDouble(), bb.path("maxy").asDouble(), "EPSG:4326");
     }
 
-    private boolean createGeoTiffStore(String baseUrl, String workspace, String storeName, String fileUrl) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores?configure=all", baseUrl, workspace);
-            String xml = String.format(
-                    "<coverageStore><name>%s</name><workspace>%s</workspace><enabled>true</enabled><type>GeoTIFF</type><url>%s</url></coverageStore>",
-                    storeName, workspace, fileUrl);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .POST(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Creación de almacén GeoTIFF {}:{} retornó status: {}", workspace, storeName, response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("Error creando almacén GeoTIFF {}:{}: {}", workspace, storeName, e.getMessage());
-            return false;
+    private Bounds groupBounds(String ws) {
+        JsonNode root = getJson("/rest/workspaces/" + ws + "/layergroups/" + group() + ".json");
+        if (root == null) {
+            return null;
         }
-    }
-
-    private void publishCoverage(String baseUrl, String workspace, String storeName, String outputCogFilename) {
-        try {
-            String nativeName = outputCogFilename != null && outputCogFilename.contains(".")
-                    ? outputCogFilename.substring(0, outputCogFilename.lastIndexOf('.'))
-                    : storeName;
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s/coverages", baseUrl, workspace, storeName);
-            String xml = String.format("<coverage><name>%s</name><title>%s</title><nativeName>%s</nativeName></coverage>",
-                    storeName, storeName, nativeName);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .POST(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Publicación de cobertura para {}:{} (nativeName: {}) retornó status: {}", workspace, storeName, nativeName, response.statusCode());
-        } catch (Exception e) {
-            log.warn("Error publicando cobertura para {}:{}: {}", workspace, storeName, e.getMessage());
+        JsonNode bb = root.path("layerGroup").path("bounds");
+        if (bb.isMissingNode()) {
+            return null;
         }
+        JsonNode crsNode = bb.path("crs");
+        String crs = crsNode.isObject() ? crsNode.path("$").asText("EPSG:3857") : crsNode.asText("EPSG:3857");
+        return new Bounds(bb.path("minx").asDouble(), bb.path("miny").asDouble(),
+                bb.path("maxx").asDouble(), bb.path("maxy").asDouble(), crs);
     }
 
-    private List<String> findMatchingStores(String baseUrl, String workspace, String band) {
-        List<String> list = new ArrayList<>();
+    /** GetMap de verificación. Devuelve null si GeoServer responde con una excepción en vez de una imagen. */
+    private Resp getMap(String layer, String style, Bounds b) {
         try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores.json", baseUrl, workspace);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 && response.body() != null && !response.body().isEmpty()) {
-                JsonNode root = objectMapper.readTree(response.body());
-                JsonNode stores = root.path("coverageStores").path("coverageStore");
-                if (stores.isArray()) {
-                    for (JsonNode store : stores) {
-                        String name = store.path("name").asText("");
-                        if (isStoreForBand(name, band)) {
-                            list.add(name);
-                        }
-                    }
-                } else if (stores.isObject()) {
-                    String name = stores.path("name").asText("");
-                    if (isStoreForBand(name, band)) {
-                        list.add(name);
-                    }
-                }
+            String url = String.format(Locale.ROOT,
+                    "%s/%s/wms?service=WMS&version=1.1.1&request=GetMap&layers=%s&styles=%s&bbox=%f,%f,%f,%f"
+                            + "&width=256&height=256&srs=%s&format=image/png&transparent=true",
+                    baseUrl(), workspace(), URLEncoder.encode(layer, StandardCharsets.UTF_8), style,
+                    b.minx(), b.miny(), b.maxx(), b.maxy(), b.crs());
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                    .header("Authorization", authHeader())
+                    .GET().timeout(Duration.ofSeconds(60)).build();
+            HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            String ctype = response.headers().firstValue("Content-Type").orElse("");
+            if (response.statusCode() == 200 && ctype.startsWith("image/")) {
+                return new Resp(200, null);
             }
+            log.warn("[GeoServer] GetMap de {} falló: {} {} {}", layer, response.statusCode(), ctype,
+                    new String(response.body(), StandardCharsets.UTF_8).replaceAll("\\s+", " "));
+            return null;
         } catch (Exception e) {
-            log.warn("Error consultando almacenes de GeoServer en {} para {}: {}", workspace, band, e.getMessage());
+            log.warn("[GeoServer] GetMap de {} falló: {}", layer, e.getMessage());
+            return null;
+        }
+    }
+
+    /** Vacía la caché de teselas (GeoWebCache) de la capa y del grupo. */
+    private void truncateGwc(String ws, String layer) {
+        for (String name : new LinkedHashSet<>(List.of(ws + ":" + layer, ws + ":" + group()))) {
+            call("POST", "/gwc/rest/masstruncate",
+                    "<truncateLayer><layerName>" + name + "</layerName></truncateLayer>", "text/xml");
+        }
+    }
+
+    private JsonNode getJson(String path) {
+        Resp r = call("GET", path, null, null);
+        if (r.status() != 200 || r.body() == null || r.body().isBlank()) {
+            return null;
+        }
+        try {
+            return objectMapper.readTree(r.body());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Resp call(String method, String path, String body, String contentType) {
+        try {
+            HttpRequest.Builder b = HttpRequest.newBuilder(URI.create(baseUrl() + path))
+                    .header("Authorization", authHeader())
+                    .timeout(Duration.ofSeconds(120));
+            if (contentType != null) {
+                b.header("Content-Type", contentType);
+            }
+            HttpRequest.BodyPublisher publisher = body != null
+                    ? HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8)
+                    : HttpRequest.BodyPublishers.noBody();
+            b.method(method, publisher);
+            HttpResponse<String> response = httpClient.send(b.build(), HttpResponse.BodyHandlers.ofString());
+            if (!"GET".equals(method)) {
+                log.debug("[GeoServer] {} {} -> {}", method, path, response.statusCode());
+            }
+            return new Resp(response.statusCode(), response.body());
+        } catch (Exception e) {
+            log.warn("[GeoServer] {} {} falló: {}", method, path, e.getMessage());
+            return new Resp(0, "GeoServer no disponible: " + e.getMessage());
+        }
+    }
+
+    /** GeoServer devuelve un objeto cuando hay un solo elemento y un arreglo cuando hay varios. */
+    private static List<JsonNode> items(JsonNode node) {
+        List<JsonNode> list = new ArrayList<>();
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return list;
+        }
+        if (node.isArray()) {
+            node.forEach(list::add);
+        } else {
+            list.add(node);
         }
         return list;
     }
 
-    private boolean isStoreForBand(String storeName, String band) {
-        String s = storeName.toLowerCase().replace("-", "").replace("_", "");
-        String b = band.toLowerCase().replace("-", "").replace("_", "");
-        return s.contains(b);
+    private static String storeXml(String name, String ws, String type, String url) {
+        return "<coverageStore><name>" + name + "</name><workspace>" + ws + "</workspace><enabled>true</enabled>"
+                + "<type>" + type + "</type><url>" + url + "</url></coverageStore>";
     }
 
-    private boolean harvestMosaicStore(String baseUrl, String workspace, String storeName, String band) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s/external.imagemosaic",
-                    baseUrl, workspace, storeName);
-            String folderUrl = "file:///mnt/geotiff/" + band;
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "text/plain")
-                    .POST(HttpRequest.BodyPublishers.ofString(folderUrl))
-                    .timeout(Duration.ofSeconds(30))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("GeoServer harvest store {}:{} con {} retornó status: {}", workspace, storeName, folderUrl, response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("Error haciendo harvest en almacén {}:{} de GeoServer: {}", workspace, storeName, e.getMessage());
-            return false;
-        }
+    private static String storePath(String ws, String store) {
+        return "/rest/workspaces/" + ws + "/coveragestores/" + store;
     }
 
-    private boolean createMosaicStore(String baseUrl, String workspace, String band) {
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores?configure=all", baseUrl, workspace);
-            String xml = String.format(
-                    "<coverageStore><name>%s</name><workspace>%s</workspace><enabled>true</enabled><type>ImageMosaic</type><url>file:///mnt/geotiff/%s</url></coverageStore>",
-                    band, workspace, band);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .POST(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(20))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Creación de almacén ImageMosaic {}:{} retornó status: {}", workspace, band, response.statusCode());
-            return response.statusCode() >= 200 && response.statusCode() < 300;
-        } catch (Exception e) {
-            log.warn("Error creando almacén ImageMosaic {}:{} en GeoServer: {}", workspace, band, e.getMessage());
-            return false;
-        }
+    private static int bandNumber(String layerName) {
+        Matcher m = BAND_PATTERN.matcher(layerName == null ? "" : layerName.toLowerCase(Locale.ROOT));
+        return m.find() ? Integer.parseInt(m.group(1)) : -1;
     }
 
-    private boolean hasAnyCoverage(String baseUrl, String workspace, String storeName) {
-        return !listCoverageNames(baseUrl, workspace, storeName).isEmpty();
+    private static String bandTitle(String band) {
+        return switch (band) {
+            case "banda1" -> "Banda 1 - Overview";
+            case "banda2" -> "Banda 2 - General";
+            case "banda3" -> "Banda 3 - Costera";
+            case "banda4" -> "Banda 4 - Aproximacion";
+            case "banda5" -> "Banda 5 - Puerto";
+            case "banda6" -> "Banda 6 - Atraque";
+            default -> band;
+        };
     }
 
-    private List<String> listCoverageNames(String baseUrl, String workspace, String storeName) {
-        List<String> names = new ArrayList<>();
-        try {
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s/coverages.json", baseUrl, workspace, storeName);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .GET()
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 && response.body() != null && !response.body().isEmpty()) {
-                JsonNode root = objectMapper.readTree(response.body());
-                JsonNode coverages = root.path("coverages").path("coverage");
-                if (coverages.isArray()) {
-                    for (JsonNode cov : coverages) {
-                        String n = cov.path("name").asText("");
-                        if (!n.isEmpty()) {
-                            names.add(n);
-                        }
-                    }
-                } else if (coverages.isObject()) {
-                    String n = coverages.path("name").asText("");
-                    if (!n.isEmpty()) {
-                        names.add(n);
-                    }
-                }
-            }
-        } catch (Exception ignored) {}
-        return names;
+    private String baseUrl() {
+        return properties.getGeoserverUrl().replaceAll("/+$", "");
     }
 
-    /**
-     * Recalcula explícitamente el nativeBoundingBox y latLonBoundingBox de todas las coberturas del almacén
-     * para que las nuevas cartas agregadas fuera del BBox original sean visibles inmediatamente en GeoServer.
-     */
-    private void recalculateStoreCoveragesBBox(String baseUrl, String workspace, String storeName) {
-        List<String> coverages = listCoverageNames(baseUrl, workspace, storeName);
-        if (coverages.isEmpty()) {
-            coverages.add(storeName);
-        }
-        for (String covName : coverages) {
-            try {
-                String url = String.format(
-                        "%s/rest/workspaces/%s/coveragestores/%s/coverages/%s.xml?recalculate=nativebbox,latlonbbox",
-                        baseUrl, workspace, storeName, covName
-                );
-                String xml = String.format("<coverage><name>%s</name><enabled>true</enabled></coverage>", covName);
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", getAuthHeader())
-                        .header("Content-Type", "application/xml")
-                        .PUT(HttpRequest.BodyPublishers.ofString(xml))
-                        .timeout(Duration.ofSeconds(20))
-                        .build();
-                HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-                log.info("Recálculo de BoundingBox para cobertura {}:{} retornó status: {}", workspace, covName, response.statusCode());
-            } catch (Exception e) {
-                log.warn("No se pudo recalcular el BoundingBox de {}:{}: {}", workspace, covName, e.getMessage());
-            }
-        }
+    private String workspace() {
+        String ws = properties.getGeoserverWorkspace();
+        return ws == null || ws.isBlank() ? "pisac_shn" : ws.trim();
     }
 
-    /**
-     * Vacía la caché de teselas WMTS en GeoWebCache (masstruncate) tanto para la capa individual de la banda
-     * como para los grupos de capas cartográficos (pisac_shn:cartografia_ve, cartografia_ve, etc.).
-     */
-    private void truncateGwcForBandAndGroup(String baseUrl, String workspace, String storeOrLayerName) {
-        String configuredGroup = properties.getGeoserverLayerGroup() != null
-                ? properties.getGeoserverLayerGroup().trim()
-                : "cartografia_ve";
-
-        List<String> gwcLayers = List.of(
-                workspace + ":" + storeOrLayerName,
-                workspace + ":" + configuredGroup,
-                configuredGroup,
-                workspace + ":cartografia_ve",
-                "pisac_shn:cartografia_ve",
-                workspace + ":cartas_nauticas_shn"
-        );
-
-        for (String layerName : gwcLayers) {
-            truncateGwcLayer(baseUrl, layerName);
-        }
+    private String group() {
+        String g = properties.getGeoserverLayerGroup();
+        return g == null || g.isBlank() ? "cartografia_ve" : g.trim();
     }
 
-    private void truncateGwcLayer(String baseUrl, String qualifiedLayerName) {
-        try {
-            String url = baseUrl + "/gwc/rest/masstruncate";
-            String xml = String.format("<truncateLayer><layerName>%s</layerName></truncateLayer>", qualifiedLayerName);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "text/xml")
-                    .POST(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                log.info("GeoWebCache masstruncate ejecutado para capa WMTS: {}", qualifiedLayerName);
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private boolean publishMosaicCoverage(String baseUrl, String workspace, String storeName, String band) {
-        try {
-            String coverageName = band;
-            String url = String.format("%s/rest/workspaces/%s/coveragestores/%s/coverages", baseUrl, workspace, storeName);
-            String xml = String.format("<coverage><name>%s</name><title>%s</title><nativeName>%s</nativeName><srs>EPSG:3395</srs><enabled>true</enabled></coverage>",
-                    coverageName, coverageName, coverageName);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .POST(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-
-            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Publicación de cobertura ImageMosaic {} en almacén {}:{} retornó status: {}", coverageName, workspace, storeName, response.statusCode());
-            boolean ok = response.statusCode() >= 200 && response.statusCode() < 300;
-            if (ok) {
-                assignBandDefaultStyle(baseUrl, workspace, coverageName);
-            }
-            return ok;
-        } catch (Exception e) {
-            log.warn("Error publicando cobertura ImageMosaic {} en {}:{}: {}", band, workspace, storeName, e.getMessage());
-            return false;
-        }
-    }
-
-    private void assignBandDefaultStyle(String baseUrl, String workspace, String band) {
-        try {
-            String styleName = "estilo_" + band;
-            String url = String.format("%s/rest/workspaces/%s/layers/%s", baseUrl, workspace, band);
-            String xml = String.format(
-                    "<layer><defaultStyle><name>%s</name><workspace>%s</workspace></defaultStyle><enabled>true</enabled></layer>",
-                    styleName, workspace);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", getAuthHeader())
-                    .header("Content-Type", "application/xml")
-                    .PUT(HttpRequest.BodyPublishers.ofString(xml))
-                    .timeout(Duration.ofSeconds(10))
-                    .build();
-            getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception ignored) {}
+    private String authHeader() {
+        String auth = properties.getGeoserverUser() + ":" + properties.getGeoserverPassword();
+        return "Basic " + Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
     }
 }

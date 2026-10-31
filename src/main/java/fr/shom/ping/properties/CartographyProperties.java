@@ -1,5 +1,7 @@
 package fr.shom.ping.properties;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,4 +72,17 @@ public class CartographyProperties {
      */
     @Builder.Default
     private int pdfDpi = 300;
+
+    /**
+     * Escala a partir de la cual se muestra cada banda (MaxScaleDenominator del estilo estilo_bandaN).
+     * Sólo se usa al crear un estilo que no existe; los estilos ya creados en GeoServer no se modifican.
+     * Valores según la tabla de bandas del área funcional; banda1/banda2 sin límite (fondo siempre visible).
+     */
+    @Builder.Default
+    private Map<String, Integer> bandMaxScale = new HashMap<>(Map.of(
+            "banda3", 350000,
+            "banda4", 90000,
+            "banda5", 25000,
+            "banda6", 4000
+    ));
 }
