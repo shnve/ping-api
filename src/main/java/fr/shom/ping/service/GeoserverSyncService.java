@@ -116,6 +116,8 @@ public class GeoserverSyncService {
         List<String[]> groupBefore = readGroupEntries(ws);
 
         String previousUrl = null;
+        String previousCoverageName = null;
+        String newCoverageName = cogFileName.contains(".") ? cogFileName.substring(0, cogFileName.lastIndexOf('.')) : cogFileName;
         JsonNode store = getJson(storePath(ws, band));
         if (store != null) {
             previousUrl = store.path("coverageStore").path("url").asText(null);
@@ -124,12 +126,15 @@ public class GeoserverSyncService {
                 return result.fail("No se pudo actualizar el almacén " + band + " (" + r.status() + "): " + r.shortBody());
             }
             result.step("Almacén " + band + " apuntado a " + fileUrl);
+            // El lector GeoTIFF exige que nativeCoverageName coincida con el nombre del archivo nuevo
+            // (si no: "The specified coverageName VE002 is not supported")
+            previousCoverageName = setNativeCoverageName(ws, band, newCoverageName, result);
         } else {
             Resp r = call("POST", "/rest/workspaces/" + ws + "/coveragestores", storeXml(band, ws, "GeoTIFF", fileUrl), "application/xml");
             if (!r.ok()) {
                 return result.fail("No se pudo crear el almacén " + band + " (" + r.status() + "): " + r.shortBody());
             }
-            String nativeName = cogFileName.contains(".") ? cogFileName.substring(0, cogFileName.lastIndexOf('.')) : cogFileName;
+            String nativeName = newCoverageName;
             r = call("POST", storePath(ws, band) + "/coverages",
                     "<coverage><name>" + band + "</name><title>" + band + "</title><nativeName>" + nativeName
                             + "</nativeName><nativeCoverageName>" + nativeName + "</nativeCoverageName><enabled>true</enabled></coverage>",
@@ -147,6 +152,9 @@ public class GeoserverSyncService {
         if (!verifyLayer(ws, band, result) || !verifyGroupOrRollback(ws, band, groupBefore, result)) {
             if (previousUrl != null) {
                 call("PUT", storePath(ws, band), storeXml(band, ws, "GeoTIFF", previousUrl), "application/xml");
+                if (previousCoverageName != null) {
+                    setNativeCoverageName(ws, band, previousCoverageName, result);
+                }
                 result.step("Restaurada la URL anterior del almacén: " + previousUrl);
             }
             truncateGwc(ws, band);
@@ -468,6 +476,24 @@ public class GeoserverSyncService {
         // external.imagemosaic espera la ruta del archivo dentro del contenedor, sin el prefijo file://
         // (con file:// responde 400 "Failed to locate the input file")
         return call("POST", storePath(ws, band) + "/external.imagemosaic", "/mnt/geotiff/" + band + "/" + fileName, "text/plain");
+    }
+
+    /**
+     * Ajusta nativeCoverageName de la(s) cobertura(s) de un almacén GeoTIFF y devuelve el valor anterior.
+     */
+    private String setNativeCoverageName(String ws, String band, String coverageName, PublishResult result) {
+        String previous = null;
+        for (String cov : listCoverageNames(ws, band)) {
+            JsonNode c = getJson(storePath(ws, band) + "/coverages/" + cov + ".json");
+            if (c != null && previous == null) {
+                JsonNode n = c.path("coverage");
+                previous = n.path("nativeCoverageName").asText(n.path("nativeName").asText(null));
+            }
+            Resp r = call("PUT", storePath(ws, band) + "/coverages/" + cov,
+                    "<coverage><nativeCoverageName>" + coverageName + "</nativeCoverageName></coverage>", "application/xml");
+            result.step("Nombre nativo de " + cov + " → " + coverageName + ": " + r.status());
+        }
+        return previous;
     }
 
     private void recalculateBBox(String ws, String band, PublishResult result) {
