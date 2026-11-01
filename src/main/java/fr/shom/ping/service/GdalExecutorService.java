@@ -147,18 +147,19 @@ public class GdalExecutorService {
             outThread.start();
             errThread.start();
 
-            // Timeout generoso de 10 minutos para cartas grandes a 300 DPI
-            boolean finished = process.waitFor(10, TimeUnit.MINUTES);
+            // Tiempo límite configurable (por defecto 30 min): el procesamiento es en segundo plano,
+            // así que no depende del tiempo de espera de Nginx
+            boolean finished = process.waitFor(properties.getGdalTimeoutMinutes(), TimeUnit.MINUTES);
             outThread.join(2000);
             errThread.join(2000);
 
             if (!finished) {
                 process.destroyForcibly();
-                log.error("Comando GDAL superó el tiempo límite de 10 minutos.");
+                log.error("Comando GDAL superó el tiempo límite de {} minutos.", properties.getGdalTimeoutMinutes());
                 return ProcessResult.builder()
                         .exitCode(-1)
                         .stdout(stdout.toString())
-                        .stderr("Timeout: el proceso tardó más de 10 minutos.")
+                        .stderr("Timeout: el proceso tardó más de " + properties.getGdalTimeoutMinutes() + " minutos.")
                         .success(false)
                         .build();
             }

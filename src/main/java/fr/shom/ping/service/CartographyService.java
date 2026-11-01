@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -41,14 +42,46 @@ public class CartographyService {
             "banda1", "banda2", "banda3", "banda4", "banda5", "banda6"
     );
 
+    /** Carta recibida y guardada en disco, lista para procesarse (de inmediato o en segundo plano). */
+    public static class PreparedUpload {
+        private Path tempDir;
+        private String originalFilename;
+        private String band;
+        private String ext;
+
+        public String getOriginalFilename() {
+            return originalFilename;
+        }
+
+        public String getBand() {
+            return band;
+        }
+
+        /** Identificador de la carta (ej. "101 (2).pdf" -> "101") para detectar reintentos de la misma carta. */
+        public String getChartKey() {
+            return band + ":" + extractCanonicalChartId(originalFilename).toLowerCase();
+        }
+    }
+
     /**
      * Procesa la subida de una carta náutica (GeoPDF o TIFF), realiza la validación de
      * georreferenciación con GDAL, convierte a COG EPSG:3395 y la traslada a la carpeta
      * del servidor para su actualización en GeoServer.
      */
     public CartographyUploadResponse uploadAndConvert(MultipartFile file, String band, boolean reloadGeoserver) {
-        long startTime = System.currentTimeMillis();
+        PreparedUpload prepared = new PreparedUpload();
+        CartographyUploadResponse error = prepareUpload(file, band, prepared);
+        if (error != null) {
+            return error;
+        }
+        return processPreparedUpload(prepared, reloadGeoserver, stage -> { });
+    }
 
+    /**
+     * Valida banda y formato y guarda el archivo recibido en una carpeta temporal propia del trabajo.
+     * Devuelve null si todo está bien (y completa {@code out}); si no, la respuesta de error.
+     */
+    public CartographyUploadResponse prepareUpload(MultipartFile file, String band, PreparedUpload out) {
         if (file == null || file.isEmpty()) {
             return CartographyUploadResponse.builder()
                     .success(false)
@@ -96,24 +129,54 @@ public class CartographyService {
         Path tempDir = baseTempPath.resolve("job_" + UUID.randomUUID()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(tempDir);
+            // Guardar archivo recibido en disco de forma segura usando Java NIO
+            try (var in = file.getInputStream()) {
+                Files.copy(in, tempDir.resolve(originalFilename), StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
-            log.error("No se pudo crear la carpeta temporal: {}", e.getMessage());
+            log.error("No se pudo guardar el archivo recibido en la carpeta temporal: {}", e.getMessage());
+            try {
+                FileUtils.deleteDirectory(tempDir.toFile());
+            } catch (Exception ignored) {}
             return CartographyUploadResponse.builder()
                     .success(false)
                     .fileName(originalFilename)
                     .band(cleanBand)
-                    .message("Error creando carpeta temporal del servidor: " + e.getMessage())
+                    .message("Error guardando el archivo en el servidor: " + e.getMessage())
                     .build();
         }
 
-        Path uploadedPath = tempDir.resolve(originalFilename);
+        out.tempDir = tempDir;
+        out.originalFilename = originalFilename;
+        out.band = cleanBand;
+        out.ext = ext;
+        return null;
+    }
+
+    /** Descarta una carta preparada que no se va a procesar (borra su carpeta temporal). */
+    public void discardPreparedUpload(PreparedUpload prepared) {
+        try {
+            if (prepared != null && prepared.tempDir != null) {
+                FileUtils.deleteDirectory(prepared.tempDir.toFile());
+            }
+        } catch (Exception ignored) {}
+    }
+
+    /**
+     * Valida, convierte a COG EPSG:3395, mueve a la carpeta de la banda y publica en GeoServer una carta ya
+     * guardada por {@link #prepareUpload}. {@code stage} recibe la etapa en curso (VALIDATING, CONVERTING,
+     * PUBLISHING) para informar el avance. Siempre elimina la carpeta temporal del trabajo.
+     */
+    public CartographyUploadResponse processPreparedUpload(PreparedUpload prepared, boolean reloadGeoserver,
+                                                          Consumer<String> stage) {
+        long startTime = System.currentTimeMillis();
+        Path tempDir = prepared.tempDir;
+        String originalFilename = prepared.originalFilename;
+        String cleanBand = prepared.band;
+        String ext = prepared.ext;
 
         try {
-            // Guardar archivo recibido en disco de forma segura usando Java NIO
-            try (var in = file.getInputStream()) {
-                Files.copy(in, uploadedPath, StandardCopyOption.REPLACE_EXISTING);
-            }
-
+            stage.accept("VALIDATING");
             // 1. Validar georreferenciación y metadatos con gdalinfo
             CartographyValidationResult validation = gdalExecutorService.validateCartographyFile(tempDir, originalFilename);
 
@@ -135,6 +198,7 @@ public class CartographyService {
             String canonicalChartId = extractCanonicalChartId(originalFilename);
             String outputCogName = canonicalChartId + "_cog.tif";
 
+            stage.accept("CONVERTING");
             GdalExecutorService.ProcessResult convResult = gdalExecutorService.convertToCog3395(
                     tempDir, originalFilename, outputCogName, ext, validation
             );
@@ -166,6 +230,7 @@ public class CartographyService {
             boolean isSingleChart = "banda1".equals(cleanBand) || "banda2".equals(cleanBand);
 
             // 3. Preparar la carpeta de la banda con permisos que GeoServer (otro usuario) pueda leer y escribir
+            stage.accept("PUBLISHING");
             Path targetBandDir = resolveStorageBandDir(cleanBand);
             Files.createDirectories(targetBandDir);
             String permissionProblem = ensureGeoserverCanWrite(targetBandDir);

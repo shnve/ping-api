@@ -74,6 +74,12 @@ public class CartographyProperties {
     private int pdfDpi = 300;
 
     /**
+     * Tiempo máximo (minutos) de cada comando GDAL. La conversión corre en segundo plano.
+     */
+    @Builder.Default
+    private int gdalTimeoutMinutes = 30;
+
+    /**
      * Escala a partir de la cual se muestra cada banda (MaxScaleDenominator del estilo estilo_bandaN).
      * Sólo se usa al crear un estilo que no existe; los estilos ya creados en GeoServer no se modifican.
      * Valores según la tabla de bandas del área funcional; banda1/banda2 sin límite (fondo siempre visible).
