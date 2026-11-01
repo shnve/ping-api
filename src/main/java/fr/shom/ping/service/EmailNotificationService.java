@@ -39,7 +39,7 @@ import static fr.shom.ping.utils.WarningUtil.generateUsualNumber;
 @Slf4j
 public class EmailNotificationService {
 
-    private final static String DEFAULT_LANGUAGE = "fr";
+    private final static String DEFAULT_LANGUAGE = "es";
 
     private static final String EMAIL_LINE_SEPARATOR = "<br/>";
     public static final String A_HREF = "<a href=\"";
@@ -94,7 +94,8 @@ public class EmailNotificationService {
         }
         final String lang = subscription.getLang();
         final String defaultLanguage = StringUtils.isNotBlank(lang) ? lang :
-            warning.getSerie().getMandatoryLanguages().stream().findFirst().orElse(DEFAULT_LANGUAGE);
+            (warning.getSerie().getMandatoryLanguages().contains(DEFAULT_LANGUAGE) ? DEFAULT_LANGUAGE :
+                warning.getSerie().getMandatoryLanguages().stream().findFirst().orElse(DEFAULT_LANGUAGE));
         sendEmailNotification(email, getSubject(warning, defaultLanguage), getBody(subscription, warning, defaultLanguage));
     }
 
@@ -110,7 +111,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(INSTITUTIONAL_HEADER_HTML + body + INSTITUTIONAL_SIGNATURE_HTML))
+                .body(INSTITUTIONAL_HEADER_HTML + xssSanitizerService.sanitize(body) + INSTITUTIONAL_SIGNATURE_HTML)
                 .build()
         );
     }
@@ -288,7 +289,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(INSTITUTIONAL_HEADER_HTML + body + INSTITUTIONAL_SIGNATURE_HTML))
+                .body(INSTITUTIONAL_HEADER_HTML + xssSanitizerService.sanitize(body) + INSTITUTIONAL_SIGNATURE_HTML)
                 .build()
         );
     }

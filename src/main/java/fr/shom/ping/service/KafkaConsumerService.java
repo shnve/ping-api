@@ -1,13 +1,13 @@
 package fr.shom.ping.service;
 
 import fr.shom.ping.exception.ServiceException;
+import fr.shom.ping.model.EmailToSend;
 import fr.shom.ping.model.dto.LighthouseAndBeaconInfosourceMessageDto;
 import fr.shom.ping.model.dto.SseNotificationDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @Slf4j
@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class KafkaConsumerService {
     private final LighthouseAndBeaconInfosourceService lighthouseAndBeaconInfosourceService;
     private final SseNotificationService sseNotificationService;
+    private final SmtpEmailService smtpEmailService;
 
     @KafkaListener(topics = "${kafka.topicName}",
         groupId = "${kafka.groupId}",
@@ -32,5 +33,12 @@ public class KafkaConsumerService {
         log.info("Received payload: {}", payload.toString());
         sseNotificationService.sendEvent(payload);
     }
-}
 
+    @KafkaListener(topics = "${kafka.subscription-mail-notification-topic-name}",
+        groupId = "${kafka.groupId}",
+        containerFactory = "emailListenerContainerFactory")
+    public void consumeEmailNotification(EmailToSend payload) {
+        log.info("Received email payload from Kafka: {}", payload);
+        smtpEmailService.sendEmail(payload);
+    }
+}

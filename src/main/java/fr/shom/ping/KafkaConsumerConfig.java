@@ -1,5 +1,6 @@
 package fr.shom.ping;
 
+import fr.shom.ping.model.EmailToSend;
 import fr.shom.ping.model.dto.LighthouseAndBeaconInfosourceMessageDto;
 import fr.shom.ping.model.dto.SseNotificationDto;
 import fr.shom.ping.properties.KafkaProperties;
@@ -39,6 +40,21 @@ public class KafkaConsumerConfig {
     lighthouseAndBeaconInfosourceMessageDtoListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, LighthouseAndBeaconInfosourceMessageDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(lighthouseAndBeaconInfosourceMessageDtoConsumerFactory());
+        factory.setCommonErrorHandler(new CommonLoggingErrorHandler());
+        return factory;
+    }
+
+    public ConsumerFactory<String, EmailToSend> emailConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getBootstrapAddress());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.getGroupId());
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(EmailToSend.class, false));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, EmailToSend> emailListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, EmailToSend> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(emailConsumerFactory());
         factory.setCommonErrorHandler(new CommonLoggingErrorHandler());
         return factory;
     }
