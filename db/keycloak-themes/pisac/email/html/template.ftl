@@ -9,18 +9,9 @@
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
         <!-- Encabezado Institucional -->
         <tr>
-            <td style="background-color: #ffffff; padding: 20px 24px; border-bottom: 3px solid #0b3152;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                        <td width="135" style="vertical-align: middle; text-align: left; width: 135px;">
-                            <img src="${(properties.logoUrl)!'http://192.168.2.182/assets/images/logos_email.png'}" alt="Logos Institucionales" width="130" style="display: block; width: 130px; height: auto; border: 0;" />
-                        </td>
-                        <td style="vertical-align: middle; text-align: left; padding-left: 20px; border-left: 2px solid #e2e8f0;">
-                            <div style="color: #0b3152; font-size: 20px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.2;">PISAC</div>
-                            <div style="color: #64748b; font-size: 11px; margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3;">Plataforma de Informaci&oacute;n de Seguridad Acu&aacute;tica</div>
-                        </td>
-                    </tr>
-                </table>
+            <td style="background-color: #0b3152; padding: 22px 28px; text-align: center; border-bottom: 3px solid #0056b3;">
+                <div style="color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: 1px; line-height: 1.2;">PISAC</div>
+                <div style="color: #cbd5e1; font-size: 12px; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3;">Plataforma de Informaci&oacute;n de Seguridad Acu&aacute;tica</div>
             </td>
         </tr>
         <!-- Contenido Principal -->

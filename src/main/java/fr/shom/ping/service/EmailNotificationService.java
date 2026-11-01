@@ -44,6 +44,12 @@ public class EmailNotificationService {
     private static final String EMAIL_LINE_SEPARATOR = "<br/>";
     public static final String A_HREF = "<a href=\"";
 
+    public static final String INSTITUTIONAL_HEADER_HTML =
+        "<div style=\"background-color: #0b3152; padding: 22px 28px; text-align: center; border-bottom: 3px solid #0056b3; margin-bottom: 24px; font-family: 'Segoe UI', Arial, sans-serif;\">" +
+        "<div style=\"color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: 1px; line-height: 1.2;\">PISAC</div>" +
+        "<div style=\"color: #cbd5e1; font-size: 12px; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3;\">Plataforma de Informaci&oacute;n de Seguridad Acu&aacute;tica</div>" +
+        "</div>";
+
     public static final String INSTITUTIONAL_SIGNATURE_HTML =
         "<br/><br/><div style=\"margin-top: 24px; padding-top: 16px; border-top: 2px solid #e2e8f0; font-size: 12px; color: #475569; line-height: 1.5; font-family: 'Segoe UI', Arial, sans-serif;\">" +
         "<p style=\"margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #0b3152;\">" +
@@ -104,7 +110,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(body + INSTITUTIONAL_SIGNATURE_HTML))
+                .body(xssSanitizerService.sanitize(INSTITUTIONAL_HEADER_HTML + body + INSTITUTIONAL_SIGNATURE_HTML))
                 .build()
         );
     }
@@ -119,7 +125,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(recipients)
                 .subject(surveyExternalAnalysisMailProperties.getEmailSubject())
-                .body(getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType) + INSTITUTIONAL_SIGNATURE_HTML)
+                .body(INSTITUTIONAL_HEADER_HTML + getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType) + INSTITUTIONAL_SIGNATURE_HTML)
                 .build()
         );
     }
@@ -282,7 +288,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(xssSanitizerService.sanitize(body + INSTITUTIONAL_SIGNATURE_HTML))
+                .body(xssSanitizerService.sanitize(INSTITUTIONAL_HEADER_HTML + body + INSTITUTIONAL_SIGNATURE_HTML))
                 .build()
         );
     }
