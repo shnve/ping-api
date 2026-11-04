@@ -65,8 +65,8 @@ public abstract class AbstractInfosourceService {
 
     public String generateInfosourceNumber(User user) {
         final int year = Year.now(UTC).getValue();
-        final long numberOfInfosourcesSentInYear = countReportedInfosourcesByUserWithinYear(user, year) + 1;
-        return String.format("%s-%02d-%d", user.getIdentifier(), numberOfInfosourcesSentInYear, year);
+        final long numberOfInfosourcesSentInYear = repository.countReportedInfosourcesWithinYear(year) + 1;
+        return String.format("REP-%04d-%d", numberOfInfosourcesSentInYear, year);
     }
 
     @Transactional

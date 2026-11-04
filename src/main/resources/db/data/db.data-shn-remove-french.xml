@@ -99,4 +99,26 @@ UPDATE static_section SET content = convert_to($txt$¡Gracias por su contribuci�
                 type = EXCLUDED.type;
         </sql>
     </changeSet>
+
+    <!-- ===================== Numeración correlativa anual de reportes (REP-0001-YYYY) ===================== -->
+    <changeSet id="DB.Data.SHN.Normalize_Infosource_Numbers_To_Annual_Correlative" author="SHN">
+        <sql stripComments="true" dbms="postgresql">
+            WITH numbered AS (
+                SELECT id,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY EXTRACT(YEAR FROM COALESCE(validation_time, creation_date))
+                           ORDER BY COALESCE(validation_time, creation_date), id
+                       ) AS seq,
+                       CAST(EXTRACT(YEAR FROM COALESCE(validation_time, creation_date)) AS INTEGER) AS yr
+                FROM infosource
+                WHERE number IS NOT NULL
+                  AND nature != 'LIGHTHOUSE_AND_BEACON'
+            )
+            UPDATE infosource i
+            SET number = 'REP-' || LPAD(CAST(n.seq AS VARCHAR), 4, '0') || '-' || CAST(n.yr AS VARCHAR)
+            FROM numbered n
+            WHERE i.id = n.id
+              AND i.number NOT LIKE 'REP-%';
+        </sql>
+    </changeSet>
 </databaseChangeLog>

@@ -74,6 +74,18 @@ public interface InfosourceRepository extends JpaRepository<Infosource, UUID> {
     )
     long countReportedInfosourcesByServiceUserWithinYear(UUID userId, int year);
 
+    @Query(
+        value = "SELECT GREATEST(" +
+            "COALESCE(MAX(CASE WHEN i.number ~ '^REP-[0-9]+-[0-9]{4}$' THEN CAST(SPLIT_PART(i.number, '-', 2) AS INTEGER) ELSE 0 END), 0), " +
+            "COUNT(i.id)" +
+            ") FROM infosource i " +
+            "WHERE EXTRACT(YEAR FROM COALESCE(i.validation_time, i.creation_date)) = :year " +
+            "AND i.number IS NOT NULL " +
+            "AND i.nature != 'LIGHTHOUSE_AND_BEACON'",
+        nativeQuery = true
+    )
+    long countReportedInfosourcesWithinYear(int year);
+
     @Modifying
     @Query(
         "UPDATE Infosource i " +
