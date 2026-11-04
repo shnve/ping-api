@@ -78,4 +78,25 @@ UPDATE static_section SET content = convert_to($txt$Instrucciones generales para
 UPDATE static_section SET content = convert_to($txt$¡Gracias por su contribución!<br/><br/>La herramienta de asistencia para la detección de información náutica batimétrica constituye una ayuda a la decisión para el reporte de información crítica para la navegación.<br/><br/>La herramienta detecta las sondas del levantamiento que son menores que las indicadas en las cartas náuticas electrónicas (ENC) del SHN (desviación muy importante, importante o comprobada).<br/><br/>La herramienta también ofrece información sintética sobre la existencia de estas sondas detectadas, ya sea mediante sondas representativas de las desviaciones o mediante zonas de menor profundidad con indicación de la desviación máxima. Esta información sintética puede servirle de base para realizar un reporte a las autoridades encargadas de la información náutica (advertencias de navegación, avisos a los navegantes).<br/><br/>Aunque la herramienta brinda asistencia, se recuerda que es responsabilidad del contribuyente identificar la información náutica pertinente que debe ponerse en conocimiento de las autoridades encargadas de procesar y difundir la información náutica. En ningún caso las detecciones propuestas podrán considerarse exhaustivas de todo peligro revelado por un levantamiento.$txt$, 'UTF8') WHERE section_key = 'survey-transmission-popup-content'
         ]]></sql>
     </changeSet>
+
+    <!-- ===================== Servicio técnico de sistema OLD_USERS (Usuarios antiguos) ===================== -->
+    <changeSet id="DB.Data.SHN.Restore_And_Translate_Old_Users_Service" author="SHN">
+        <sql stripComments="true" dbms="postgresql">
+            INSERT INTO maritime_service (
+                id, urn, name, international_name, production_agency, information,
+                localized_information, country, service_network, ping_partner,
+                maritime_notice_producer, type, sissy_id, folder_manager,
+                authority_code, shom_service, survey_owner, ohi_producer_code, s124_data_producer
+            ) VALUES (
+                '55a6e22d-4b15-41e6-a65a-dc119f8e7d36', null, 'Usuarios antiguos', 'Old Users',
+                null, null, null, null, 'PRIVATE_SERVICE', false,
+                false, 'OLD_USERS', null, false,
+                null, false, false, null, false
+            )
+            ON CONFLICT (id) DO UPDATE
+            SET name = EXCLUDED.name,
+                international_name = EXCLUDED.international_name,
+                type = EXCLUDED.type;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
