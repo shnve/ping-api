@@ -77,6 +77,8 @@ public final class TelexUtil {
         final boolean internationalLanguage = isInternationalLanguage(lang);
         final AtomicInteger itemCounter = new AtomicInteger(1);
         return new StringBuilder()
+            .append(generatePublicationDateTimeHeader(warning, internationalLanguage))
+            .append(TELEX_LINE_SEPARATOR)
             .append(generateUsualNumber(warning, internationalLanguage, usualNumberLink))
             .append(TELEX_LINE_SEPARATOR)
             .append(generateGeneralAreasAndLocalities(warning, internationalLanguage, lang))
@@ -87,6 +89,18 @@ public final class TelexUtil {
             .append(generateCancelledWarnings(warning, internationalLanguage, itemCounter))
             .append(generateAutoCancellation(warning, internationalLanguage, itemCounter))
             .toString();
+    }
+
+    private String generatePublicationDateTimeHeader(final Warning warning, final boolean internationalLanguage) {
+        final Instant referenceInstant = Optional.ofNullable(warning.getPublicationTime())
+            .orElseGet(() -> Optional.ofNullable(warning.getLastUpdate())
+                .orElseGet(() -> Optional.ofNullable(warning.getCreationDate()).orElseGet(Instant::now)));
+        final Locale chosenLocale = internationalLanguage ? ENGLISH : Locale.forLanguageTag("es");
+        final ZoneOffset zoneUtc = ZoneOffset.UTC;
+        return getFormatterDateHour(chosenLocale)
+            .apply(LocalDate.ofInstant(referenceInstant, zoneUtc), LocalTime.ofInstant(referenceInstant, zoneUtc))
+            .trim()
+            .toUpperCase(chosenLocale);
     }
 
     private String generateGeneralAreasAndLocalities(final Warning warning, final boolean internationalLanguage, final String lang) {
@@ -167,6 +181,8 @@ public final class TelexUtil {
         final Optional<String> information = featurePart.getInformation().stream()
             .filter(localizedText -> localizedText.getLanguage().equals(lang))
             .map(LocalizedText::getText)
+            // Coordenadas escritas a mano (ej. 10°18'44.54"N) -> formato S-53 con 2 decimales
+            .map(CoordinateTextNormalizer::normalize)
             .findFirst();
         if (information.isPresent()) {
             final String formattedInformation = isIndentRequired ? indentMultilineText(information.get(), SPACES_FOR_FEATURE_INDENT) : information.get();
@@ -311,7 +327,7 @@ public final class TelexUtil {
     private static BiFunction<LocalDate, LocalTime, String> getFormatterDateHour(Locale chosenLocale) {
         return (p1, p2) ->
             String.format(chosenLocale, " %1$td", p1)
-                + String.format(chosenLocale, "%1$tH%1$tM UTC ", p2)
+                + String.format(chosenLocale, "%1$tH%1$tMZ ", p2)
                 + String.format((p1.getMonth() == Month.JUNE || p1.getMonth() == Month.JULY ? ENGLISH : chosenLocale), "%1$tb", p1).substring(0, 3)
                 + String.format(chosenLocale, " %1$ty", p1);
     }

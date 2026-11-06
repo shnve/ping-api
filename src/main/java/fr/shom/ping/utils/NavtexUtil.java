@@ -78,6 +78,18 @@ public final class NavtexUtil {
     public String generateCancellationNavtex(Warning warning) {
         final Serie serie = warning.getSerie();
         final DiffusionNavtexSource source = serie.getNavtexSource();
+        if (DiffusionNavtexSource.N4 == source) {
+            return warning.getSerie().getMandatoryLanguages().stream()
+                    .sorted(java.util.Comparator.comparing(lang -> !"es".equalsIgnoreCase(lang)))
+                    .map(lang -> {
+                        final boolean internationalLanguage = isInternationalLanguage(lang);
+                        final String prefix = internationalLanguage ? "CANCEL" : "CANCELA";
+                        return prefix + " " + fr.shom.ping.utils.WarningUtil.generateUsualNumber(warning, internationalLanguage);
+                    })
+                    .map(StringUtils::stripAccents)
+                    .map(String::toUpperCase)
+                    .collect(Collectors.joining(LINE_SEPARATOR + LINE_SEPARATOR));
+        }
         return "NAVTEX %s??%s".formatted(source, getNavtexCommunicationNumber(warning));
     }
 
@@ -91,7 +103,18 @@ public final class NavtexUtil {
             return generateSpecificNavtex(warning);
         }
 
+        if (DiffusionNavtexSource.N4 == source) {
+            return generateNavareaNavtex(warning);
+        }
+
         return generateClassicNavtex(warning, source);
+    }
+
+    private String generateNavareaNavtex(Warning warning) {
+        return warning.getSerie().getMandatoryLanguages().stream()
+                .sorted(java.util.Comparator.comparing(lang -> !"es".equalsIgnoreCase(lang)))
+                .map(language -> generateTelexForLanguage(warning, language, false))
+                .collect(Collectors.joining(LINE_SEPARATOR + LINE_SEPARATOR));
     }
 
     private String generateHeader(Warning warning, DiffusionNavtexSource source) {
@@ -195,7 +218,7 @@ public final class NavtexUtil {
     }
 
     public static boolean isConfigValid(WarningNavtexConfig config, DiffusionNavtexSource source) {
-        if (source == null) {
+        if (source == null || source == DiffusionNavtexSource.N4) {
             return true;
         }
 
@@ -207,11 +230,12 @@ public final class NavtexUtil {
         switch (source) {
             case B:
             case T:
-            case N4:
                 isValid = config.getEmergencyLevel() != null && config.getCommunicationType() != null;
                 break;
             case N:
                 isValid = config.getEmergencyLevel() != null && config.getNitonNumber() != null;
+                break;
+            default:
                 break;
         }
 
