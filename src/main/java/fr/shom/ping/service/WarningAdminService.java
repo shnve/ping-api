@@ -406,10 +406,19 @@ public class WarningAdminService {
     private void updateLinkedInfosources(Serie serie, List<UUID> infosourcesIds, Set<Infosource> linkedInfosources) {
         final MaritimeService serieService = serie.getMaritimeService();
         final Set<InfosourceReferenceDto> authorizedInfosources = infosourceAdminService.findByIssuingServiceOrRecipient(serieService);
+        final List<UUID> authorizedInfosourceIds = authorizedInfosources.stream()
+            .map(InfosourceReferenceDto::getId)
+            .collect(toList());
+        // PISAC: las contribuciones ya vinculadas se conservan aunque el servicio de la serie no sea emisor ni
+        // destinatario (p. ej. advertencia creada desde una contribución con una serie de otro servicio del
+        // usuario, que createWarning permite). Solo se validan las que se vinculan nuevas; antes cualquier
+        // edición del borrador fallaba con "At least one infosource cannot be linked".
+        final Set<UUID> alreadyLinkedInfosourceIds = linkedInfosources.stream()
+            .map(Infosource::getId)
+            .collect(toSet());
         final boolean allNewInfosourcesInAuthorizedList = infosourcesIds.stream()
-            .allMatch(authorizedInfosources.stream()
-                .map(InfosourceReferenceDto::getId)
-                .collect(toList())::contains);
+            .filter(infosourceId -> !alreadyLinkedInfosourceIds.contains(infosourceId))
+            .allMatch(authorizedInfosourceIds::contains);
 
         if (!allNewInfosourcesInAuthorizedList) {
             throw new BadRequestException("At least one infosource cannot be linked");
