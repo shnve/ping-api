@@ -107,7 +107,9 @@ import static java.util.UUID.randomUUID;
                     @ColumnResult(name = "is_new", type = Boolean.class),
                     @ColumnResult(name = "publication_date", type = LocalDate.class),
                     @ColumnResult(name = "geometry_properties", type = JsonNodeStringType.class),
-                    @ColumnResult(name = "geometry", type = Geometry.class)
+                    @ColumnResult(name = "geometry", type = Geometry.class),
+                    @ColumnResult(name = "title", type = String.class),
+                    @ColumnResult(name = "international_title", type = String.class)
                 })
         }
     ),

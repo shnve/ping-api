@@ -14,6 +14,8 @@ public class GeoregulationMapViewTupleToGeoregulationMapViewDto implements Funct
             .mainNumber(georegulation.getNumber())
             .features(georegulation.getFeatures())
             .publicationDate(georegulation.getPublicationDate())
+            .title(georegulation.getTitle())
+            .internationalTitle(georegulation.getInternationalTitle())
             .build();
     }
 }

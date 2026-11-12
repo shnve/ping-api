@@ -46,9 +46,14 @@ public class GeoregulationMapViewTuple implements Serializable {
 
     private LocalDate publicationDate;
 
+    /** PISAC: título (y título internacional) para la lista lateral del visor de regulaciones. */
+    private String title;
+
+    private String internationalTitle;
+
     public GeoregulationMapViewTuple(UUID id, Integer mainNumberYear, String mainNumberText, String mainNumberAuthorityCode,
         LocalDate mainNumberDate, boolean isTemporary, boolean isNew, LocalDate publicationDate,
-        JsonNode geometryProperties, Geometry geometry) {
+        JsonNode geometryProperties, Geometry geometry, String title, String internationalTitle) {
         this.id = id;
         this.isTemporary = isTemporary;
         this.isNew = isNew;
@@ -57,6 +62,8 @@ public class GeoregulationMapViewTuple implements Serializable {
         this.mainNumberAuthorityCode = mainNumberAuthorityCode;
         this.mainNumberDate = mainNumberDate;
         this.publicationDate = publicationDate;
+        this.title = title;
+        this.internationalTitle = internationalTitle;
         if (geometry != null) {
             this.feature = builderFeature(geometry, geometryProperties);
         }

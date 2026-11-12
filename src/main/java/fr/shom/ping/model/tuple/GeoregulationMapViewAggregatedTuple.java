@@ -35,6 +35,11 @@ public class GeoregulationMapViewAggregatedTuple implements Serializable {
 
     private LocalDate publicationDate;
 
+    /** PISAC: título para la lista lateral del visor de regulaciones. */
+    private String title;
+
+    private String internationalTitle;
+
     @JsonIgnore
     private GeoregulationAdminTableDto.GeoregulationAdminTableNumberDto mainNumber;
 

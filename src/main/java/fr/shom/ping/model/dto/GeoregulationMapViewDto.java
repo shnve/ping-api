@@ -48,4 +48,12 @@ public class GeoregulationMapViewDto implements Serializable {
     private Set<Feature> features = new HashSet<>();
 
     private LocalDate publicationDate;
+
+    @Schema(description = "PISAC: title of the georegulation (local language)")
+    @NoHtml
+    private String title;
+
+    @Schema(description = "PISAC: international title of the georegulation")
+    @NoHtml
+    private String internationalTitle;
 }

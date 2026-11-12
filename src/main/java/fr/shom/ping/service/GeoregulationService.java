@@ -94,7 +94,9 @@ public class GeoregulationService {
 
         final StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("SELECT g.id, g.number_year, g.number_text, nac.authority_code as number_authority_code, g.number_date, g.is_temporary, " +
-            "g.is_new, g.publication_date, gpf.properties as geometry_properties, gpf.geom as geometry\n");
+            "g.is_new, g.publication_date, gpf.properties as geometry_properties, gpf.geom as geometry, " +
+            // PISAC: título para la lista lateral del visor de regulaciones
+            "g.title, g.international_title\n");
         queryStringBuilder.append("FROM georegulation g\n");
         queryStringBuilder.append("LEFT JOIN georegulation_part gp ON gp.georegulation_id = g.id\n");
         queryStringBuilder.append("LEFT JOIN georegulation_part_feature gpf ON gpf.part_id = gp.id\n");
@@ -147,6 +149,8 @@ public class GeoregulationService {
                 .id(georegulationId)
                 .isNew(tuple.isNew())
                 .isTemporary(tuple.isTemporary())
+                .title(tuple.getTitle())
+                .internationalTitle(tuple.getInternationalTitle())
                 .mainNumber(GeoregulationAdminTableDto.GeoregulationAdminTableNumberDto.builder()
                     .year(tuple.getMainNumberYear())
                     .text(tuple.getMainNumberText())
