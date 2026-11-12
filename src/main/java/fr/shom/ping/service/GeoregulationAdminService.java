@@ -105,6 +105,7 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 @Slf4j
 public class GeoregulationAdminService {
 
+    /** PISAC: firma en texto plano anterior a F5.3.7 (ya no se usa en el correo de enlaces inválidos; la firma va en PisacEmailTemplate). */
     public static final String INSTITUTIONAL_SIGNATURE_TEXT =
         "\n\nAtentamente,\n\n" +
         "PISAC - Plataforma de Información de Seguridad Acuática\n" +
@@ -798,7 +799,9 @@ public class GeoregulationAdminService {
                 EmailToSend.builder()
                     .recipients(georegulationsCronCheckLinksProperties.getEmailRecipient())
                     .subject(georegulationsCronCheckLinksProperties.getEmailSubject())
-                    .body(georegulationsCronCheckLinksProperties.getEmailBodyStart() + "\n\n" + String.join("", listMessagesToSend) + INSTITUTIONAL_SIGNATURE_TEXT)
+                    // PISAC (F5.3.7): texto plano escapado y convertido a HTML (los enlaces vienen de datos externos); la firma
+                    // y la cabecera las pone SmtpEmailService con PisacEmailTemplate
+                    .body(org.apache.commons.text.StringEscapeUtils.escapeHtml4(georegulationsCronCheckLinksProperties.getEmailBodyStart() + "\n\n" + String.join("", listMessagesToSend)).replace("\n", "<br/>"))
                     .build()
             );
         }

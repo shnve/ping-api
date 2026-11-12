@@ -44,6 +44,10 @@ public class EmailNotificationService {
     private static final String EMAIL_LINE_SEPARATOR = "<br/>";
     public static final String A_HREF = "<a href=\"";
 
+    /**
+     * PISAC: cabecera y firma HTML anteriores a F5.3.7. Ya no se añaden al cuerpo (la plantilla completa la aplica
+     * SmtpEmailService con PisacEmailTemplate); se conservan solo para limpiar mensajes antiguos que sigan en Kafka.
+     */
     public static final String INSTITUTIONAL_HEADER_HTML =
         "<div style=\"background-color: #0b3152; padding: 22px 28px; text-align: center; border-bottom: 3px solid #0056b3; margin-bottom: 24px; font-family: 'Segoe UI', Arial, sans-serif;\">" +
         "<div style=\"color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: 1px; line-height: 1.2;\">PISAC</div>" +
@@ -111,7 +115,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(INSTITUTIONAL_HEADER_HTML + xssSanitizerService.sanitize(body) + INSTITUTIONAL_SIGNATURE_HTML)
+                .body(xssSanitizerService.sanitize(body)) // PISAC (F5.3.7): cabecera y firma las pone SmtpEmailService (PisacEmailTemplate)
                 .build()
         );
     }
@@ -126,7 +130,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(recipients)
                 .subject(surveyExternalAnalysisMailProperties.getEmailSubject())
-                .body(INSTITUTIONAL_HEADER_HTML + getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType) + INSTITUTIONAL_SIGNATURE_HTML)
+                .body(getSurveyExternalAnalysisNotificationEmailBody(survey, notificationType)) // PISAC (F5.3.7): plantilla en SmtpEmailService
                 .build()
         );
     }
@@ -289,7 +293,7 @@ public class EmailNotificationService {
             EmailToSend.builder()
                 .recipients(email)
                 .subject(xssSanitizerService.sanitize(subject))
-                .body(INSTITUTIONAL_HEADER_HTML + xssSanitizerService.sanitize(body) + INSTITUTIONAL_SIGNATURE_HTML)
+                .body(xssSanitizerService.sanitize(body)) // PISAC (F5.3.7): cabecera y firma las pone SmtpEmailService (PisacEmailTemplate)
                 .build()
         );
     }
