@@ -1,0 +1,51 @@
+# =============================================================================================
+# PISAC: Keycloak en MODO PRODUCCIÓN (complemento de docker-compose.prod.yml)
+#
+# NO usar hasta completar la migración descrita en docs-internos/Guia_Despliegue_PISAC.md §2.5
+# (exportar los realms del H2 actual e importarlos en PostgreSQL). Si se levanta sin migrar,
+# Keycloak arranca con una base de datos vacía: no existirán los realms ping-public / ping-pro.
+#
+# Uso (después de la migración):
+#   docker compose -f docker-compose.prod.yml -f docker-compose.keycloak-prod.yml up -d keycloak
+#
+# Qué cambia respecto a "start-dev":
+#   - start (modo producción): sin valores inseguros de desarrollo.
+#   - KC_HOSTNAME fijo: los enlaces de los correos (verificar correo, configurar o restablecer contraseña)
+#     siempre usan la dirección pública oficial, nunca el encabezado Host de la petición (evita el
+#     envenenamiento de enlaces por cabecera Host).
+#   - Detrás de Nginx con HTTPS: Keycloak escucha HTTP solo en 127.0.0.1 (no accesible desde la red) y
+#     confía en las cabeceras X-Forwarded-* que pone Nginx.
+#   - Base de datos PostgreSQL (la H2 de start-dev no es apta para producción).
+#
+# Variables nuevas en db/.env (ver .env.example):
+#   KEYCLOAK_PUBLIC_URL   URL pública con HTTPS, p. ej. https://pisac.shn.gob.ve/auth
+#   KEYCLOAK_DB_USER      usuario de PostgreSQL exclusivo de Keycloak
+#   KEYCLOAK_DB_PASSWORD  su contraseña
+# =============================================================================================
+services:
+  keycloak:
+    command: start
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      # Administrador inicial (solo se usa si la base de datos está vacía)
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_ADMIN:-admin}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
+      # Base de datos
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/keycloak
+      - KC_DB_USERNAME=${KEYCLOAK_DB_USER:?Defina KEYCLOAK_DB_USER en .env}
+      - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:?Defina KEYCLOAK_DB_PASSWORD en .env}
+      # Dirección pública fija (HTTPS) y ruta /auth detrás de Nginx
+      - KC_HOSTNAME=${KEYCLOAK_PUBLIC_URL:?Defina KEYCLOAK_PUBLIC_URL en .env (https://.../auth)}
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_HTTP_ENABLED=true
+      - KC_PROXY_HEADERS=xforwarded
+      # Salud y métricas solo en el puerto de gestión (9000), no publicado
+      - KC_HEALTH_ENABLED=true
+      # Tema de inicio de sesión: URL del portal para «Volver al portal»
+      - PISAC_PORTAL_URL=${PING_PORTAL_URL:?Defina PING_PORTAL_URL en .env}
+    ports: !override
+      # Solo accesible desde el propio servidor (Nginx); no se publica en la red
+      - "127.0.0.1:8180:8080"

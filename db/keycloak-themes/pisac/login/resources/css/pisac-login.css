@@ -1,300 +1,798 @@
 /* ==========================================================================
-   PISAC - TEMA PERSONALIZADO KEYCLOAK (SHN - VENEZUELA)
+   PISAC (F5.3.6) - Tema de inicio de sesión de Keycloak (realms ping-public y ping-pro)
+   Misma identidad que el portal: cabecera blanca con logos, franja marina con acento naranja,
+   tipografías Source Sans 3 / Montserrat alojadas en el tema y colores de src/styling/pisac/_palette.scss.
+   Se carga después de PatternFly 3/4 (stylesCommon del tema padre); las reglas usan el prefijo
+   html.login-pf para ganar en especificidad sin recurrir a !important.
    ========================================================================== */
 
-/* Fondo general de la página de login */
-body.login-pf,
-body {
-  background: radial-gradient(circle at 50% 20%, #163d72 0%, #0c2344 60%, #051020 100%) !important;
-  min-height: 100vh !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
-  margin: 0 !important;
-  padding: 1.5rem !important;
+/* ---- Fuentes (licencia SIL OFL 1.1, ver fonts/OFL-*.txt) ---- */
+@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/source-sans-3-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url("../fonts/source-sans-3-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 700; font-display: swap; src: url("../fonts/source-sans-3-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: swap; src: url("../fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 700; font-display: swap; src: url("../fonts/montserrat-latin-700-normal.woff2") format("woff2"); }
+
+/* ---- Tokens (copiados de _palette.scss / _tokens.scss del portal) ---- */
+:root {
+  --shn-navy: #002B5C;
+  --shn-navy-deep: #001D3D;
+  --shn-navy-700: #0A3A70;
+  --shn-navy-100: #DCE5F0;
+  --shn-navy-50: #EEF3F9;
+  --shn-sky: #4FB9E3;
+  --shn-sky-700: #1F7FA6;
+  --shn-orange: #F47C20;
+  --shn-ink: #253746;
+  --pisac-neutral-50: #F8FAFC;
+  --pisac-neutral-100: #F1F5F9;
+  --pisac-neutral-200: #E2E8F0;
+  --pisac-neutral-300: #CBD5E1;
+  --pisac-neutral-500: #64748B;
+  --pisac-neutral-600: #475569;
+  --pisac-neutral-700: #334155;
+  --pisac-danger: #C62828;
+  --pisac-success: #15803D;
+  --pisac-warning: #B45309;
+  --pisac-font: "Source Sans 3", "Segoe UI", Roboto, Arial, sans-serif;
+  --pisac-font-heading: "Montserrat", "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --pisac-control-h: 44px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
-.login-pf-page {
-  width: 100% !important;
-  max-width: 460px !important;
-  margin: 0 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
+/* ---- Base ---- */
+html.login-pf,
+html.login-pf body {
+  height: auto;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--pisac-neutral-100);
+  background-image: none;
+  font-family: var(--pisac-font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--shn-ink);
 }
 
-.login-pf {
-  background: transparent !important;
+html.login-pf body * {
+  font-family: inherit;
 }
 
-/* Contenedor general */
-#kc-container {
-  width: 100% !important;
-  max-width: 460px !important;
-  margin: 0 auto !important;
+html.login-pf .fa,
+html.login-pf [class^="pficon"],
+html.login-pf [class*=" pficon"] {
+  font-family: FontAwesome, PatternFlyIcons-webfont;
 }
 
-/* Encabezado: Logos y texto institucional */
-#kc-header {
-  margin: 0 0 1.25rem 0 !important;
-  padding: 0 !important;
-  text-align: center !important;
-  width: 100% !important;
+html.login-pf .pficon {
+  font-family: PatternFlyIcons-webfont;
 }
 
-#kc-header-wrapper {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 0 !important; /* Oculta texto plano de realm */
-  color: transparent !important;
+html.login-pf a {
+  color: var(--shn-sky-700);
+  font-weight: 600;
+  text-decoration: none;
 }
 
-/* Placa con Logos Institucionales SHN y OCHINA */
-#kc-header-wrapper::before {
-  content: "" !important;
-  display: block !important;
-  width: 220px !important;
-  height: 125px !important;
-  background: #ffffff url('../img/logo-shn-ochina.png') no-repeat center center !important;
-  background-size: 92% auto !important;
-  border-radius: 12px !important;
-  padding: 6px !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
-  margin: 0 auto 0.85rem auto !important;
+html.login-pf a:hover,
+html.login-pf a:focus {
+  color: var(--shn-navy);
+  text-decoration: underline;
 }
 
-/* Texto institucional debajo de los logos */
-#kc-header-wrapper::after {
-  content: "República Bolivariana de Venezuela\A PISAC - Plataforma de Información de Seguridad Acuática" !important;
-  white-space: pre-wrap !important;
-  font-size: 0.95rem !important;
-  font-weight: 600 !important;
-  color: #ffffff !important;
-  line-height: 1.35 !important;
-  text-align: center !important;
-  letter-spacing: 0.3px !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+.pisac-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Tarjeta de login principal */
-.card-pf {
-  background: #ffffff !important;
-  border-radius: 14px !important;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
-  border-top: 5px solid #1a4a8d !important;
-  padding: 2.25rem 2rem 2rem 2rem !important;
-  max-width: 460px !important;
-  width: 100% !important;
-  margin: 0 auto !important;
-  position: relative !important;
-  box-sizing: border-box !important;
+/* ---- Cabecera institucional (como la del portal) ---- */
+.pisac-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  background: #ffffff;
 }
 
-/* Eliminar cajas/bordes duplicados en contenedores internos */
-#kc-content,
-#kc-content-wrapper,
-#kc-form,
-#kc-form-wrapper {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100% !important;
+.pisac-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
 }
 
-/* Cabecera interna de la tarjeta */
-header.login-pf-header {
-  margin-bottom: 1.5rem !important;
-  position: relative !important;
+.pisac-topbar__logo {
+  display: block;
+  width: 96px;
+  height: auto;
+  flex: 0 0 auto;
 }
 
-/* Título de la página */
-#kc-page-title {
-  color: #0b2244 !important;
-  font-weight: 700 !important;
-  font-size: 1.35rem !important;
-  margin-top: 0.5rem !important;
-  margin-bottom: 1.25rem !important;
-  text-align: center !important;
+.pisac-topbar__divider {
+  width: 3px;
+  height: 34px;
+  border-radius: 2px;
+  background: var(--shn-orange);
+  flex: 0 0 auto;
 }
 
-/* Selector de idioma: botón compacto en la esquina superior derecha */
-#kc-locale {
-  position: absolute !important;
-  top: -1.25rem !important;
-  right: -0.75rem !important;
-  margin: 0 !important;
-  z-index: 100 !important;
+.pisac-topbar__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-#kc-locale-wrapper {
-  position: relative !important;
+.pisac-topbar__republic {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pisac-neutral-600);
 }
 
-#kc-current-locale-link {
-  background: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 6px !important;
-  padding: 0.3rem 0.65rem !important;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-  color: #1e293b !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 0.25rem !important;
-  transition: all 0.2s ease-in-out !important;
-  text-decoration: none !important;
+.pisac-topbar__platform {
+  font-family: var(--pisac-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--shn-navy);
 }
 
-#kc-current-locale-link:hover {
-  background: #e2e8f0 !important;
-  border-color: #94a3b8 !important;
-  color: #0f3261 !important;
+.pisac-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
 }
 
-#kc-current-locale-link::after {
-  content: " \25BE" !important;
-  font-size: 0.75rem !important;
-  margin-left: 2px !important;
+html.login-pf .pisac-topbar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  color: var(--shn-navy);
 }
 
-/* Menú desplegable de idiomas: oculto por defecto para evitar redundancia */
-#kc-locale .pf-c-dropdown__menu,
-#language-switch1 {
-  display: none !important;
-  position: absolute !important;
-  top: 100% !important;
-  right: 0 !important;
-  background: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
-  min-width: 130px !important;
-  padding: 0.25rem 0 !important;
-  list-style: none !important;
-  margin: 4px 0 0 0 !important;
-  z-index: 1000 !important;
+/* Franja marina con acento naranja (equivale a la barra de menú del portal) */
+.pisac-navband {
+  height: 8px;
+  background: var(--shn-navy);
+  border-bottom: 3px solid var(--shn-orange);
 }
 
-/* Mostrar solo cuando el botón esté activo / desplegado */
-#kc-current-locale-link[aria-expanded="true"] + #language-switch1,
-#kc-locale-dropdown.open .pf-c-dropdown__menu,
-#kc-locale.open .pf-c-dropdown__menu {
-  display: block !important;
+/* ---- Selector de idioma ---- */
+html.login-pf #kc-locale {
+  position: relative;
+  margin: 0;
 }
 
-#kc-locale .pf-c-dropdown__menu-item {
-  display: block !important;
-  padding: 0.45rem 0.85rem !important;
-  color: #1e293b !important;
-  font-size: 0.82rem !important;
-  text-decoration: none !important;
-  transition: background 0.15s !important;
+html.login-pf #kc-locale-wrapper,
+html.login-pf #kc-locale-dropdown {
+  position: relative;
 }
 
-#kc-locale .pf-c-dropdown__menu-item:hover {
-  background: #f1f5f9 !important;
-  color: #0f3261 !important;
-  font-weight: 600 !important;
+html.login-pf #kc-current-locale-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--pisac-neutral-300);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--shn-navy);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-/* Etiquetas del formulario */
-label.control-label,
-label.pf-c-form__label {
-  color: #1e293b !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  margin-bottom: 0.35rem !important;
-  display: block !important;
+html.login-pf #kc-current-locale-link::after {
+  content: "\25BE";
+  font-size: 0.75rem;
 }
 
-/* Grupos de formulario */
-.form-group {
-  margin-bottom: 1.15rem !important;
+html.login-pf #kc-current-locale-link:hover,
+html.login-pf #kc-current-locale-link:focus-visible {
+  border-color: var(--shn-navy-700);
+  background: var(--shn-navy-50);
+  outline: none;
 }
 
-/* Campos de entrada */
-.form-control,
-.pf-c-form-control {
-  border-radius: 6px !important;
-  border: 1px solid #cbd5e1 !important;
-  padding: 0.65rem 0.85rem !important;
-  font-size: 0.95rem !important;
-  height: auto !important;
-  box-shadow: none !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  transition: all 0.2s ease-in-out !important;
+html.login-pf #language-switch1 {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 1000;
+  min-width: 160px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid var(--pisac-neutral-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 43, 92, 0.16);
 }
 
-.form-control:focus,
-.pf-c-form-control:focus {
-  border-color: #1a4a8d !important;
-  box-shadow: 0 0 0 3px rgba(26, 74, 141, 0.18) !important;
-  outline: none !important;
+html.login-pf #kc-current-locale-link[aria-expanded="true"] + #language-switch1 {
+  display: block;
 }
 
-/* Botón de alternar ver contraseña */
-.pf-c-input-group {
-  position: relative !important;
-  display: flex !important;
-  align-items: stretch !important;
-  width: 100% !important;
+html.login-pf #language-switch1 .pf-c-dropdown__menu-item {
+  display: block;
+  padding: 8px 14px;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--shn-ink);
+  text-decoration: none;
 }
 
-.pf-c-button.pf-m-control {
-  border: 1px solid #cbd5e1 !important;
-  border-left: none !important;
-  background: #f8fafc !important;
-  border-top-right-radius: 6px !important;
-  border-bottom-right-radius: 6px !important;
-  padding: 0 0.85rem !important;
-  cursor: pointer !important;
-  color: #64748b !important;
-  transition: color 0.15s !important;
+html.login-pf #language-switch1 .pf-c-dropdown__menu-item:hover,
+html.login-pf #language-switch1 .pf-c-dropdown__menu-item:focus {
+  background: var(--shn-navy-50);
+  color: var(--shn-navy);
 }
 
-.pf-c-button.pf-m-control:hover {
-  color: #0f3261 !important;
+/* ---- Contenido: panel del realm + tarjeta del formulario ---- */
+.pisac-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
 }
 
-/* Botón de inicio de sesión */
-.btn-primary,
-#kc-login,
-.pf-c-button.pf-m-primary {
-  background-color: #0f3261 !important;
-  border: 1px solid #0f3261 !important;
-  border-radius: 6px !important;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  padding: 0.75rem 1rem !important;
-  color: #ffffff !important;
-  letter-spacing: 0.3px !important;
-  cursor: pointer !important;
-  transition: all 0.25s ease-in-out !important;
-  box-shadow: 0 4px 10px rgba(15, 50, 97, 0.3) !important;
-  width: 100% !important;
-  display: block !important;
+.pisac-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  width: 100%;
+  max-width: 960px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 43, 92, 0.06), 0 16px 40px rgba(0, 43, 92, 0.12);
 }
 
-.btn-primary:hover,
-#kc-login:hover,
-.pf-c-button.pf-m-primary:hover {
-  background-color: #1a4a8d !important;
-  border-color: #1a4a8d !important;
-  box-shadow: 0 6px 16px rgba(15, 50, 97, 0.45) !important;
-  transform: translateY(-1px) !important;
+/* Panel lateral marino con líneas batimétricas */
+.pisac-aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 40px;
+  color: #ffffff;
+  background-color: var(--shn-navy);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600' fill='none' stroke='%23ffffff' stroke-opacity='0.07' stroke-width='1.5'%3E%3Cpath d='M-20 420c80-40 140-10 210-40s110-90 200-80 150 60 230 30'/%3E%3Cpath d='M-20 460c90-40 150-5 220-35s120-90 210-75 140 55 210 30'/%3E%3Cpath d='M-20 500c100-40 160 0 230-30s130-85 220-70 130 50 190 30'/%3E%3Cpath d='M-20 540c110-40 170 5 240-25s140-80 230-65 120 45 170 30'/%3E%3Cpath d='M-20 580c120-40 180 10 250-20s150-75 240-60 110 40 150 25'/%3E%3Ccircle cx='470' cy='130' r='40'/%3E%3Ccircle cx='470' cy='130' r='80'/%3E%3Ccircle cx='470' cy='130' r='120'/%3E%3Ccircle cx='470' cy='130' r='160'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, var(--shn-navy-700) 0%, var(--shn-navy) 55%, var(--shn-navy-deep) 100%);
+  background-size: cover, auto;
+  background-position: center, center;
 }
 
-.btn-primary:active,
-#kc-login:active,
-.pf-c-button.pf-m-primary:active {
-  transform: translateY(0) !important;
+.pisac-aside::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--shn-orange);
+}
+
+.pisac-aside__badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pisac-aside__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--shn-sky);
+}
+
+.pisac-realm-pro .pisac-aside__badge-dot {
+  background: var(--shn-orange);
+}
+
+html.login-pf .pisac-aside__title {
+  margin: 0;
+  font-family: var(--pisac-font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.pisac-aside__text {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.pisac-aside__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pisac-aside__list li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Marca de verificación en círculo celeste */
+.pisac-aside__list li::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(79, 185, 227, 0.22) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%234FB9E3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 12px 12px;
+}
+
+.pisac-aside__register {
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+html.login-pf .pisac-aside__register a {
+  color: var(--shn-sky);
+}
+
+html.login-pf .pisac-aside__register a:hover {
+  color: #ffffff;
+}
+
+/* ---- Tarjeta del formulario ---- */
+html.login-pf .login-pf-page.pisac-login {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+html.login-pf .pisac-login .card-pf {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 40px 40px 32px;
+  border: 0;
+  border-top: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #ffffff;
+}
+
+html.login-pf .pisac-login .login-pf-header {
+  margin-bottom: 24px;
+  padding: 0;
+}
+
+html.login-pf #kc-page-title {
+  margin: 0;
+  font-family: var(--pisac-font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+  color: var(--shn-navy);
+}
+
+html.login-pf #kc-content,
+html.login-pf #kc-content-wrapper,
+html.login-pf #kc-form,
+html.login-pf #kc-form-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Usuario ya identificado (pasos posteriores): ficha con enlace para reiniciar */
+html.login-pf #kc-username {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--pisac-neutral-200);
+  border-radius: var(--radius-md);
+  background: var(--pisac-neutral-50);
+}
+
+html.login-pf #kc-attempted-username {
+  margin: 0;
+  font-weight: 600;
+  color: var(--shn-ink);
+}
+
+/* ---- Campos ---- */
+html.login-pf .pisac-login .form-group {
+  margin: 0 0 20px;
+}
+
+html.login-pf .pisac-login label.pf-c-form__label,
+html.login-pf .pisac-login label.control-label,
+html.login-pf .pisac-login .pf-c-form__label-text {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pisac-neutral-700);
+}
+
+html.login-pf .pisac-login .pf-c-form-control,
+html.login-pf .pisac-login .form-control {
+  width: 100%;
+  height: var(--pisac-control-h);
+  padding: 0 12px;
+  border: 1px solid var(--pisac-neutral-300);
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: none;
+  font-size: 1rem;
+  color: var(--shn-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.login-pf .pisac-login textarea.pf-c-form-control,
+html.login-pf .pisac-login textarea.form-control {
+  height: auto;
+  padding: 10px 12px;
+}
+
+html.login-pf .pisac-login .pf-c-form-control:hover,
+html.login-pf .pisac-login .form-control:hover {
+  border-color: var(--shn-navy-700);
+}
+
+html.login-pf .pisac-login .pf-c-form-control:focus,
+html.login-pf .pisac-login .form-control:focus {
+  border-color: var(--shn-navy);
+  box-shadow: 0 0 0 3px rgba(79, 185, 227, 0.35);
+  outline: none;
+}
+
+html.login-pf .pisac-login .pf-c-form-control[aria-invalid="true"] {
+  border-color: var(--pisac-danger);
+}
+
+/* Contraseña + botón de mostrar */
+html.login-pf .pisac-login .pf-c-input-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+html.login-pf .pisac-login .pf-c-input-group .pf-c-form-control {
+  flex: 1 1 auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pisac-control-h);
+  height: var(--pisac-control-h);
+  padding: 0;
+  border: 1px solid var(--pisac-neutral-300);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  background: var(--pisac-neutral-50);
+  color: var(--pisac-neutral-600);
+  cursor: pointer;
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-control::after {
+  display: none;
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-control:hover,
+html.login-pf .pisac-login .pf-c-button.pf-m-control:focus-visible {
+  background: var(--shn-navy-50);
+  color: var(--shn-navy);
+}
+
+/* Mensajes de error bajo el campo */
+html.login-pf .pisac-login .pf-c-form__helper-text.pf-m-error,
+html.login-pf .pisac-login #input-error,
+html.login-pf .pisac-login .kc-feedback-text.required {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pisac-danger);
+}
+
+/* Opciones (recordarme, ¿olvidaste tu contraseña?) */
+html.login-pf .pisac-login .login-pf-settings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9375rem;
+}
+
+html.login-pf .pisac-login .login-pf-settings:empty,
+html.login-pf .pisac-login #kc-form-options:empty {
+  display: none;
+}
+
+html.login-pf .pisac-login .checkbox label,
+html.login-pf .pisac-login .pf-c-check__label {
+  font-weight: 400;
+  color: var(--shn-ink);
+}
+
+/* ---- Botones ---- */
+html.login-pf .pisac-login #kc-form-buttons {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-primary,
+html.login-pf .pisac-login .btn-primary,
+html.login-pf .pisac-login #kc-login {
+  display: block;
+  width: 100%;
+  height: var(--pisac-control-h);
+  padding: 0 16px;
+  border: 1px solid var(--shn-navy);
+  border-radius: 6px;
+  background: var(--shn-navy);
+  box-shadow: none;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-primary:hover,
+html.login-pf .pisac-login .btn-primary:hover,
+html.login-pf .pisac-login #kc-login:hover {
+  border-color: var(--shn-navy-deep);
+  background: var(--shn-navy-deep);
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-primary:focus-visible,
+html.login-pf .pisac-login #kc-login:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 185, 227, 0.45);
+}
+
+html.login-pf .pisac-login .pf-c-button.pf-m-primary:disabled,
+html.login-pf .pisac-login #kc-login:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Botones secundarios (cancelar, volver, etc.) */
+html.login-pf .pisac-login .btn-default,
+html.login-pf .pisac-login .pf-c-button.pf-m-secondary {
+  height: var(--pisac-control-h);
+  padding: 0 16px;
+  border: 1px solid var(--shn-navy);
+  border-radius: 6px;
+  background: #ffffff;
+  background-image: none;
+  box-shadow: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--shn-navy);
+}
+
+html.login-pf .pisac-login .btn-default:hover,
+html.login-pf .pisac-login .pf-c-button.pf-m-secondary:hover {
+  background: var(--shn-navy-50);
+}
+
+/* ---- Alertas ---- */
+html.login-pf .pisac-login .pf-c-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--pisac-neutral-200);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+  background: var(--pisac-neutral-50);
+  box-shadow: none;
+  font-size: 0.9375rem;
+  color: var(--shn-ink);
+}
+
+html.login-pf .pisac-login .pf-c-alert::before {
+  display: none;
+}
+
+html.login-pf .pisac-login .pf-c-alert__icon {
+  margin: 1px 0 0;
+  font-size: 1rem;
+}
+
+html.login-pf .pisac-login .pf-c-alert__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-danger {
+  border-color: #F3C7C7;
+  border-left-color: var(--pisac-danger);
+  background: #FDF1F1;
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-danger .pf-c-alert__icon {
+  color: var(--pisac-danger);
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-warning {
+  border-color: #F6DDB8;
+  border-left-color: var(--shn-orange);
+  background: #FEF3EA;
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-warning .pf-c-alert__icon {
+  color: var(--pisac-warning);
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-success {
+  border-color: #BFE3CB;
+  border-left-color: var(--pisac-success);
+  background: #EFF8F2;
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-success .pf-c-alert__icon {
+  color: var(--pisac-success);
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-info {
+  border-color: #BFE1EF;
+  border-left-color: var(--shn-sky-700);
+  background: #E8F6FC;
+}
+
+html.login-pf .pisac-login .pf-c-alert.pf-m-info .pf-c-alert__icon {
+  color: var(--shn-sky-700);
+}
+
+/* ---- Páginas informativas (enlace caducado, error, correo enviado, etc.) ---- */
+html.login-pf .pisac-login #kc-info-message p,
+html.login-pf .pisac-login .instruction {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--shn-ink);
+}
+
+html.login-pf .pisac-login #kc-info,
+html.login-pf .pisac-login .login-pf-signup {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pisac-neutral-200);
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+html.login-pf .pisac-login #kc-info-wrapper {
+  padding: 0;
+  background: transparent;
+}
+
+/* ---- Pie institucional ---- */
+.pisac-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 10px;
+  padding: 12px 24px;
+  background: var(--shn-navy);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+
+.pisac-footer__sep {
+  color: var(--shn-orange);
+}
+
+/* ---- Pantallas estrechas ---- */
+@media (max-width: 860px) {
+  .pisac-layout {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 480px;
+  }
+
+  .pisac-aside {
+    gap: 10px;
+    padding: 24px 28px;
+  }
+
+  html.login-pf .pisac-aside__title {
+    font-size: 1.375rem;
+  }
+
+  .pisac-aside__text {
+    font-size: 0.9375rem;
+  }
+
+  .pisac-aside__list {
+    display: none;
+  }
+
+  html.login-pf .pisac-login .card-pf {
+    padding: 28px 28px 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .pisac-topbar {
+    flex-wrap: wrap;
+    padding: 10px 16px;
+  }
+
+  .pisac-topbar__logo {
+    width: 72px;
+  }
+
+  .pisac-topbar__platform {
+    font-size: 1rem;
+  }
+
+  .pisac-topbar__republic {
+    font-size: 0.6875rem;
+  }
+
+  .pisac-topbar__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .pisac-main {
+    padding: 20px 12px;
+    align-items: flex-start;
+  }
+
+  .pisac-aside__register {
+    display: none;
+  }
 }

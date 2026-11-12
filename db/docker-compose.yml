@@ -39,12 +39,14 @@ services:
       - "./import_pdf_to_cog.sh:/import_pdf_to_cog.sh"
     command: /bin/bash /import_pdf_to_cog.sh
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.6.4
     container_name: ping_keycloak
     restart: unless-stopped
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
+      # PISAC: URL del portal para el enlace «Volver al portal» del tema de inicio de sesión
+      - PISAC_PORTAL_URL=${PING_PORTAL_URL:-http://localhost:4200}
     ports:
       - "8180:8080"
     volumes:
