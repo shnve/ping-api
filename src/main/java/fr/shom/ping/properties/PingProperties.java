@@ -65,7 +65,10 @@ public class PingProperties {
     @Setter
     @Builder
     public static class KeyStoreConfiguration {
+        /** Ruta relativa: recurso del classpath. Ruta absoluta o con prefijo "file:": archivo del servidor. */
         private String path;
+        /** Tipo de almacén (JKS o PKCS12). Si no se define, JKS. */
+        private String type;
         private String password;
         private S100CertificateConfiguration s100;
         private SECOMCertificateConfiguration secom;

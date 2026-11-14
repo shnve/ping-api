@@ -25,8 +25,8 @@ ping:
   portal-url: ${PING_PORTAL_URL:http://localhost:4200}
   services-url: ${PING_SERVICES_URL:http://localhost:8180}
   shom-organization-info:
-    name: "Servicio de Hidrografía y Navegación (SHN)"
-    address: "Observatorio Naval Cagigal, La Planicie, Caracas"
+    name: "Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN Venezuela)"
+    address: "Playa Grande, La Guaira"
     country: Venezuela
     electronic-mail-address: ${SHN_CONTACT_EMAIL:}
     function: information
@@ -263,7 +263,11 @@ ping:
   generated-survey-zip-archive-folder: ${ping.root-folder}/survey-archives
   cartonaut-sftp-root-relative-path: /chemin/relatif/sftp_cartonaut
   keystore:
-    path: secom/secom_keystore.jks
+    # PISAC: ruta relativa = dentro del .jar (certificados autofirmados de prueba del SHN, valor por defecto).
+    # Ruta absoluta o con prefijo file: = archivo del servidor, fuera del repositorio (certificados reales).
+    path: ${KEYSTORE_PATH:secom/secom_keystore.jks}
+    # JKS (por defecto) o PKCS12
+    type: ${KEYSTORE_TYPE:JKS}
     password: ${KEYSTORE_PASSWORD:CHANGE_ME}
     s100:
       alias-ca: s100_root
