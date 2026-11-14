@@ -1,5 +1,6 @@
 package fr.shom.ping.service;
 
+import fr.shom.ping.exception.BadRequestException;
 import fr.shom.ping.exception.KeycloakUserCreationException;
 import fr.shom.ping.model.KeycloakError;
 import fr.shom.ping.model.PublicUser;
@@ -9,6 +10,7 @@ import fr.shom.ping.model.enums.ProUserRole;
 import fr.shom.ping.properties.KeycloakProperties;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +27,17 @@ import org.springframework.stereotype.Service;
 import static fr.shom.ping.model.enums.ProUserRole.FUNCTIONAL_ADMIN;
 import static fr.shom.ping.model.enums.UserCreationErrorMessage.fromKeycloakError;
 import static java.util.Collections.singletonList;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class KeycloakService {
+    /** PISAC: claves i18n (es.json / en.json) que el portal muestra tal cual. */
+    public static final String PRO_USER_KEYCLOAK_ACCOUNT_NOT_FOUND = "message.error.api.pro-user-keycloak-account-not-found";
+    public static final String PRO_USER_EMAIL_ALREADY_USED = "message.error.api.pro-user-email-already-used";
+
     private final KeycloakProperties keycloakProperties;
     private final RealmResource publicRealmResource;
 
@@ -129,6 +136,29 @@ public class KeycloakService {
         userResource.update(userRepresentation);
     }
 
+    /**
+     * PISAC: id del usuario en el realm profesional. Si el {@code keycloak_id} guardado en PISAC ya no existe en Keycloak
+     * (datos desincronizados, por ejemplo tras recrear Keycloak), se busca la cuenta por correo.
+     *
+     * @return el id vigente, o vacío si el usuario no tiene cuenta en Keycloak
+     */
+    public Optional<UUID> findProUserKeycloakId(UUID storedKeycloakId, String email) {
+        if (storedKeycloakId != null) {
+            try {
+                proRealmResource.users().get(storedKeycloakId.toString()).toRepresentation();
+                return Optional.of(storedKeycloakId);
+            } catch (jakarta.ws.rs.NotFoundException e) {
+                log.warn("El keycloak_id {} del usuario profesional {} no existe en Keycloak; se busca la cuenta por correo", storedKeycloakId, email);
+            }
+        }
+        if (email == null || email.isBlank()) {
+            return Optional.empty();
+        }
+        return proRealmResource.users().searchByEmail(email, true).stream()
+            .findFirst()
+            .map(user -> UUID.fromString(user.getId()));
+    }
+
     public void updateUserEmail(UUID keycloakId, String email) {
         UserResource userResource = proRealmResource.users().get(keycloakId.toString());
 
@@ -136,7 +166,15 @@ public class KeycloakService {
         userRepresentation.setUsername(email);
         userRepresentation.setEmail(email);
 
-        userResource.update(userRepresentation);
+        try {
+            userResource.update(userRepresentation);
+        } catch (jakarta.ws.rs.ClientErrorException e) {
+            // PISAC: Keycloak responde 409 si el correo ya pertenece a otra cuenta; antes llegaba al portal como error 500
+            if (e.getResponse() != null && e.getResponse().getStatus() == CONFLICT.value()) {
+                throw new BadRequestException(PRO_USER_EMAIL_ALREADY_USED);
+            }
+            throw e;
+        }
     }
 
     public void updateUserRole(UUID keycloakId, ProUserRole newRole) {

@@ -242,13 +242,16 @@ public class ProUserService extends AbstractProUserService {
             throw new ForbiddenException();
         }
 
-        UUID keycloakId = proUser.getKeycloakId();
+        final boolean emailChanged = !proUser.getEmail().equals(proUserDto.getEmail());
+        final boolean roleChanged = proUser.getRole() != proUserDto.getRole();
+        // PISAC: solo se consulta Keycloak si hace falta, y con el id ya verificado (se corrige si estaba desincronizado)
+        final UUID keycloakId = emailChanged || roleChanged ? resolveKeycloakId(proUser) : proUser.getKeycloakId();
 
-        if (!proUser.getEmail().equals(proUserDto.getEmail())) {
+        if (emailChanged) {
             keycloakService.updateUserEmail(keycloakId, proUserDto.getEmail());
         }
 
-        if (proUser.getRole() != proUserDto.getRole()) {
+        if (roleChanged) {
             keycloakService.updateUserRole(keycloakId, proUserDto.getRole());
             ProUser newUser = proUser.switchRole(new ProUserConvertVisitorImpl());
             proUserRepository.delete(proUser);
@@ -310,11 +313,11 @@ public class ProUserService extends AbstractProUserService {
 
     public void resetPassword(String username) {
         ProUser proUser = findByEmail(username);
-        keycloakService.sendUpdatePasswordEmail(proUser.getKeycloakId());
+        keycloakService.sendUpdatePasswordEmail(resolveKeycloakId(proUser));
     }
 
     public void resetPasswordForUser(UUID id) {
         ProUser proUser = proUserRepository.findById(id).orElseThrow(NotFoundException::new);
-        keycloakService.sendUpdatePasswordEmail(proUser.getKeycloakId());
+        keycloakService.sendUpdatePasswordEmail(resolveKeycloakId(proUser));
     }
 }
