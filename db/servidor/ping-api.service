@@ -1,0 +1,37 @@
+[Unit]
+Description=PISAC Backend API (Spring Boot)
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+# Usuario y rutas del servidor de desarrollo (ajustar en producción si cambian)
+User=root1
+WorkingDirectory=/home/pisac/pisac_dev/ping-api
+
+# Paso 2 de recursos (Ajuste_Recursos_Servidores_PISAC.md §4):
+#  - heap fijo de 6 GB (subidas de hasta 500 MB y levantamientos de hasta 10 GB) con G1
+#  - si se agota la memoria, el proceso termina y systemd lo reinicia (antes quedaba vivo pero inestable)
+#  - logs: el perfil activo por defecto (local) deja SQL y trazas DEBUG/TRACE de seguridad y JDBC; en el servidor se bajan
+#    a INFO/WARN con propiedades de sistema, que tienen prioridad sobre application.yml y el .env
+ExecStart=/usr/bin/java \
+  -Xms6g -Xmx6g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 \
+  -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/DATA/pisac/dumps \
+  -Dspring.jpa.show-sql=false \
+  -Dlogging.level.fr.shom.ping=INFO \
+  -Dlogging.level.org.springframework.security=WARN \
+  -Dlogging.level.org.springframework.jdbc.core=WARN \
+  -Dlogging.level.org.keycloak=WARN \
+  -Dlogging.level.org.hibernate.type.descriptor.sql.BasicBinder=WARN \
+  -jar /home/pisac/pisac_dev/ping-api/target/ping-api-0.36.2.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+MemoryMax=9G
+LimitNOFILE=65536
+
+# Gestión de logs en systemd journal
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

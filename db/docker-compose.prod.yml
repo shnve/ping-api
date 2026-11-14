@@ -10,6 +10,9 @@
 #   - Rotación de logs de Docker (50 MB x 5 archivos por contenedor).
 #   - PostgreSQL: shm_size 2g (las consultas paralelas necesitan memoria compartida; Docker da 64 MB).
 #   - Keycloak: mem_limit 3g (sin límite, su JVM toma como base los 64 GB del equipo).
+#
+# Paso 2 (14-nov-2026): PostgreSQL ajustado a 64 GB / HDD (mem_limit 24g), GeoServer con heap fijo de 10 GB
+# (mem_limit 14g), límites de Kafka (2g), ZooKeeper (1g) y GDAL (4g, 16 núcleos).
 # =============================================================================================
 
 x-logging: &logging
@@ -33,7 +36,27 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       - POSTGRES_DB=${POSTGRES_DB:-ping-api}
     shm_size: 2g
-    command: postgres -c shared_buffers=16GB -c work_mem=64MB -c max_connections=200
+    # Paso 2 (14-nov-2026): parámetros para 64 GB de RAM y disco HDD en RAID 5 (Ajuste_Recursos_Servidores_PISAC.md §3)
+    mem_limit: 24g
+    command: >
+      postgres
+        -c shared_buffers=16GB
+        -c effective_cache_size=40GB
+        -c work_mem=32MB
+        -c maintenance_work_mem=2GB
+        -c max_connections=150
+        -c wal_buffers=16MB
+        -c min_wal_size=1GB
+        -c max_wal_size=8GB
+        -c checkpoint_completion_target=0.9
+        -c random_page_cost=4
+        -c effective_io_concurrency=2
+        -c max_worker_processes=16
+        -c max_parallel_workers=12
+        -c max_parallel_workers_per_gather=4
+        -c max_parallel_maintenance_workers=4
+        -c autovacuum_max_workers=4
+        -c log_min_duration_statement=2000
     volumes:
       - postgres_data:/var/lib/postgresql/data
   geoserver:
@@ -43,11 +66,13 @@ services:
     <<: *logging
     ports:
       - "8082:8080"
+    # Paso 2: heap fijo de 10 GB (sin pausas por crecer/encoger) y 4 GB fuera del heap para GDAL nativo y lectura de COG
+    mem_limit: 14g
     environment:
       - GEOSERVER_ADMIN_USER=${GEOSERVER_USER:-admin}
       - GEOSERVER_ADMIN_PASSWORD=${GEOSERVER_PASSWORD:?Defina GEOSERVER_PASSWORD en .env}
-      - INITIAL_MEMORY=8G
-      - MAXIMUM_MEMORY=16G
+      - INITIAL_MEMORY=10G
+      - MAXIMUM_MEMORY=10G
       - CORS_ENABLED=true
     volumes:
       - geoserver_data:/opt/geoserver/data_dir
@@ -56,6 +81,12 @@ services:
     image: ghcr.io/osgeo/gdal:ubuntu-full-latest
     container_name: gdal_s100_transcoder
     <<: *logging
+    # Paso 2: la conversión de cartografía no debe acaparar la CPU ni la memoria del servidor
+    mem_limit: 4g
+    cpus: 16
+    environment:
+      - GDAL_NUM_THREADS=16
+      - GDAL_CACHEMAX=2048
     depends_on:
       - db
     volumes:
@@ -88,6 +119,7 @@ services:
     container_name: zookeeper
     restart: unless-stopped
     <<: *logging
+    mem_limit: 1g
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -99,6 +131,7 @@ services:
     container_name: kafka
     restart: unless-stopped
     <<: *logging
+    mem_limit: 2g
     depends_on:
       - zookeeper
     ports:

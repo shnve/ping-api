@@ -329,6 +329,11 @@ keycloak:
   public-issuer-uri: ${ping.keycloak.server-url}/realms/${ping.keycloak.public-realm.realm}
 
 spring:
+  # PISAC (paso 2 de recursos): el pool por defecto (10) se quedaba corto con 25 hilos de Quartz más las peticiones web
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:30}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
   security:
     oauth2:
       client:

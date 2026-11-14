@@ -12,6 +12,8 @@ services:
     container_name: ping_api_clamav
     restart: unless-stopped
     <<: *logging
+    # Las firmas ocupan ~1,5 GB y el doble durante la actualización diaria
+    mem_limit: 4g
     volumes:
       - clam_db:/var/lib/clamav
       - /mnt/c/tmp/ping-api:/mnt/c/tmp/ping-api
