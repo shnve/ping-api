@@ -1,0 +1,14 @@
+[Unit]
+Description=PISAC - respaldo diario (base de datos, archivos, volúmenes y configuración)
+Documentation=file:///home/pisac/pisac_dev/ping-api/db/respaldos/pisac-respaldo.sh
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/pisac-respaldo.sh
+# Código 2 = respaldo local correcto pero falló la copia externa: se marca como fallo para que se vea
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=3h

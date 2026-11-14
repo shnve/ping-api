@@ -1,0 +1,29 @@
+# PISAC: configuración del respaldo diario. Copiar a /etc/pisac-respaldo.conf (root, permisos 600).
+# Todas las variables son opcionales: estos son los valores por defecto.
+
+# Carpeta donde están ping-api y ping-web
+PISAC_DIR=/home/pisac/pisac_dev
+
+# Destino local (volumen respaldos-lv)
+RESPALDO_DIR=/respaldos/pisac
+
+# Cuántos respaldos conservar de cada tipo
+RETENER_DIARIOS=14
+RETENER_SEMANALES=8
+RETENER_MENSUALES=12
+
+# No empezar si queda menos espacio libre que esto en RESPALDO_DIR
+MIN_LIBRE_GB=20
+
+# Nombres de los contenedores
+CONTENEDOR_DB=ping_api_db
+CONTENEDOR_KC=ping_keycloak
+CONTENEDOR_GS=geoserver_local
+
+# Detener Keycloak durante la copia de su volumen: auto (solo con start-dev / H2), si, no
+KC_DETENER=auto
+
+# Copia fuera del servidor por rsync + SSH (vacío = sin copia externa; el respaldo avisa en el log)
+# DESTINO_REMOTO=respaldos@10.0.0.50:/srv/respaldos/pisac-dev
+# SSH_CLAVE=/root/.ssh/pisac_respaldo
+DESTINO_REMOTO=

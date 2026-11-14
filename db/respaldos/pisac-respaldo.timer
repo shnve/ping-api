@@ -1,0 +1,11 @@
+[Unit]
+Description=PISAC - programa el respaldo diario a las 02:30
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=10min
+# Si el servidor estaba apagado a esa hora, se ejecuta al arrancar
+Persistent=true
+
+[Install]
+WantedBy=timers.target
