@@ -50,6 +50,7 @@ public class PisacEmailTemplate {
     private static final String NAVY = "#002B5C";
     private static final String NAVY_DEEP = "#001D3D";
     private static final String ORANGE = "#F47C20";
+    private static final String DIVIDER = "#CBD5E1";
     private static final String INK = "#253746";
     private static final String MUTED = "#475569";
     private static final String SUBTLE = "#64748B";
@@ -146,7 +147,7 @@ public class PisacEmailTemplate {
             .append("La plataforma PISAC está implementada únicamente para las aguas jurisdiccionales de la República Bolivariana de Venezuela.\n")
             .append("La disponibilidad de las advertencias de navegación en esta plataforma no exime a los capitanes de la obligación de recibir en el mar ")
             .append("las advertencias de navegación a través de los sistemas de difusión oficiales, de conformidad con las disposiciones del Convenio SOLAS.\n")
-            .append("La plataforma PISAC presenta una selección de decretos marítimos. Para mayor información consultar las publicaciones de las autoridades competentes.\n\n")
+            .append("La plataforma PISAC presenta una selección de decretos marítimos. Para mayor información consultar las publicaciones de las organismos competentes.\n\n")
             .append("No responda ni reenvíe correos a esta cuenta: es una cuenta no monitoreada. Consultas: ").append(CONTACT_EMAIL).append('\n');
         return text.toString().replaceAll("\n{3,}", "\n\n");
     }
@@ -177,6 +178,10 @@ public class PisacEmailTemplate {
         }
     }
 
+    /**
+     * Cabecera institucional (igual que el encabezado del portal): logos SHN / OCHINA, línea fina gris y nombre de
+     * PISAC. Sin franja de gobierno: la imagen del Ministerio y la Armada solo va en el pie del portal.
+     */
     private void appendHeader(StringBuilder html, boolean withLogo) {
         html.append("<tr><td style=\"padding:20px 28px;background-color:#ffffff;\">")
             .append("<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr>");
@@ -184,14 +189,13 @@ public class PisacEmailTemplate {
             html.append("<td valign=\"middle\" style=\"padding-right:14px;\">")
                 .append("<img src=\"cid:").append(LOGO_CID).append("\" width=\"96\" height=\"56\" alt=\"SHN · OCHINA\" ")
                 .append("style=\"display:block;width:96px;height:auto;border:0;outline:none;text-decoration:none;\">")
-                .append("</td>")
-                .append("<td valign=\"middle\" style=\"padding-right:14px;\">")
-                .append("<div style=\"width:3px;height:40px;background-color:").append(ORANGE).append(";border-radius:2px;\"></div>")
                 .append("</td>");
         }
-        html.append("<td valign=\"middle\" style=\"font-family:").append(FONT).append(";\">")
-            .append("<div style=\"font-size:11px;line-height:1.3;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:")
-            .append(MUTED).append(";\">Rep&uacute;blica Bolivariana de Venezuela</div>")
+        // Línea fina gris (antes barra naranja), igual a la del portal
+        html.append("<td valign=\"middle\" style=\"padding-right:14px;\">")
+            .append("<div style=\"width:1px;height:40px;font-size:0;line-height:0;background-color:").append(DIVIDER).append(";\"></div>")
+            .append("</td>")
+            .append("<td valign=\"middle\" style=\"font-family:").append(FONT).append(";\">")
             .append("<div style=\"font-family:Montserrat,").append(FONT).append(";font-size:18px;line-height:1.25;font-weight:700;color:")
             .append(NAVY).append(";\">PISAC</div>")
             .append("<div style=\"font-size:13px;line-height:1.3;font-weight:600;color:").append(NAVY)
@@ -217,7 +221,7 @@ public class PisacEmailTemplate {
             .append("disposiciones del Convenio SOLAS.</p>")
             .append("<p style=\"margin:0 0 12px 0;font-size:11px;color:").append(SUBTLE).append(";\">")
             .append("La plataforma PISAC presenta una selecci&oacute;n de decretos mar&iacute;timos. Para mayor informaci&oacute;n consultar las publicaciones ")
-            .append("de las autoridades competentes.</p>")
+            .append("de las organismos competentes.</p>")
             .append("<p style=\"margin:0;padding-top:10px;border-top:1px dashed #CBD5E1;font-size:11px;color:").append(SUBTLE).append(";\">")
             .append("No responda ni reenv&iacute;e correos a esta cuenta: es una cuenta no monitoreada. ")
             .append("Para cualquier consulta, escriba a <a href=\"mailto:").append(CONTACT_EMAIL).append("\" style=\"color:").append(LINK)

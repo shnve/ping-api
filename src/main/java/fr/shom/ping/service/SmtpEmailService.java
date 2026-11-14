@@ -101,7 +101,8 @@ public class SmtpEmailService {
             } else {
                 final String safeContent = emailTemplate.sanitizeContent(stripLegacyLayout(body));
                 final boolean withLogo = emailTemplate.logo().exists();
-                helper.setText(emailTemplate.renderText(subject, safeContent), emailTemplate.renderHtml(subject, safeContent, withLogo));
+                helper.setText(emailTemplate.renderText(subject, safeContent),
+                    emailTemplate.renderHtml(subject, safeContent, withLogo));
                 if (withLogo) {
                     helper.addInline(PisacEmailTemplate.LOGO_CID, emailTemplate.logo(), PisacEmailTemplate.LOGO_CONTENT_TYPE);
                 }

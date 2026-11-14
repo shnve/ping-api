@@ -29,15 +29,29 @@
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F1F5F9;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #E2E8F0;border-radius:12px;border-collapse:separate;overflow:hidden;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;">
-    <#-- Cabecera institucional -->
+    <#-- Cabecera institucional en dos filas, como el encabezado del portal: franja de gobierno (Ministerio del Poder
+         Popular para la Defensa y Armada Bolivariana) y, debajo, el nombre de PISAC. Solo texto (ver nota inicial). -->
     <tr>
-        <td style="padding:20px 28px;background-color:#ffffff;">
+        <td style="padding:16px 28px 12px 28px;background-color:#ffffff;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                <td valign="middle" style="padding-right:12px;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#002B5C;">
+                    <div style="font-size:10px;line-height:1.15;font-weight:600;">Ministerio del Poder Popular<br>para la</div>
+                    <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.05;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;">Defensa</div>
+                </td>
+                <td valign="middle" style="padding:0 12px;border-left:1px solid #CBD5E1;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#002B5C;">
+                    <div style="font-size:10px;line-height:1.15;font-weight:600;">Armada</div>
+                    <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.05;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;">Bolivariana</div>
+                </td>
+            </tr></table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:12px 28px 18px 28px;background-color:#ffffff;border-top:1px solid #E2E8F0;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
                 <td valign="middle" style="padding-right:14px;">
                     <div style="width:3px;height:40px;background-color:#F47C20;border-radius:2px;"></div>
                 </td>
                 <td valign="middle" style="font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;">
-                    <div style="font-size:11px;line-height:1.3;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:#475569;">Rep&uacute;blica Bolivariana de Venezuela</div>
                     <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:18px;line-height:1.25;font-weight:700;color:#002B5C;">PISAC</div>
                     <div style="font-size:13px;line-height:1.3;font-weight:600;color:#002B5C;">Plataforma de Informaci&oacute;n de Seguridad Acu&aacute;tica</div>
                 </td>
@@ -66,7 +80,7 @@
             </p>
             <p style="margin:0 0 8px 0;font-size:11px;color:#64748B;">La plataforma PISAC est&aacute; implementada &uacute;nicamente para las aguas jurisdiccionales de la Rep&uacute;blica Bolivariana de Venezuela.</p>
             <p style="margin:0 0 8px 0;font-size:11px;color:#64748B;">La disponibilidad de las advertencias de navegaci&oacute;n en esta plataforma no exime a los capitanes de la obligaci&oacute;n de recibir en el mar las advertencias de navegaci&oacute;n a trav&eacute;s de los sistemas de difusi&oacute;n oficiales, de conformidad con las disposiciones del Convenio SOLAS.</p>
-            <p style="margin:0 0 12px 0;font-size:11px;color:#64748B;">La plataforma PISAC presenta una selecci&oacute;n de decretos mar&iacute;timos. Para mayor informaci&oacute;n consultar las publicaciones de las autoridades competentes.</p>
+            <p style="margin:0 0 12px 0;font-size:11px;color:#64748B;">La plataforma PISAC presenta una selecci&oacute;n de decretos mar&iacute;timos. Para mayor informaci&oacute;n consultar las publicaciones de las organismos competentes.</p>
             <p style="margin:0;padding-top:10px;border-top:1px dashed #CBD5E1;font-size:11px;color:#64748B;">
                 No responda ni reenv&iacute;e correos a esta cuenta: es una cuenta no monitoreada.
                 Para cualquier consulta, escriba a <a href="mailto:shnser@shn.gob.ve" style="color:#1F7FA6;font-weight:600;text-decoration:none;">shnser@shn.gob.ve</a>.

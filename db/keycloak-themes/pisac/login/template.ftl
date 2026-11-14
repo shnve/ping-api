@@ -3,9 +3,9 @@
   ping-public y ping-pro. Basada en theme/base/login/template.ftl de Keycloak 26.6.4.
 
   Cambios respecto a la original:
-  - Cabecera institucional (logos SHN / OCHINA, República y nombre de PISAC) igual que la del portal, con el
+  - Cabecera institucional (logos SHN / OCHINA, línea gris y nombre de PISAC) igual que la del portal, con el
     selector de idioma y el enlace «Volver al portal» a la derecha.
-  - Panel lateral con el tipo de acceso según el realm (público o profesional).
+  - Panel lateral con el tipo de acceso según el realm (público o institucional).
   - Pie institucional.
   - El resto (scripts, mensajes, bloques anidados header / form / info / socialProviders, «probar otra forma»)
     se conserva sin cambios para que sigan funcionando todas las páginas del tema padre.
@@ -107,13 +107,13 @@
 
 <body class="${properties.kcBodyClass!} pisac-body ${isPro?then('pisac-realm-pro','pisac-realm-public')}" data-page-id="login-${pageId}">
 <div class="pisac-shell">
-    <#-- Cabecera institucional -->
+    <#-- Cabecera institucional igual que la del portal (aprobada por el funcional el 13-nov-2026): solo los logos
+         SHN / OCHINA, una línea fina gris y el nombre de PISAC. La franja de gobierno va solo en el pie del portal. -->
     <header class="pisac-topbar">
         <div class="pisac-topbar__brand">
             <img class="pisac-topbar__logo" src="${url.resourcesPath}/img/logo-shn-ochina.png" alt="SHN · OCHINA" width="96" height="55" />
             <span class="pisac-topbar__divider" aria-hidden="true"></span>
             <div class="pisac-topbar__titles">
-                <span class="pisac-topbar__republic">${msg("pisacRepublic")}</span>
                 <span class="pisac-topbar__platform">${msg("pisacPlatform")}</span>
             </div>
         </div>

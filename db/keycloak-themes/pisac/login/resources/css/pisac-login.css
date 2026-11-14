@@ -112,11 +112,11 @@ html.login-pf a:focus {
   flex: 0 0 auto;
 }
 
+/* Línea fina gris entre los logos SHN / OCHINA y el nombre de PISAC, con las mismas medidas que en el portal */
 .pisac-topbar__divider {
-  width: 3px;
-  height: 34px;
-  border-radius: 2px;
-  background: var(--shn-orange);
+  width: 1px;
+  height: 40px;
+  background: var(--pisac-neutral-300);
   flex: 0 0 auto;
 }
 
@@ -126,19 +126,12 @@ html.login-pf a:focus {
   min-width: 0;
 }
 
-.pisac-topbar__republic {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--pisac-neutral-600);
-}
-
-.pisac-topbar__platform {
+/* Prefijo html.login-pf: la hoja base de Keycloak fija la fuente de los textos y anulaba Montserrat */
+html.login-pf .pisac-topbar__platform {
   font-family: var(--pisac-font-heading);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.35;
   color: var(--shn-navy);
 }
 
@@ -774,12 +767,8 @@ html.login-pf .pisac-login #kc-info-wrapper {
     width: 72px;
   }
 
-  .pisac-topbar__platform {
+  html.login-pf .pisac-topbar__platform {
     font-size: 1rem;
-  }
-
-  .pisac-topbar__republic {
-    font-size: 0.6875rem;
   }
 
   .pisac-topbar__actions {
