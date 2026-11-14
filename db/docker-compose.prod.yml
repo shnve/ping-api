@@ -1,8 +1,29 @@
-version: '3.1'
+# =============================================================================================
+# PISAC: infraestructura de los servidores de desarrollo y producción (64 GB RAM, 48 núcleos, HDD)
+#
+# Requiere Docker Compose v2 (`docker compose`, v2.24 o superior): usa mem_limit, shm_size y
+# bloques de extensión x-*. Ver docs-internos/Ajuste_Recursos_Servidores_PISAC.md
+#
+# Ajustes de recursos (paso 1, 14-nov-2026):
+#   - restart: unless-stopped en los servicios permanentes (vuelven solos tras reiniciar el servidor).
+#     gdal_worker NO lleva restart: es una tarea de una sola ejecución.
+#   - Rotación de logs de Docker (50 MB x 5 archivos por contenedor).
+#   - PostgreSQL: shm_size 2g (las consultas paralelas necesitan memoria compartida; Docker da 64 MB).
+#   - Keycloak: mem_limit 3g (sin límite, su JVM toma como base los 64 GB del equipo).
+# =============================================================================================
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "50m"
+      max-file: "5"
 
 services:
   db:
     container_name: ping_api_db
+    restart: unless-stopped
+    <<: *logging
     build:
       context: ./
     ports:
@@ -11,12 +32,15 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-ping-api}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       - POSTGRES_DB=${POSTGRES_DB:-ping-api}
+    shm_size: 2g
     command: postgres -c shared_buffers=16GB -c work_mem=64MB -c max_connections=200
     volumes:
       - postgres_data:/var/lib/postgresql/data
   geoserver:
     image: kartoza/geoserver:latest
     container_name: geoserver_local
+    restart: unless-stopped
+    <<: *logging
     ports:
       - "8082:8080"
     environment:
@@ -31,6 +55,7 @@ services:
   gdal_worker:
     image: ghcr.io/osgeo/gdal:ubuntu-full-latest
     container_name: gdal_s100_transcoder
+    <<: *logging
     depends_on:
       - db
     volumes:
@@ -40,6 +65,10 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.6.4
     container_name: ping_keycloak
+    restart: unless-stopped
+    <<: *logging
+    # Heap ~2 GB (la imagen usa el 70 % del límite del contenedor)
+    mem_limit: 3g
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
@@ -57,6 +86,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.2
     container_name: zookeeper
+    restart: unless-stopped
+    <<: *logging
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -66,7 +97,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.3.2
     container_name: kafka
-    restart: on-failure
+    restart: unless-stopped
+    <<: *logging
     depends_on:
       - zookeeper
     ports:
@@ -84,6 +116,7 @@ services:
     image: axllent/mailpit:latest
     container_name: ping-mailpit
     restart: unless-stopped
+    <<: *logging
     ports:
       - "8025:8025"
       - "1025:1025"

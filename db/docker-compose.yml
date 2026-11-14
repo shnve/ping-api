@@ -1,9 +1,20 @@
-version: '3.1'
+# PISAC: entorno local (estación de desarrollo). Los servidores usan docker-compose.prod.yml.
+# Requiere Docker Compose v2 (mem_limit, shm_size, bloques x-*). Mismos ajustes del paso 1 que en
+# los servidores: rotación de logs, shm_size de PostgreSQL y límite de memoria de Keycloak.
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "50m"
+      max-file: "5"
 
 services:
   db:
     container_name: ping_api_db
     restart: unless-stopped
+    <<: *logging
+    shm_size: 2g
     build:
       context: ./
     ports:
@@ -18,6 +29,7 @@ services:
     image: kartoza/geoserver:latest
     container_name: geoserver_local
     restart: unless-stopped
+    <<: *logging
     ports:
       - "8082:8080"
     environment:
@@ -32,6 +44,7 @@ services:
   gdal_worker:
     image: ghcr.io/osgeo/gdal:ubuntu-full-latest
     container_name: gdal_s100_transcoder
+    <<: *logging
     depends_on:
       - db
     volumes:
@@ -42,6 +55,9 @@ services:
     image: quay.io/keycloak/keycloak:26.6.4
     container_name: ping_keycloak
     restart: unless-stopped
+    <<: *logging
+    # Heap ~2 GB (la imagen usa el 70 % del límite del contenedor)
+    mem_limit: 3g
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
@@ -58,6 +74,7 @@ services:
     image: confluentinc/cp-zookeeper:7.3.2
     container_name: zookeeper
     restart: unless-stopped
+    <<: *logging
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -68,6 +85,7 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     container_name: kafka
     restart: unless-stopped
+    <<: *logging
     depends_on:
       - zookeeper
     ports:
@@ -85,6 +103,7 @@ services:
     image: axllent/mailpit:latest
     container_name: ping-mailpit
     restart: unless-stopped
+    <<: *logging
     ports:
       - "8025:8025"
       - "1025:1025"
