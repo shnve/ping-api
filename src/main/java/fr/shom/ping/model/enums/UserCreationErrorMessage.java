@@ -27,6 +27,12 @@ public enum UserCreationErrorMessage {
     }
 
     public static UserCreationErrorMessage fromKeycloakError(KeycloakError keycloakError) {
+        // PISAC: cualquier incumplimiento de la política de contraseñas de Keycloak (longitud, mayúsculas, símbolos,
+        // historial, igual al usuario o al correo...) llega como "invalidPassword...Message".
+        final String error = Optional.ofNullable(keycloakError.getError()).orElse("");
+        if (error.startsWith("invalidPassword")) {
+            return PASSWORD_POLICY_NOT_MET;
+        }
         return stream(UserCreationErrorMessage.values())
             .filter(createUserErrorMessage -> Optional.ofNullable(keycloakError.getError()).orElse("").equalsIgnoreCase(createUserErrorMessage.name().replace("_", ""))
                     || Optional.ofNullable(keycloakError.getErrorMessage()).orElse(KeycloakErrorMessage.UNKNOWN_ERROR).name().equals(createUserErrorMessage.name()))
