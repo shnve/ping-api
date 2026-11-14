@@ -17,10 +17,12 @@ import fr.shom.ping.utils.DigitalSignatureUtils;
 import fr.shom.ping.utils.NavtexUtil;
 import fr.shom.ping.utils.S100Util;
 import fr.shom.ping.utils.S124FeatureCatalogue;
+import fr.shom.ping.utils.S124DownloadUtil;
 import fr.shom.ping.utils.S124v2Util;
 import fr.shom.ping.utils.ZipUtil;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -86,6 +88,8 @@ public class SecomService {
 
     private static final String KEY_STORE_TYPE = "JKS";
 
+    private static final String FILE_PREFIX = "file:";
+
     private static final XssSanitizerService XSS_SANITIZER_SERVICE = new XssSanitizerService();
 
     private static final String DATASET_IDENTIFIER_FORMAT = "124%s%s%s%s%s";
@@ -122,6 +126,8 @@ public class SecomService {
     private final WarningService warningService;
 
     private final WarningRepository warningRepository;
+
+    private final S124ExchangeSetLocator s124ExchangeSetLocator;
 
     private static final URL PRODUCT_SCHEMA_URL;
     private static final String PRODUCT_SCHEMA_URI = "https://registry.iho.int/productspec/list.do";
@@ -238,13 +244,37 @@ public class SecomService {
     }
 
     private KeyStore buildKeystore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        final KeyStore keyStore = KeyStore.getInstance(KEY_STORE_TYPE);
         final PingProperties.KeyStoreConfiguration trustStoreConfiguration = pingProperties.getKeystore();
+        final KeyStore keyStore = KeyStore.getInstance(StringUtils.defaultIfBlank(trustStoreConfiguration.getType(), KEY_STORE_TYPE));
         final char[] password = trustStoreConfiguration.getPassword().toCharArray();
-        final String path = trustStoreConfiguration.getPath();
-        final String safePath = Path.of(FilenameUtils.getFullPath(path), FilenameUtils.getName(path)).toString();
-        keyStore.load(new ClassPathResource(safePath).getInputStream(), password);
+        try (InputStream in = openKeystore(trustStoreConfiguration.getPath())) {
+            keyStore.load(in, password);
+        }
         return keyStore;
+    }
+
+    /**
+     * PISAC: abre el almacén de certificados.
+     * <ul>
+     *   <li>Ruta absoluta o con prefijo {@code file:}: archivo del servidor, fuera del repositorio (certificados reales).</li>
+     *   <li>Ruta relativa: recurso del classpath, dentro del .jar (certificados autofirmados de prueba; comportamiento original).</li>
+     * </ul>
+     */
+    static InputStream openKeystore(String configuredPath) throws IOException {
+        if (StringUtils.isBlank(configuredPath)) {
+            throw new IOException("ping.keystore.path no está definido");
+        }
+        final String path = StringUtils.removeStart(configuredPath.trim(), FILE_PREFIX);
+        final Path filePath = Path.of(path);
+        if (configuredPath.trim().startsWith(FILE_PREFIX) || filePath.isAbsolute()) {
+            final Path normalized = filePath.toAbsolutePath().normalize();
+            if (!Files.isRegularFile(normalized) || !Files.isReadable(normalized)) {
+                throw new IOException("No se puede leer el almacén de certificados: " + normalized);
+            }
+            return Files.newInputStream(normalized);
+        }
+        final String safePath = Path.of(FilenameUtils.getFullPath(path), FilenameUtils.getName(path)).toString();
+        return new ClassPathResource(safePath).getInputStream();
     }
 
     public File createSignatureFilesWithHex(File sourceFile, File targetFolder, String alias, String signingAlgorithm, String hashAlgorithm,
@@ -535,10 +565,8 @@ public class SecomService {
     }
 
     private static String buildDatasetIdentifier(Warning warning, String ihoProducerFolderName, String langIdentifier) {
-        return String.format(
-            DATASET_IDENTIFIER_FORMAT, ihoProducerFolderName, ofNullable(warning.getSerieS124Identifier()).orElse(DEFAULT_S124_ID),
-            zeroLeftPad(warning.getWarningNumber(), 4), NavtexUtil.getYearSuffix(warning.getYear()), langIdentifier
-        );
+        // PISAC: una sola fuente para el nombre del paquete (ver S124ExchangeSetLocator)
+        return S124ExchangeSetLocator.buildDatasetIdentifier(warning, ihoProducerFolderName, langIdentifier);
     }
 
     private static void cleanCatalogFiles(Path catalogFile, File targetFolderForCatalogSignatureGeneration) {
@@ -696,23 +724,31 @@ public class SecomService {
     }
 
     private Path getExchangeSetFullpath(Warning warning, String lang) {
-        final String langIdentifier = StringUtils.equalsIgnoreCase(lang, INTERNATIONAL_LANGUAGE) ? DEFAULT_LANG_IDENTIFIER_EN : DEFAULT_LANG_IDENTIFIER_ES;
-        final String ihoProducerFolderName = getIhoProducerFolderName(warning);
-        final String datasetIdentifier = buildDatasetIdentifier(warning, ihoProducerFolderName, langIdentifier);
-
-        final Path ihoProducerCodeDirPath =
-            Path.of(cleanPath(Path.of(pingProperties.getGeneratedS124Folder(), ihoProducerFolderName).toString()));
-
-        final Path warningNumberYearDirPath =
-            Path.of(cleanPath(Path.of(ihoProducerCodeDirPath.toString(), warning.getYear().toString()).toString()));
-
-        final Path exchangeSetRootDirPath = Path.of(warningNumberYearDirPath.toString(), datasetIdentifier);
-        return Path.of(exchangeSetRootDirPath.toString(), datasetIdentifier);
+        return s124ExchangeSetLocator.getExchangeSetFullpath(warning, lang);
     }
 
     private String getIhoProducerFolderName(Warning warning) {
-        return XSS_SANITIZER_SERVICE.sanitize(warning.getMaritimeServiceihoProducerCode())
-            .replaceAll(pingProperties.getS124sanitizeRegex(), "");
+        return s124ExchangeSetLocator.getIhoProducerFolderName(warning);
+    }
+
+    /**
+     * PISAC: paquete S-124 firmado (.ZIP) en inglés de un aviso publicado, para la descarga desde el portal.
+     * Es el mismo archivo que se genera al publicar y que entrega SECOM.
+     *
+     * @throws NotFoundException si el aviso no existe, no está publicado, no produce S-124, su serie no tiene el inglés como
+     *                           idioma obligatorio o el paquete no se generó
+     */
+    public Path getPublishedExchangeSetZip(UUID warningId) throws NotFoundException {
+        final Warning warning = warningService.getWarningById(warningId);
+        if (!S124DownloadUtil.isDownloadAvailable(warning)) {
+            throw new NotFoundException("s124-exchange-set-not-available");
+        }
+        final Path zip = s124ExchangeSetLocator.getDownloadZip(warning);
+        if (!Files.isRegularFile(zip)) {
+            log.warn("S-124 exchange set not found for warning {} ({}): {}", warning.formattedWarningFullNumber(), warningId, zip);
+            throw new NotFoundException("s124-exchange-set-not-available");
+        }
+        return zip;
     }
 
     private List<Warning> getWarnings(String serviceInstanceId, UUID dataReference, int page, int size)
@@ -757,8 +793,10 @@ public class SecomService {
     }
 
     public Serie getSerieFromServiceInstanceId(String serviceInstanceId) throws NotFoundException, BadRequestException, ForbiddenException {
-        if (!serviceInstanceId.endsWith("_fr") && !serviceInstanceId.endsWith("_en")) {
-            throw new BadRequestException("serviceInstanceId must end with _fr or _en");
+        // PISAC: el original solo aceptaba _fr o _en, así que la instancia en español (_es) respondía 400 aunque su paquete
+        // existiera. Se acepta cualquier sufijo de idioma; más abajo se valida que sea un idioma obligatorio de la serie.
+        if (serviceInstanceId.lastIndexOf("_") <= 0 || serviceInstanceId.endsWith("_")) {
+            throw new BadRequestException("serviceInstanceId must end with _<language>, e.g. _en or _es");
         }
 
         final String serieNamePart = serviceInstanceId.substring(0, serviceInstanceId.lastIndexOf("_"));

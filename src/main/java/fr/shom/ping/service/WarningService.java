@@ -79,6 +79,8 @@ public class WarningService {
 
     private final WarningGpxUtil warningGpxUtil;
 
+    private final S124ExchangeSetLocator s124ExchangeSetLocator;
+
     public WarningDetailDto findOne(UUID id) {
         final Warning warning = getWarningById(id);
 
@@ -86,7 +88,10 @@ public class WarningService {
             throw new ForbiddenException("error.api.warning-current-status-invalid");
         }
 
-        return warningToWarningDetailDtoMapper.apply(warning);
+        final WarningDetailDto detail = warningToWarningDetailDtoMapper.apply(warning);
+        // PISAC: botón de descarga S-124 solo si el paquete en inglés existe
+        detail.setS124Available(s124ExchangeSetLocator.isDownloadZipPresent(warning));
+        return detail;
     }
 
     public Warning getWarningById(UUID id) {

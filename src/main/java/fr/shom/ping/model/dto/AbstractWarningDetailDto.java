@@ -72,6 +72,10 @@ public abstract class AbstractWarningDetailDto implements Serializable {
     @Schema(description = "Global warning type", required = true)
     private GlobalWarningType globalWarningType;
 
+    @Schema(description = "PISAC: the signed S-124 exchange set (ZIP, English) exists and can be downloaded from the portal. "
+        + "Only set by the warning detail endpoints (public and admin details-view)")
+    private Boolean s124Available;
+
     @Default
     @JsonIgnore
     private SortedSet<GeneralAreaDto> generalAreaSortedSet = new TreeSet<>();

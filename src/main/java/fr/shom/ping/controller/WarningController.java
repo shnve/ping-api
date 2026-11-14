@@ -11,10 +11,14 @@ import fr.shom.ping.model.predicate.WarningSearchCriteria;
 import fr.shom.ping.repository.WarningHazardTypeDetailsRepository;
 import fr.shom.ping.repository.WarningReferenceCategoryRepository;
 import fr.shom.ping.repository.WarningTypeRepository;
+import fr.shom.ping.service.SecomService;
 import fr.shom.ping.service.WarningService;
 import fr.shom.ping.utils.EnumUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,6 +46,8 @@ import static fr.shom.ping.utils.GpxUtil.DEFAULT_LANGUAGE;
 public class WarningController {
 
     private final WarningService service;
+
+    private final SecomService secomService;
 
     private final WarningTypeRepository warningTypeRepository;
 
@@ -134,6 +140,19 @@ public class WarningController {
         } catch (ServiceException exception) {
             throw new BadRequestException(exception.getMessage());
         }
+    }
+
+    @GetMapping(value = "/{id}/s124")
+    @Operation(summary = "PISAC: download the signed S-124 exchange set (ZIP, English) of a published navigational warning. "
+        + "404 if the warning is not published, is not exported to S-124 (notices to mariners) or its serie has no English", tags = "Warning")
+    public void downloadS124ExchangeSet(@PathVariable UUID id, HttpServletResponse response) throws IOException {
+        final Path zip = secomService.getPublishedExchangeSetZip(id);
+        final String fileName = zip.getFileName().toString();
+        response.setContentType("application/zip");
+        response.setContentLengthLong(Files.size(zip));
+        response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+        response.addHeader("filename", fileName);
+        Files.copy(zip, response.getOutputStream());
     }
 
     @GetMapping(value = "/download-gpx-zip")

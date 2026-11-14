@@ -168,6 +168,8 @@ public class WarningAdminService {
 
     private final SecomService secomService;
 
+    private final S124ExchangeSetLocator s124ExchangeSetLocator;
+
     private final AttachmentRepository attachmentRepository;
 
     private final PingProperties pingProperties;
@@ -974,7 +976,10 @@ public class WarningAdminService {
                 .map(ServiceUserRole::getServiceId)
                 .collect(toList())
         );
-        return new WarningAdminDetailDto().fromWarning(warning, canBeAddedToFolder);
+        final WarningAdminDetailDto detail = new WarningAdminDetailDto().fromWarning(warning, canBeAddedToFolder);
+        // PISAC: botón de descarga S-124 solo si el paquete en inglés existe
+        detail.setS124Available(s124ExchangeSetLocator.isDownloadZipPresent(warning));
+        return detail;
     }
 
     @Transactional
