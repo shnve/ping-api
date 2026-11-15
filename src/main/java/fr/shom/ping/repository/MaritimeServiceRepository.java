@@ -34,6 +34,17 @@ public interface MaritimeServiceRepository extends JpaRepository<MaritimeService
     )
     List<MaritimeServiceInfosourceRecipientDto> findAllByMaritimeServiceTypeIn(Collection<MaritimeServiceType> maritimeServiceTypes);
 
+    /**
+     * PISAC: destinatarios por tipo de servicio, sin exigir zona de servicio dibujada. El enrutamiento de las
+     * contribuciones en Venezuela es nacional (SHN - AN y SHN - Cartografía), no por intersección geográfica.
+     */
+    @Query(
+        "SELECT DISTINCT new fr.shom.ping.model.dto.MaritimeServiceInfosourceRecipientDto(ms.id, ms.name, ms.type) " +
+            "FROM MaritimeService ms " +
+            "WHERE ms.type IN :maritimeServiceTypes"
+    )
+    List<MaritimeServiceInfosourceRecipientDto> findRecipientsByMaritimeServiceTypeIn(Collection<MaritimeServiceType> maritimeServiceTypes);
+
     @Query(
         "SELECT new fr.shom.ping.model.dto.MaritimeServiceInfosourceRecipientDto(ms.id, ms.name, ms.type) " +
             "FROM MaritimeService ms " +

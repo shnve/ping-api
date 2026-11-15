@@ -9,6 +9,8 @@
 #   - Política de contraseñas: 12 caracteres, mayúscula, minúscula, número y símbolo; distinta del usuario y del
 #     correo; no repetir las 5 últimas.
 #   - PKCE (S256) obligatorio en el cliente ping-web.
+#   - Enlaces de un solo uso pedidos por el usuario: verificar correo 24 h y restablecer contraseña 30 min
+#     (Keycloak trae 5 min para ambos; un usuario que se registraba y no abría el correo a tiempo quedaba bloqueado).
 #
 # El portal (ping-web) aplica la misma inactividad: avisa 2 min antes y cierra la sesión (ver session-activity.service.ts).
 # Si se cambian los tiempos aquí, cambiar también environment.keycloak.idleTimeoutMinutes en ping-web.
@@ -25,6 +27,8 @@ KC_ADMIN="${KC_ADMIN:-admin}"
 KCADM=(docker exec -i "$CONTAINER" /opt/keycloak/bin/kcadm.sh)
 
 PASSWORD_POLICY='length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined) and passwordHistory(5)'
+VERIFY_EMAIL_LIFESPAN=86400        # 24 h
+RESET_CREDENTIALS_LIFESPAN=1800    # 30 min
 
 "${KCADM[@]}" config credentials --server http://localhost:8080 --realm master --user "$KC_ADMIN" --password "$KC_ADMIN_PASSWORD"
 
@@ -50,9 +54,17 @@ for REALM in ping-pro ping-public; do
   CLIENT_ID=$("${KCADM[@]}" get clients -r "$REALM" -q clientId=ping-web --fields id --format csv --noquotes | tr -d '\r')
   echo ">> $REALM: PKCE S256 en ping-web ($CLIENT_ID)"
   echo '{"attributes":{"pkce.code.challenge.method":"S256"}}' | "${KCADM[@]}" update "clients/$CLIENT_ID" -r "$REALM" -f - --merge
+
+  # Vigencia de los enlaces de un solo uso que pide el propio usuario (por defecto Keycloak: 5 min para todos).
+  # Verificar correo (registro público): 24 h; restablecer contraseña: 30 min. Los de administración (alta de usuario
+  # institucional) siguen en 12 h. El texto «expira en ...» de los correos toma el valor solo.
+  echo ">> $REALM: enlaces de verificación de correo 24 h y de restablecer contraseña 30 min"
+  echo "{\"attributes\":{\"actionTokenGeneratedByUserLifespan.verify-email\":\"$VERIFY_EMAIL_LIFESPAN\",\"actionTokenGeneratedByUserLifespan.reset-credentials\":\"$RESET_CREDENTIALS_LIFESPAN\"}}" \
+    | "${KCADM[@]}" update "realms/$REALM" -f - --merge
 done
 
 echo ">> Listo. Verificación:"
 for REALM in ping-pro ping-public; do
   "${KCADM[@]}" get "realms/$REALM" --fields ssoSessionIdleTimeout,ssoSessionMaxLifespan,revokeRefreshToken,bruteForceProtected,failureFactor,passwordPolicy
+  "${KCADM[@]}" get "realms/$REALM" --fields attributes | grep -E 'actionTokenGeneratedByUserLifespan' || true
 done

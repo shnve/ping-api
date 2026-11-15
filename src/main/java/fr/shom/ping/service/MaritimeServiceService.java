@@ -176,6 +176,11 @@ public class MaritimeServiceService {
         return repository.findAllByMaritimeServiceTypeIn(maritimeServiceTypes);
     }
 
+    /** PISAC: destinatarios de contribuciones por tipo de servicio, tengan o no zona de servicio. */
+    public List<MaritimeServiceInfosourceRecipientDto> getRecipientsByType(Collection<MaritimeServiceType> maritimeServiceTypes) {
+        return repository.findRecipientsByMaritimeServiceTypeIn(maritimeServiceTypes);
+    }
+
     public List<MaritimeServiceDto> findAllByIds(List<UUID> serviceIds) {
         return repository.findAllByIdIn(serviceIds);
     }
