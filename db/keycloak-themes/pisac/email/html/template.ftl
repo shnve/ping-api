@@ -29,27 +29,16 @@
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F1F5F9;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #E2E8F0;border-radius:12px;border-collapse:separate;overflow:hidden;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;">
-    <#-- Cabecera institucional en dos filas, como el encabezado del portal: franja de gobierno (Ministerio del Poder
-         Popular para la Defensa y Armada Bolivariana) y, debajo, el nombre de PISAC. Solo texto (ver nota inicial). -->
+    <#-- Cabecera institucional igual a la de los correos del backend (PisacEmailTemplate.appendHeader) y al encabezado
+         del portal: SHN · OCHINA, línea fina gris y nombre de PISAC. Sin franja de gobierno (Ministerio y Armada): esa
+         imagen solo va en el pie del portal (identidad institucional, 14-nov-2026). El backend muestra los logos como
+         imagen en línea; aquí van como texto (ver nota inicial). -->
     <tr>
-        <td style="padding:16px 28px 12px 28px;background-color:#ffffff;">
+        <td style="padding:20px 28px;background-color:#ffffff;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-                <td valign="middle" style="padding-right:12px;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#002B5C;">
-                    <div style="font-size:10px;line-height:1.15;font-weight:600;">Ministerio del Poder Popular<br>para la</div>
-                    <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.05;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;">Defensa</div>
-                </td>
-                <td valign="middle" style="padding:0 12px;border-left:1px solid #CBD5E1;font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;color:#002B5C;">
-                    <div style="font-size:10px;line-height:1.15;font-weight:600;">Armada</div>
-                    <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.05;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;">Bolivariana</div>
-                </td>
-            </tr></table>
-        </td>
-    </tr>
-    <tr>
-        <td style="padding:12px 28px 18px 28px;background-color:#ffffff;border-top:1px solid #E2E8F0;">
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                <td valign="middle" style="padding-right:14px;font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:17px;line-height:1.1;font-weight:800;letter-spacing:0.3px;color:#002B5C;white-space:nowrap;">SHN &middot; OCHINA</td>
                 <td valign="middle" style="padding-right:14px;">
-                    <div style="width:3px;height:40px;background-color:#F47C20;border-radius:2px;"></div>
+                    <div style="width:1px;height:40px;font-size:0;line-height:0;background-color:#CBD5E1;"></div>
                 </td>
                 <td valign="middle" style="font-family:'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif;">
                     <div style="font-family:Montserrat,'Segoe UI',Arial,sans-serif;font-size:18px;line-height:1.25;font-weight:700;color:#002B5C;">PISAC</div>
