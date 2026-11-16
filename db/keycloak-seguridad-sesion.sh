@@ -66,5 +66,5 @@ done
 echo ">> Listo. Verificación:"
 for REALM in ping-pro ping-public; do
   "${KCADM[@]}" get "realms/$REALM" --fields ssoSessionIdleTimeout,ssoSessionMaxLifespan,revokeRefreshToken,bruteForceProtected,failureFactor,passwordPolicy
-  "${KCADM[@]}" get "realms/$REALM" --fields attributes | grep -E 'actionTokenGeneratedByUserLifespan' || true
+  "${KCADM[@]}" get "realms/$REALM" | grep -E 'actionTokenGeneratedByUserLifespan\.' || true
 done
