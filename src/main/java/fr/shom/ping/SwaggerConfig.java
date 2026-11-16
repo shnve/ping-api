@@ -56,4 +56,17 @@ public class SwaggerConfig {
             .build();
     }
 
+    /**
+     * PISAC: servicios de datos públicos (API REST S-124 y SECOM). Es el único grupo que Nginx publica hacia fuera
+     * (página «Servicios de datos»); los demás quedan solo en el servidor.
+     */
+    @Bean
+    public GroupedOpenApi dataServicesAPI() {
+        return GroupedOpenApi.builder()
+            .group("datos")
+            .displayName("PISAC - Servicios de datos (S-124 / SECOM)")
+            .pathsToMatch("/nw/**", "/secom/**")
+            .build();
+    }
+
 }

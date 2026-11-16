@@ -6,6 +6,7 @@ import fr.shom.ping.exception.NotFoundException;
 import fr.shom.ping.model.MaritimeService;
 import fr.shom.ping.model.Serie;
 import fr.shom.ping.model.SubArea;
+import fr.shom.ping.model.dto.DataServiceSerieDto;
 import fr.shom.ping.model.dto.SerieCreateDto;
 import fr.shom.ping.model.dto.SerieDetailsDto;
 import fr.shom.ping.model.dto.SerieDto;
@@ -14,6 +15,7 @@ import fr.shom.ping.model.predicate.SerieSearchCriteria;
 import fr.shom.ping.model.tuple.SerieTuple;
 import fr.shom.ping.repository.SerieRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,18 @@ public class SerieService {
 
     public List<Serie> findAll() {
         return repository.findAll();
+    }
+
+    /** PISAC: series distribuidas en S-124 (con identificador S-124), ordenadas por nombre; idiomas con «es» primero. */
+    @Transactional(readOnly = true)
+    public List<DataServiceSerieDto> findS124Series() {
+        final Comparator<String> spanishFirst = Comparator.comparing((String language) -> !"es".equalsIgnoreCase(language))
+            .thenComparing(Comparator.naturalOrder());
+        return repository.findAll(Sort.by("name")).stream()
+            .filter(s -> s.getS124Identifier() != null && !s.getS124Identifier().isBlank())
+            .map(s -> new DataServiceSerieDto(s.getName(), s.getInternationalName(), s.getS124Identifier(),
+                s.getMandatoryLanguages().stream().map(String::toLowerCase).sorted(spanishFirst).toList()))
+            .toList();
     }
 
     public List<SerieDto> findAllBySearchCriteria(SerieSearchCriteria searchCriteria) {
