@@ -65,6 +65,8 @@ import org.grad.secom.core.models.enums.AckRequestEnum;
 import org.grad.secom.core.models.enums.ContainerTypeEnum;
 import org.grad.secom.core.models.enums.DigitalSignatureAlgorithmEnum;
 import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -251,6 +253,19 @@ public class SecomService {
             keyStore.load(in, password);
         }
         return keyStore;
+    }
+
+    /**
+     * PISAC: aviso al arrancar si se firman los datos S-124 con los certificados de prueba incluidos en el .jar
+     * (públicos en el repositorio). En producción {@code KEYSTORE_PATH} debe apuntar al almacén real del servidor.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void warnIfEmbeddedTestKeystore() {
+        final String path = pingProperties.getKeystore() == null ? null : pingProperties.getKeystore().getPath();
+        if (StringUtils.isNotBlank(path) && !path.trim().startsWith(FILE_PREFIX) && !Path.of(path.trim()).isAbsolute()) {
+            log.warn("SECOM/S-124: se usan los certificados de PRUEBA incluidos en la aplicacion ({}). "
+                + "En produccion defina KEYSTORE_PATH con el almacen real, fuera del repositorio.", path);
+        }
     }
 
     /**

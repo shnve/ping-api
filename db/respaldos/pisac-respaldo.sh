@@ -151,6 +151,13 @@ for f in "$API_ENV" "$DB_ENV" /etc/systemd/system/ping-api.service /etc/nginx "$
          "$PISAC_DIR/ping-web/src/environments/environment.prod.ts"; do
   [[ -e "$f" ]] && CONFIG+=("${f#/}")
 done
+# Almacén de certificados SECOM/S-124 del servidor (KEYSTORE_PATH absoluto o con file:). Si es relativo, es el de
+# prueba incluido en el .jar y no hace falta respaldarlo.
+KEYSTORE=$(valor_env "$API_ENV" KEYSTORE_PATH); KEYSTORE="${KEYSTORE#file:}"
+if [[ "$KEYSTORE" == /* && -f "$KEYSTORE" ]]; then
+  CONFIG+=("${KEYSTORE#/}")
+  log "  almacén de certificados: $KEYSTORE"
+fi
 tar_seguro -C / -czf "$DEST/config/config.tar.gz" "${CONFIG[@]}"
 
 # --- 5. Manifiesto, sumas de verificación y rotación -------------------------------------------
