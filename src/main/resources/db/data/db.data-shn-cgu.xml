@@ -8,8 +8,10 @@
         PING (SHOM) al marco del SHN. Es la página que el usuario acepta al crear su cuenta.
         El contenido se carga aquí (y no con el editor de páginas estáticas) para conservar los títulos h2 que arman el
         índice «En esta página». Texto sujeto a revisión de la asesoría jurídica del SHN antes de producción.
+        runOnChange: la sentencia es idempotente (inserta o actualiza la fila 'cgu'); si se corrige el texto, se vuelve a
+        aplicar en lugar de fallar por cambio de checksum.
     -->
-    <changeSet id="DB.Data.SHN.CGU.Terms_Of_Use" author="SHN">
+    <changeSet id="DB.Data.SHN.CGU.Terms_Of_Use" author="SHN" runOnChange="true">
         <sql splitStatements="false"><![CDATA[
 INSERT INTO static_page (id, title, international_title, "path", "locked", content, international_content)
 VALUES (gen_random_uuid(),
@@ -22,7 +24,7 @@ VALUES (gen_random_uuid(),
 <p>El SHN puede modificar o completar estos términos en cualquier momento. La fecha de la versión vigente figura al inicio de esta página; se recomienda consultarla con regularidad.</p>
 <h2>2. Qué es PISAC</h2>
 <p>PISAC es el sistema institucional del <strong>Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN)</strong> de la República Bolivariana de Venezuela, a través de la Oficina Coordinadora de Hidrografía y Navegación (OCHINA), para producir, publicar y difundir información sobre seguridad marítima en los espacios acuáticos bajo jurisdicción nacional.</p>
-<p>Comprende un portal público, una consola para los organismos que producen o reciben información náutica y servicios de datos accesibles por internet. Implementa la especificación de producto <strong>IHO S-124</strong> (advertencias de navegación) de la Organización Hidrográfica Internacional.</p>
+<p>Comprende un portal público, un acceso institucional para los organismos que producen o reciben información náutica y servicios de datos accesibles por internet. Implementa la especificación de producto <strong>IHO S-124</strong> (advertencias de navegación) de la Organización Hidrográfica Internacional.</p>
 <h2>3. Limitación de responsabilidad</h2>
 <p>El SHN procura mantener la plataforma disponible de forma continua, pero no puede garantizarlo ni asumir responsabilidad por interrupciones del servicio o por la falta temporal de información.</p>
 <p>El SHN no se hace responsable del uso o de la interpretación que terceros hagan de la información publicada en PISAC.</p>
@@ -47,11 +49,10 @@ VALUES (gen_random_uuid(),
 <p>Según su naturaleza y ubicación, la contribución se envía automáticamente al SHN y, en su caso, a los organismos competentes registrados en PISAC, que deciden las acciones dentro de su ámbito y tienen acceso a los datos de contacto del autor. Al contribuir, el usuario acepta ser contactado por correo electrónico o por teléfono para ampliar la información.</p>
 <p>Una contribución enviada no puede modificarse ni eliminarse; se conserva junto con los datos de su autor según las normas de archivo del organismo destinatario. Las contribuciones no son públicas: solo las ve su autor y los organismos que las reciben. El autor puede seguir en «Mis contribuciones» qué organismos la recibieron y la información náutica publicada a partir de ella.</p>
 <p><strong>6.3 Suscripciones.</strong> Un usuario puede suscribirse a una o varias series, con los filtros que elija, para ser notificado de cada nuevo AN. La notificación aparece en el portal y, si el usuario lo desea, también se envía por correo electrónico.</p>
-<p><strong>6.4 Levantamientos hidrográficos.</strong> Los usuarios habilitados pueden analizar los datos de un levantamiento para detectar información náutica crítica y transmitirlos al SHN. Los datos transmitidos se tratan con la confidencialidad indicada en el propio formulario.</p>
-<p><strong>6.5 Gestión de la cuenta.</strong> El usuario puede modificar sus datos o eliminar su cuenta. La eliminación no borra las contribuciones realizadas ni los datos asociados a ellas, que se conservan por razones de seguridad de la navegación (tratamiento y trazabilidad de la información). El SHN puede desactivar una cuenta en caso de uso abusivo o contrario a estos términos.</p>
-<h2>7. Consola de los organismos</h2>
+<p><strong>6.4 Gestión de la cuenta.</strong> El usuario puede modificar sus datos o eliminar su cuenta. La eliminación no borra las contribuciones realizadas ni los datos asociados a ellas, que se conservan por razones de seguridad de la navegación (tratamiento y trazabilidad de la información). El SHN puede desactivar una cuenta en caso de uso abusivo o contrario a estos términos.</p>
+<h2>7. Acceso institucional (organismos)</h2>
 <p><strong>7.1 Registro de organismos.</strong> El SHN administra PISAC. Registra los organismos habilitados (capitanías de puerto, guardacostas, autoridades portuarias, entre otros), les asigna sus funciones y zonas de responsabilidad, crea las series de AN y designa al organismo productor de cada una.</p>
-<p><strong>7.2 Usuarios institucionales.</strong> El personal de un organismo accede con su cuenta institucional mediante el acceso privado. Según las funciones de su organismo, puede enviar contribuciones a otros organismos, recibir y gestionar las contribuciones dirigidas al suyo, seguir expedientes y suscribirse a nuevas regulaciones.</p>
+<p><strong>7.2 Usuarios institucionales.</strong> El personal de un organismo inicia sesión con su cuenta institucional desde el botón «Acceso privado». Según las funciones de su organismo, puede enviar contribuciones a otros organismos, recibir y gestionar las contribuciones dirigidas al suyo, seguir expedientes y suscribirse a nuevas regulaciones.</p>
 <p><strong>7.3 Organismos productores.</strong> Disponen de las herramientas para redactar, publicar y cancelar los AN de sus series. PISAC mantiene la trazabilidad entre las contribuciones recibidas y los AN publicados.</p>
 <p><strong>7.4 Autoridades.</strong> Los organismos con la función de autoridad crean y gestionan las regulaciones de su competencia que se muestran en el mapa.</p>
 <p><strong>7.5 Expedientes.</strong> Un expediente agrupa, para un mismo asunto (por ejemplo, la ampliación de un puerto), las contribuciones recibidas, las regulaciones, los AN publicados y las actualizaciones de cartas y publicaciones náuticas.</p>
@@ -101,7 +102,7 @@ VALUES (gen_random_uuid(),
 <p>The SHN may amend or supplement these terms at any time. The date of the current version is shown at the top of this page; please check it regularly.</p>
 <h2>2. What PISAC is</h2>
 <p>PISAC is the institutional system of the <strong>Hydrography, Oceanography, Meteorology and Nautical Charting Service (SHN)</strong> of the Bolivarian Republic of Venezuela, through the Hydrography and Navigation Coordinating Office (OCHINA), for producing, publishing and disseminating maritime safety information in the waters under national jurisdiction.</p>
-<p>It comprises a public portal, a console for the agencies that produce or receive nautical information, and data services available over the Internet. It implements the International Hydrographic Organization's <strong>IHO S-124</strong> product specification (navigational warnings).</p>
+<p>It comprises a public portal, institutional access for the agencies that produce or receive nautical information, and data services available over the Internet. It implements the International Hydrographic Organization's <strong>IHO S-124</strong> product specification (navigational warnings).</p>
 <h2>3. Limitation of liability</h2>
 <p>The SHN endeavours to keep the platform continuously available but cannot guarantee it, nor be held liable for service interruptions or the temporary unavailability of information.</p>
 <p>The SHN cannot be held liable for the use or interpretation that third parties make of the information published on PISAC.</p>
@@ -126,11 +127,10 @@ VALUES (gen_random_uuid(),
 <p>Depending on its nature and location, the contribution is automatically sent to the SHN and, where appropriate, to the competent agencies registered on PISAC, which decide on the action to take within their remit and have access to the author's contact details. By contributing, users agree to be contacted by e-mail or telephone for further information.</p>
 <p>A submitted contribution cannot be modified or deleted; it is kept together with its author's details according to the recipient agency's archiving rules. Contributions are not public: only their author and the receiving agencies can see them. In "My contributions", authors can see which agencies received it and the nautical information published as a result.</p>
 <p><strong>6.3 Subscriptions.</strong> Users can subscribe to one or more series, with the filters of their choice, to be notified of each new AN. Notifications appear in the portal and, if the user wishes, are also sent by e-mail.</p>
-<p><strong>6.4 Hydrographic surveys.</strong> Authorised users can analyse survey data to detect critical nautical information and send it to the SHN. Submitted data is handled with the confidentiality stated in the form itself.</p>
-<p><strong>6.5 Account management.</strong> Users can modify their details or delete their account. Deleting the account does not delete the contributions made or the data associated with them, which are kept for navigation safety purposes (information processing and traceability). The SHN may deactivate an account in the event of abusive use or use contrary to these terms.</p>
-<h2>7. Agency console</h2>
+<p><strong>6.4 Account management.</strong> Users can modify their details or delete their account. Deleting the account does not delete the contributions made or the data associated with them, which are kept for navigation safety purposes (information processing and traceability). The SHN may deactivate an account in the event of abusive use or use contrary to these terms.</p>
+<h2>7. Institutional access (agencies)</h2>
 <p><strong>7.1 Agency registration.</strong> The SHN administers PISAC. It registers the authorised agencies (harbour masters, coast guard, port authorities, among others), assigns their roles and areas of responsibility, creates the AN series and designates the producing agency for each one.</p>
-<p><strong>7.2 Institutional users.</strong> Agency staff log in with their institutional account through private access. Depending on their agency's roles, they can send contributions to other agencies, receive and manage the contributions addressed to their own, follow cases and subscribe to new regulations.</p>
+<p><strong>7.2 Institutional users.</strong> Agency staff log in with their institutional account using the "Private access" button. Depending on their agency's roles, they can send contributions to other agencies, receive and manage the contributions addressed to their own, follow cases and subscribe to new regulations.</p>
 <p><strong>7.3 Producing agencies.</strong> They have the tools to draft, publish and cancel the ANs of their series. PISAC keeps traceability between the contributions received and the ANs published.</p>
 <p><strong>7.4 Authorities.</strong> Agencies with the authority role create and manage the regulations within their remit that are displayed on the map.</p>
 <p><strong>7.5 Cases.</strong> For a given subject (for example, a port extension), a case groups the contributions received, the regulations, the published ANs and the updates to nautical charts and publications.</p>
