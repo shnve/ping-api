@@ -37,7 +37,10 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-            .info(new Info().title("Ping API").version("1.0"));
+            .info(new Info().title("PISAC API (SHN Venezuela)")
+                .description("Servicios de datos de PISAC: advertencias náuticas en IHO S-124 (REST /nw y SECOM IEC 63173-2). "
+                    + "PISAC data services: navigational warnings in IHO S-124 (REST /nw and SECOM IEC 63173-2).")
+                .version("1.0"));
     }
 
     @Bean

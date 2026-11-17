@@ -339,7 +339,7 @@ public final class S124v2Util {
 
     private S124v2NWReferencesDto buildReferences(String lang, List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode, Warning warning) {
         final String referencesGmlId = referenceCategoryCode.getLabel();
-        final S124v2NWReferencesDto referencesDto = buildNWReferencesDto(warnings, referenceCategoryCode, referencesGmlId);
+        final S124v2NWReferencesDto referencesDto = buildNWReferencesDto(lang, warnings, referenceCategoryCode, referencesGmlId);
         referencesDto.setTheWarning(S124Link.builder()
             .href(formatNWPreambleHeaderLink(warning, lang))
             .build());
@@ -349,12 +349,12 @@ public final class S124v2Util {
 
     private S124v2NWReferencesDto buildReferences(List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode) {
         final String referencesGmlId = referenceCategoryCode.getLabel();
-        return buildNWReferencesDto(warnings, referenceCategoryCode, referencesGmlId);
+        return buildNWReferencesDto(DEFAULT_LANGUAGE, warnings, referenceCategoryCode, referencesGmlId);
     }
 
-    private S124v2NWReferencesDto buildNWReferencesDto(List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode,
+    private S124v2NWReferencesDto buildNWReferencesDto(String lang, List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode,
         String referencesGmlId) {
-        final List<S124v2MessageSeriesIdentifierDto> messageSeries = buildMessageSeriesIdentifierList(warnings);
+        final List<S124v2MessageSeriesIdentifierDto> messageSeries = buildMessageSeriesIdentifierList(lang, warnings);
         return S124v2NWReferencesDto.builder()
             .gmlId(referencesGmlId)
             .messageSeries(messageSeries)
@@ -372,7 +372,7 @@ public final class S124v2Util {
     private S124v2NWPreambleDto buildPreamble(String lang, Warning warning) {
         final S124v2NWPreambleDto preamble = S124v2NWPreambleDto.builder()
             .gmlId(formatNWPreambleGmlIdByLanguageCode(lang, warning))
-            .messageSeriesIdentifier(buildMessageSeriesIdentifier(warning))
+            .messageSeriesIdentifier(buildMessageSeriesIdentifier(lang, warning))
             .publicationDateTime(formatDateWithoutMilliseconds(warning.getPublicationTime()))
             .generalAreas(buildGeneralAreas(lang, warning))
             .localities(buildLocalities(lang, warning))
@@ -397,9 +397,9 @@ public final class S124v2Util {
         return formatNWPreambleGmlId(warning) + "." + getLanguageCode(lang);
     }
 
-    private S124v2MessageSeriesIdentifierDto buildMessageSeriesIdentifier(Warning warning) {
+    private S124v2MessageSeriesIdentifierDto buildMessageSeriesIdentifier(String lang, Warning warning) {
         return S124v2MessageSeriesIdentifierDto.builder()
-            .nameOfSeries(warning.getNameOfSeries())
+            .nameOfSeries(getNameOfSeriesByLanguage(lang, warning))
             .warningNumber(warning.getWarningNumber())
             .warningType(S124v2MessageSeriesIdentifierDto.S124WarningType.from(toOhiWarningType(warning)))
             .year(warning.getYear())
@@ -611,12 +611,24 @@ public final class S124v2Util {
         return dataSet;
     }
 
-    private List<S124v2MessageSeriesIdentifierDto> buildMessageSeriesIdentifierList(List<Warning> warnings) {
+    private List<S124v2MessageSeriesIdentifierDto> buildMessageSeriesIdentifierList(String lang, List<Warning> warnings) {
         // notices referenced by a warning are not S-124 products and cannot be identified with an OHI warningType
         return warnings.stream()
             .filter(S124v2OhiWarningType::isS124Exportable)
-            .map(this::buildMessageSeriesIdentifier)
+            .map(referenced -> buildMessageSeriesIdentifier(lang, referenced))
             .toList();
+    }
+
+    /**
+     * PISAC: nombre de la serie en el idioma del dataset. En inglés se usa el nombre internacional de la serie
+     * (Serie.internationalName); si no está definido, el nombre en español.
+     */
+    static String getNameOfSeriesByLanguage(String lang, Warning warning) {
+        if (!DEFAULT_LANGUAGE.equals(lang) && warning.getSerie() != null
+            && StringUtils.isNotBlank(warning.getSerie().getInternationalName())) {
+            return warning.getSerie().getInternationalName().trim();
+        }
+        return warning.getNameOfSeries();
     }
 
     /**

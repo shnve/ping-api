@@ -181,16 +181,51 @@ public class SubAreaService {
 
         SubArea parentSubArea = repository.findById(parentSubAreaId).orElseThrow(() -> new BadRequestException("Parent subarea does not exist"));
 
+        final String name = normalizeLocalityName(localityCreateDto.getName());
+        final String internationalName = normalizeLocalityName(localityCreateDto.getInternationalName());
+        if (org.apache.commons.lang3.StringUtils.isBlank(name)) {
+            throw new BadRequestException("Locality name is required");
+        }
+
+        // PISAC: no duplicar localidades. Si el área general ya tiene una con el mismo nombre (sin distinguir mayúsculas,
+        // acentos ni espacios repetidos), se devuelve la existente y, si no tenía nombre en inglés, se completa.
+        final Optional<SubArea> existing = parentSubArea.getSubAreas().stream()
+            .filter(child -> isSameLocalityName(child.getName(), name))
+            .findFirst();
+        if (existing.isPresent()) {
+            final SubArea locality = existing.get();
+            if (org.apache.commons.lang3.StringUtils.isBlank(locality.getInternationalName())
+                && org.apache.commons.lang3.StringUtils.isNotBlank(internationalName)) {
+                locality.setInternationalName(internationalName);
+                repository.save(locality);
+            }
+            return locality.asDto();
+        }
+
         SubArea childSubArea = repository.save(
             SubArea.builder()
-                .name(localityCreateDto.getName())
-                .internationalName(localityCreateDto.getInternationalName())
+                .name(name)
+                .internationalName(internationalName)
                 .build()
         );
         parentSubArea.getSubAreas().add(childSubArea);
         repository.save(parentSubArea);
 
         return childSubArea.asDto();
+    }
+
+    /** PISAC: recorta y reduce los espacios repetidos del nombre de una localidad. */
+    static String normalizeLocalityName(String value) {
+        return value == null ? null : value.trim().replaceAll("\\s+", " ");
+    }
+
+    /** PISAC: compara nombres de localidad sin distinguir mayúsculas, acentos ni espacios repetidos. */
+    static boolean isSameLocalityName(String a, String b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        return org.apache.commons.lang3.StringUtils.stripAccents(normalizeLocalityName(a))
+            .equalsIgnoreCase(org.apache.commons.lang3.StringUtils.stripAccents(normalizeLocalityName(b)));
     }
 
     public SubAreaDetailsDto findOne(UUID id) {

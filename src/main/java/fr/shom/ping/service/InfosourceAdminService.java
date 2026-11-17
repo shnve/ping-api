@@ -1106,18 +1106,28 @@ public class InfosourceAdminService extends AbstractInfosourceService {
 
         final StringBuilder geometriesConditions = new StringBuilder();
         if (!isEmpty(geometries)) {
-            geometriesConditions.append("union ");
-            geometriesConditions.append("select me.id, me.name ");
-            geometriesConditions.append("from maritime_entity me ");
-            geometriesConditions.append("where me.type = 'SERVICE_AREA' ");
-            geometriesConditions.append("and (");
             final AtomicInteger geomId = new AtomicInteger(1);
             geometriesConditions.append(
                 geometries.stream().map(geometry -> "st_intersects(me.geom, :geom" + geomId.getAndIncrement() + ") = true").collect(joining(" OR "))
             );
-            geometriesConditions.append(")");
         }
 
+        // PISAC: con la ubicación del reporte ya dibujada, solo se ofrecen las zonas de responsabilidad que esa
+        // ubicación toca. Antes se sumaban además todas las zonas vecinas de las del organismo, y como la zona del SHN
+        // cubre todo el país aparecían todas.
+        if (!isEmpty(geometries)) {
+            return this.namedParameterJdbcTemplate.query(
+                "select me.id, me.name " +
+                    "from maritime_entity me " +
+                    "where me.type = 'SERVICE_AREA' " +
+                    "and (" + geometriesConditions + ") " +
+                    "order by me.name",
+                parameters,
+                new BeanPropertyRowMapper<>(MaritimeEntityConcernedDto.class)
+            );
+        }
+
+        // Sin ubicación todavía: solo las zonas del propio organismo y las que tiene asignadas como adicionales
         return this.namedParameterJdbcTemplate.query(
             "select me.id, me.name " +
                 "from maritime_entity me " +
@@ -1127,20 +1137,7 @@ public class InfosourceAdminService extends AbstractInfosourceService {
                 "select meo.id, meo.name " +
                 "from maritime_entity meo " +
                 "inner join maritime_entity_additional_service meas on meas.maritime_service_id = :serviceId and meas.maritime_entity_id = meo.id " +
-                "union " +
-                "select me2.id , me2.name " +
-                "from maritime_entity me " +
-                "left join maritime_entity me2 on me2.id not in ( " +
-                "select me.id " +
-                "from maritime_entity me " +
-                "where me.maritime_service_id = :serviceId " +
-                "and me.type = 'SERVICE_AREA' " +
-                ") " +
-                "where me.maritime_service_id = :serviceId " +
-                "and me.type = 'SERVICE_AREA' " +
-                "and me2.type = 'SERVICE_AREA' " +
-                "and st_intersects(me.geom, me2.geom) = true " +
-                geometriesConditions,
+                "order by name",
             parameters,
             new BeanPropertyRowMapper<>(MaritimeEntityConcernedDto.class)
         );

@@ -38,11 +38,11 @@ public class WarningAdminSearchCriteria {
     @Schema(description = "To be done (state != active)")
     private Boolean toBeDone;
 
-    @Schema(description = "Warning number", example = "AVURNAV Brest 1001/23")
+    @Schema(description = "Warning number", example = "ADVERTENCIA LOCAL VE 12/26")
     @NoHtml
     private String warningNumber;
 
-    @Schema(description = "AN model name", example = "Modèle 2")
+    @Schema(description = "AN model name", example = "Modelo 2")
     private String modelName;
 
     @Schema(description = "Text in locality or information", example = "001/21")
