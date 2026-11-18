@@ -94,8 +94,10 @@ public class EmailNotificationService {
 
     public void sendNotification(WarningSubscription subscription, Warning warning, String email) {
         if (!subscription.isSendingMail()) {
+            log.warn("Correo NO enviado a {} (suscripcion '{}'): la suscripcion no tiene activado el envio por correo", email, subscription.getTitle());
             return;
         }
+        log.info("Correo de aviso encolado para {} (suscripcion '{}')", email, subscription.getTitle());
         final String lang = subscription.getLang();
         final String defaultLanguage = StringUtils.isNotBlank(lang) ? lang :
             (warning.getSerie().getMandatoryLanguages().contains(DEFAULT_LANGUAGE) ? DEFAULT_LANGUAGE :

@@ -6,7 +6,7 @@
 #   - Duración máxima de la sesión: 8 h (ping-pro) y 12 h (ping-public). Token de acceso: 5 min.
 #   - Rotación del token de renovación (cada token de renovación sirve una sola vez).
 #   - Protección contra fuerza bruta: bloqueo temporal tras 5 intentos fallidos (espera creciente, máx. 15 min).
-#   - Política de contraseñas: 12 caracteres, mayúscula, minúscula, número y símbolo; distinta del usuario y del
+#   - Política de contraseñas: 10 caracteres, mayúscula, minúscula, número y símbolo; distinta del usuario y del
 #     correo; no repetir las 5 últimas.
 #   - PKCE (S256) obligatorio en el cliente ping-web.
 #   - Enlaces de un solo uso pedidos por el usuario: verificar correo 24 h y restablecer contraseña 30 min
@@ -26,7 +26,7 @@ KC_ADMIN="${KC_ADMIN:-admin}"
 : "${KC_ADMIN_PASSWORD:?Defina KC_ADMIN_PASSWORD con la contraseña del administrador de Keycloak}"
 KCADM=(docker exec -i "$CONTAINER" /opt/keycloak/bin/kcadm.sh)
 
-PASSWORD_POLICY='length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined) and passwordHistory(5)'
+PASSWORD_POLICY='length(10) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined) and passwordHistory(5)'
 VERIFY_EMAIL_LIFESPAN=86400        # 24 h
 RESET_CREDENTIALS_LIFESPAN=1800    # 30 min
 

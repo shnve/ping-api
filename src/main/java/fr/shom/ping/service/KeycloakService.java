@@ -21,7 +21,9 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import static fr.shom.ping.model.enums.ProUserRole.FUNCTIONAL_ADMIN;
@@ -38,8 +40,13 @@ public class KeycloakService {
     public static final String PRO_USER_KEYCLOAK_ACCOUNT_NOT_FOUND = "message.error.api.pro-user-keycloak-account-not-found";
     public static final String PRO_USER_EMAIL_ALREADY_USED = "message.error.api.pro-user-email-already-used";
 
+    private static final String WEB_CLIENT_ID = "ping-web";
+
     private final KeycloakProperties keycloakProperties;
     private final RealmResource publicRealmResource;
+
+    @Value("${ping.portal-url}")
+    private String portalUrl;
 
     @Qualifier("proRealmResource")
     private final RealmResource proRealmResource;
@@ -221,12 +228,26 @@ public class KeycloakService {
         } catch (Exception e) {
             log.warn("No se pudo asegurar locale es para usuario {}: {}", keycloakId, e.getMessage());
         }
-        userResource.executeActionsEmail(singletonList("UPDATE_PASSWORD"));
+        executeUpdatePasswordAction(userResource);
     }
 
     public void sendUpdatePasswordEmailPublicUser(UUID keycloakId) {
         UserResource userResource = publicRealmResource.users().get(keycloakId.toString());
-        userResource.executeActionsEmail(singletonList("UPDATE_PASSWORD"));
+        executeUpdatePasswordAction(userResource);
+    }
+
+    /**
+     * PISAC: el enlace del correo de «definir contraseña» indica el cliente del portal y su dirección de retorno.
+     * Sin ellos Keycloak no sabe a qué aplicación volver: al terminar, «Volver a la aplicación» y el inicio de sesión
+     * siguiente llevaban a la consola de cuenta de Keycloak (/realms/ping-pro/account) en lugar de al portal.
+     * La dirección debe estar entre las «Valid redirect URIs» del cliente ping-web en ambos realms.
+     */
+    private void executeUpdatePasswordAction(UserResource userResource) {
+        userResource.executeActionsEmail(WEB_CLIENT_ID, portalRedirectUri(), singletonList("UPDATE_PASSWORD"));
+    }
+
+    private String portalRedirectUri() {
+        return StringUtils.removeEnd(StringUtils.trimToEmpty(portalUrl), "/") + "/";
     }
 
     public void updateEmailPublicUser(PublicUser model, String newEmail) {

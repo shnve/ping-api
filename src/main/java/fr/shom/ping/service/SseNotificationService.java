@@ -113,6 +113,10 @@ public class SseNotificationService {
     public void sendWarningNotification(Warning warning) {
         Set<WarningSubscription> warningSubscriptions = findAllSubscriptionsToNotifyWarning(warning.getId());
         NotificationType type = NotificationType.WARNING_PUBLICATION;
+        // PISAC: trazas para saber por qué un usuario no recibe el correo (suscripción que no coincide, usuario sin la
+        // opción de correo activada, suscripción sin envío por correo...). Antes no quedaba ningún registro.
+        log.info("Aviso {} publicado: {} suscripcion(es) coinciden con su serie, zona, categoria y geometria",
+            warning.getId(), warningSubscriptions.size());
         for (WarningSubscription warningSubscription : warningSubscriptions.stream()
             .sorted(Comparator.comparing(Subscription::getCreationDate)).toList()) {
             String title = warningSubscription.getTitle() + " : " + warning.getNameOfSeries() + " " +
@@ -121,11 +125,15 @@ public class SseNotificationService {
                 List<Notification> notifications = notificationAdminService.createForServiceUsersWithRoleOnSubscriptionService(
                     title, type, warningSubscription, warning, null
                 );
+                log.info("Suscripcion '{}' del organismo '{}': {} usuario(s) con rol en el organismo, envio por correo de la suscripcion: {}",
+                    warningSubscription.getTitle(), warningSubscription.getService().getName(), notifications.size(), warningSubscription.isSendingMail());
                 for (Notification notification : notifications) {
                     final ServiceUser user = notification.getServiceUser();
                     sendNotification(user.getId().toString(), new NotificationDto(notification));
                     if (user.hasSubscriptionEmailNotifications()) {
                         emailNotificationService.sendNotification(warningSubscription, warning, user.getEmail());
+                    } else {
+                        log.warn("Correo NO enviado a {}: tiene desactivadas las notificaciones de suscripcion por correo", user.getEmail());
                     }
                 }
             } else {
@@ -134,6 +142,8 @@ public class SseNotificationService {
                 sendNotification(user.getId().toString(), new NotificationDto(notification));
                 if (user.hasSubscriptionEmailNotifications()) {
                     emailNotificationService.sendNotification(warningSubscription, warning, user.getEmail());
+                } else {
+                    log.warn("Correo NO enviado a {}: tiene desactivadas las notificaciones de suscripcion por correo", user.getEmail());
                 }
             }
         }
