@@ -24,6 +24,10 @@ springdoc:
 ping:
   portal-url: ${PING_PORTAL_URL:http://localhost:4200}
   services-url: ${PING_SERVICES_URL:http://localhost:8180}
+  # PISAC (18-nov-2026): traducción propuesta del campo «Información» (LibreTranslate propio, contenedor ping_libretranslate)
+  translation:
+    enabled: ${TRANSLATION_ENABLED:true}
+    url: ${TRANSLATION_URL:http://localhost:5000}
   shom-organization-info:
     name: "Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN Venezuela)"
     address: "Playa Grande, La Guaira"

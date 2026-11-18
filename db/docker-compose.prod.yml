@@ -154,7 +154,28 @@ services:
       - "8025:8025"
       - "1025:1025"
 
+  # PISAC (18-nov-2026): traducción propuesta (es<->en) del campo «Información» de advertencias y regulaciones.
+  # Software libre (AGPL-3.0), sin costo por uso. Solo escucha en 127.0.0.1; el texto no sale del servidor.
+  # Los modelos (unos 200 MB) se descargan la primera vez que arranca y quedan en el volumen libretranslate_models.
+  # Medido el 18-nov en desarrollo: 19 GB usados de 64, 44 GB disponibles; 2 GB más no afectan a mapa ni avisos.
+  libretranslate:
+    image: libretranslate/libretranslate:v1.9.6
+    container_name: ping_libretranslate
+    restart: unless-stopped
+    <<: *logging
+    environment:
+      - LT_LOAD_ONLY=es,en
+      - LT_DISABLE_WEB_UI=true
+      - LT_THREADS=4
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - libretranslate_models:/home/libretranslate/.local
+    mem_limit: 2g
+    cpus: 4
+
 volumes:
   geoserver_data:
   postgres_data:
   keycloak_data:
+  libretranslate_models:
