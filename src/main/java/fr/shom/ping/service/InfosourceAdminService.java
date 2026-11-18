@@ -263,9 +263,9 @@ public class InfosourceAdminService extends AbstractInfosourceService {
 
         MaritimeService service = maritimeServiceRepository.findById(dto.getServiceId()).orElseThrow(NotFoundException::new);
         List<Attachment> attachments = attachmentService.findAllByIdIn(dto.getAttachmentIds());
-        List<MaritimeEntity> entities = maritimeEntityRepository.findAllById(ofNullable(dto.getConcernedMaritimeEntityIds()).orElse(emptyList()));
+        List<MaritimeEntity> entities = emptyList(); // PISAC: zonas calculadas con la ubicación (withEntitiesFromLocation)
 
-        Infosource infosource = dto.toInfosource(attachments, serviceUser, service, entities);
+        Infosource infosource = withEntitiesFromLocation(dto.toInfosource(attachments, serviceUser, service, entities));
         final Infosource savedInfosource = repository.save(infosource);
 
         // schedule IS draft deletion
@@ -365,8 +365,8 @@ public class InfosourceAdminService extends AbstractInfosourceService {
         ServiceUser serviceUser = getServiceUser(bindingResult, username);
         MaritimeService service = maritimeServiceRepository.findById(dto.getServiceId()).orElseThrow(NotFoundException::new);
         List<Attachment> attachments = attachmentService.findAllByIdIn(dto.getAttachmentIds());
-        List<MaritimeEntity> entities = maritimeEntityRepository.findAllById(ofNullable(dto.getConcernedMaritimeEntityIds()).orElse(emptyList()));
-        Infosource infosourceToUpdate = dto.toInfosource(attachments, serviceUser, service, entities);
+        List<MaritimeEntity> entities = emptyList(); // PISAC: zonas calculadas con la ubicación (withEntitiesFromLocation)
+        Infosource infosourceToUpdate = withEntitiesFromLocation(dto.toInfosource(attachments, serviceUser, service, entities));
         Infosource infosource = getInfosource(id, serviceUser);
 
         infosource.setComment(infosourceToUpdate.getComment());
@@ -409,8 +409,8 @@ public class InfosourceAdminService extends AbstractInfosourceService {
         ServiceUser serviceUser = getServiceUser(bindingResult, username);
         MaritimeService service = maritimeServiceRepository.findById(dto.getServiceId()).orElseThrow(NotFoundException::new);
         List<Attachment> attachments = attachmentService.findAllByIdIn(dto.getAttachmentIds());
-        List<MaritimeEntity> entities = maritimeEntityRepository.findAllById(ofNullable(dto.getConcernedMaritimeEntityIds()).orElse(emptyList()));
-        Infosource infosourceToUpdate = dto.toInfosource(attachments, serviceUser, service, entities);
+        List<MaritimeEntity> entities = emptyList(); // PISAC: zonas calculadas con la ubicación (withEntitiesFromLocation)
+        Infosource infosourceToUpdate = withEntitiesFromLocation(dto.toInfosource(attachments, serviceUser, service, entities));
         return updateInfosource(id, infosourceToUpdate, serviceUser);
     }
 
@@ -691,8 +691,8 @@ public class InfosourceAdminService extends AbstractInfosourceService {
         final ServiceUser serviceUser = getServiceUser(bindingResult, username);
         final MaritimeService service = maritimeServiceRepository.findById(dto.getServiceId()).orElseThrow(NotFoundException::new);
         final List<Attachment> attachments = attachmentService.findAllByIdIn(dto.getAttachmentIds());
-        final List<MaritimeEntity> entities = maritimeEntityRepository.findAllById(ofNullable(dto.getConcernedMaritimeEntityIds()).orElse(emptyList()));
-        final Infosource infosource = dto.toInfosource(attachments, serviceUser, service, entities);
+        final List<MaritimeEntity> entities = emptyList(); // PISAC: zonas calculadas con la ubicación (withEntitiesFromLocation)
+        final Infosource infosource = withEntitiesFromLocation(dto.toInfosource(attachments, serviceUser, service, entities));
         final Infosource savedInfosource = repository.save(infosource);
 
         // schedule IS draft deletion
@@ -1092,6 +1092,28 @@ public class InfosourceAdminService extends AbstractInfosourceService {
         }
 
         return findAllConcernedMaritimeEntities(serviceId, geometries);
+    }
+
+    /**
+     * PISAC (pruebas funcionales del 16-nov, punto 9): el formulario de contribución ya no pide las zonas de
+     * responsabilidad afectadas. Se calculan aquí con la ubicación dibujada: las zonas (SERVICE_AREA) que la tocan.
+     * Así siguen apareciendo en la tabla de contribuciones y al crear una advertencia desde la contribución.
+     */
+    private Infosource withEntitiesFromLocation(Infosource infosource) {
+        final List<Geometry> geometries = ofNullable(infosource.getInfosourceParts()).orElse(newTreeSet()).stream()
+            .flatMap(part -> ofNullable(part.getLocalisation()).orElse(newHashSet()).stream())
+            .map(Feature::getGeometry)
+            .filter(java.util.Objects::nonNull)
+            .collect(toList());
+        final Set<MaritimeEntity> entities = new HashSet<>();
+        if (!geometries.isEmpty()) {
+            final List<UUID> ids = findAllConcernedMaritimeEntities(null, geometries).stream()
+                .map(MaritimeEntityConcernedDto::getId)
+                .collect(toList());
+            entities.addAll(maritimeEntityRepository.findAllById(ids));
+        }
+        infosource.setEntities(entities);
+        return infosource;
     }
 
     public List<MaritimeEntityConcernedDto> findAllConcernedMaritimeEntities(UUID serviceId, List<Geometry> geometries) {
