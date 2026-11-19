@@ -66,9 +66,11 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -172,7 +174,7 @@ public final class S124v2Util {
                 // ISO 639-2 code of the dataset language (was always "eng", even for the Spanish dataset)
                 .datasetLanguage(getLanguageCode(lang))
                 .datasetFileIdentifier(fileIdentifier)
-                .datasetTitle(warning.formattedWarningFullNumber() + " - " + getLanguageCode(lang))
+                .datasetTitle(formatWarningFullNumberByLanguage(lang, warning) + " - " + getLanguageCode(lang))
                 .datasetReferenceDate(LocalDate.ofInstant(warning.getPublicationTime(), ZoneId.of("UTC")))
                 .datasetTopicCategory(DATASET_TOPIC_CATEGORY)
                 .datasetPurpose(DATASET_PURPOSE)
@@ -629,6 +631,13 @@ public final class S124v2Util {
             return warning.getSerie().getInternationalName().trim();
         }
         return warning.getNameOfSeries();
+    }
+
+    static String formatWarningFullNumberByLanguage(String lang, Warning warning) {
+        String nameOfSeries = getNameOfSeriesByLanguage(lang, warning);
+        String warningNumber = warning.getWarningNumber().toString();
+        String warningYear = Year.of(warning.getYear()).format(DateTimeFormatter.ofPattern("uu"));
+        return nameOfSeries + " " + warningNumber + "/" + warningYear;
     }
 
     /**
