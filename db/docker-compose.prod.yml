@@ -30,7 +30,7 @@ services:
     build:
       context: ./
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-ping-api}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
     <<: *logging
     ports:
-      - "8082:8080"
+      - "127.0.0.1:8082:8080"
     # Paso 2: heap fijo de 10 GB (sin pausas por crecer/encoger) y 4 GB fuera del heap para GDAL nativo y lectura de COG
     mem_limit: 14g
     environment:
@@ -105,12 +105,16 @@ services:
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
+      # PISAC: Keycloak detrás de Nginx en /auth (mismo origen que el portal, sin exponer :8180)
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_HTTP_ENABLED=true
+      - KC_PROXY_HEADERS=xforwarded
       # PISAC: URL del portal para el enlace «Volver al portal» del tema de inicio de sesión
       - PISAC_PORTAL_URL=${PING_PORTAL_URL:-http://localhost:4200}
       # Mitigacion CVE-2026-114938 (Java4Shell) mientras OpenJDK del contenedor sea < 21.0.13.1
       - JAVA_OPTS_APPEND=-XX:-UseBASE64Intrinsics
     ports:
-      - "8180:8080"
+      - "127.0.0.1:8180:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./keycloak-themes:/opt/keycloak/themes
@@ -128,7 +132,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - "127.0.0.1:2181:2181"
 
   kafka:
     image: confluentinc/cp-kafka:7.3.2
@@ -139,7 +143,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - "127.0.0.1:9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -155,8 +159,8 @@ services:
     restart: unless-stopped
     <<: *logging
     ports:
-      - "8025:8025"
-      - "1025:1025"
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
 
   # PISAC (18-nov-2026): traducción propuesta (es<->en) del campo «Información» de advertencias y regulaciones.
   # Software libre (AGPL-3.0), sin costo por uso. Solo escucha en 127.0.0.1; el texto no sale del servidor.

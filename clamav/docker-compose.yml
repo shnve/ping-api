@@ -21,7 +21,7 @@ services:
     #environment:
     #  CLAMAV_NO_FRESHCLAMD: "true"
     ports:
-      - "4310:3310"
+      - "127.0.0.1:4310:3310"
 
 volumes:
   clam_db:
