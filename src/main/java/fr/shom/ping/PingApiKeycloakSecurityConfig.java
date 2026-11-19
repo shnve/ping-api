@@ -142,7 +142,10 @@ public class PingApiKeycloakSecurityConfig {
         JwtIssuerAuthenticationManagerResolver authenticationManagerResolver = new JwtIssuerAuthenticationManagerResolver(
                 authenticationManagers::get);
 
-        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+        http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/admin-api/**").hasAnyAuthority("functional-admin", "service-user")
+                        .requestMatchers("/secured-api/**").authenticated()
+                        .anyRequest().permitAll())
                 .sessionManagement(sessions -> sessions
                         .requireExplicitAuthenticationStrategy(false)
                         .sessionCreationPolicy(STATELESS)

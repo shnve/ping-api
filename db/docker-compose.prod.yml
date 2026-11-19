@@ -74,6 +74,8 @@ services:
       - INITIAL_MEMORY=10G
       - MAXIMUM_MEMORY=10G
       - CORS_ENABLED=true
+      # Mitigacion CVE-2026-114938 (Java4Shell) mientras OpenJDK del contenedor sea < 21.0.13.1
+      - ADDITIONAL_JAVA_STARTUP_OPTIONS=-XX:-UseBASE64Intrinsics
     volumes:
       - geoserver_data:/opt/geoserver/data_dir
       - "./geotiff:/mnt/geotiff"
@@ -105,6 +107,8 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
       # PISAC: URL del portal para el enlace «Volver al portal» del tema de inicio de sesión
       - PISAC_PORTAL_URL=${PING_PORTAL_URL:-http://localhost:4200}
+      # Mitigacion CVE-2026-114938 (Java4Shell) mientras OpenJDK del contenedor sea < 21.0.13.1
+      - JAVA_OPTS_APPEND=-XX:-UseBASE64Intrinsics
     ports:
       - "8180:8080"
     volumes:

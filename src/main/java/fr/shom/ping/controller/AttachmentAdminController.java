@@ -18,6 +18,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,7 +91,7 @@ public class AttachmentAdminController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public UUID create(@RequestBody AttachmentCreateDto attachmentCreateDto) {
+    public UUID create(@RequestBody @Valid AttachmentCreateDto attachmentCreateDto) {
         try {
             return service.create(attachmentCreateDto);
         } catch (ServiceException | IOException e) {
@@ -100,18 +101,18 @@ public class AttachmentAdminController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable UUID id, Authentication authentication) {
         try {
-            service.deleteFromDiskAndDatabase(id);
+            service.deleteFromDiskAndDatabase(id, authentication);
         } catch (ServiceException ignored) {
             // Nothing to do as we don't want to notify user
         }
     }
 
     @GetMapping(value = "/{id}", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> getFile(@PathVariable UUID id) {
+    public ResponseEntity<byte[]> getFile(@PathVariable UUID id, Authentication authentication) {
         try {
-            return service.getFile(id);
+            return service.getFile(id, authentication);
         } catch (ServiceException e) {
             throw new BadRequestException(e.getMessage());
         }

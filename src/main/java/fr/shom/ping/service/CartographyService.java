@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,9 +90,17 @@ public class CartographyService {
                     .build();
         }
 
-        String originalFilename = file.getOriginalFilename();
+        String originalFilename = FilenameUtils.getName(file.getOriginalFilename());
         if (originalFilename == null || originalFilename.trim().isEmpty()) {
             originalFilename = "archivo_cartografico";
+        }
+        originalFilename = originalFilename.trim();
+        if (originalFilename.startsWith("-") || ".".equals(originalFilename) || "..".equals(originalFilename)) {
+            return CartographyUploadResponse.builder()
+                    .success(false)
+                    .fileName(originalFilename)
+                    .message("Nombre de archivo no permitido.")
+                    .build();
         }
 
         String cleanBand = band != null ? band.toLowerCase().trim() : "";
@@ -129,9 +138,13 @@ public class CartographyService {
         Path tempDir = baseTempPath.resolve("job_" + UUID.randomUUID()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(tempDir);
+            Path targetFile = tempDir.resolve(originalFilename).normalize();
+            if (!targetFile.startsWith(tempDir)) {
+                throw new IOException("Ruta de archivo no permitida: " + originalFilename);
+            }
             // Guardar archivo recibido en disco de forma segura usando Java NIO
             try (var in = file.getInputStream()) {
-                Files.copy(in, tempDir.resolve(originalFilename), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             log.error("No se pudo guardar el archivo recibido en la carpeta temporal: {}", e.getMessage());

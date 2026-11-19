@@ -44,10 +44,10 @@ public class CartographyProperties {
     private String geoserverUser = "admin";
 
     /**
-     * Contraseña de administrador de GeoServer.
+     * Contraseña de administrador de GeoServer (definida vía GEOSERVER_PASSWORD en .env).
      */
     @Builder.Default
-    private String geoserverPassword = "geoserver";
+    private String geoserverPassword = "";
 
     /**
      * Workspace de GeoServer para las capas raster cartográficas.

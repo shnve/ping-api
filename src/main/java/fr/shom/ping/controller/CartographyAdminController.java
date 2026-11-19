@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Cartography Automation (Admin)", description = "Automatización y conversión de cartografía a COG EPSG:3395")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAuthority('functional-admin')")
 public class CartographyAdminController {
 
     private final CartographyService cartographyService;

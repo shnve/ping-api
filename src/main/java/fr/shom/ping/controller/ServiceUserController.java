@@ -31,6 +31,7 @@ public class ServiceUserController {
     }
 
     @GetMapping("/{id}/services")
+    @PreAuthorize("hasAuthority('functional-admin') or hasAuthority('service-user')")
     public List<ServiceLinkToUserDto> userServicesLinked(@PathVariable UUID id) {
         return this.serviceUserService.findServicesAssignToUser(id);
     }

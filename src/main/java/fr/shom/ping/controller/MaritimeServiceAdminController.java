@@ -65,7 +65,7 @@ public class MaritimeServiceAdminController {
 
     @PostMapping(value = "/{id}/users/{userId}/{role}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @Operation(summary = "Add role to user on maritime service", tags = "Maritime Service (Admin)")
-    @PreAuthorize("hasAuthority('functional-admin') or (hasAuthority('service-user') and hasPermission(#id, '*'))")
+    @PreAuthorize("hasAuthority('functional-admin') or (hasAuthority('service-user') and hasPermission(#id, 'SERVICE_ADMIN'))")
     public void assignRole(@PathVariable UUID id, @PathVariable UUID userId, @PathVariable ServiceRole role) {
         service.assignRole(id, userId, role);
     }

@@ -47,6 +47,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -236,6 +237,28 @@ public class AttachmentService {
     }
 
     @Transactional
+    public void deleteFromDiskAndDatabase(UUID id, Authentication authentication) throws ServiceException {
+        final String email = authentication != null ? authentication.getName() : null;
+        if (isFunctionalAdmin(authentication)) {
+            deleteFromDiskAndDatabase(id);
+            return;
+        }
+        if (isServiceUser(authentication)) {
+            if (email == null || repository.isLinkedToStaticFile(id) || !repository.hasServiceUserWriteRole(email)) {
+                throw new ForbiddenException();
+            }
+            deleteFromDiskAndDatabase(id);
+            return;
+        }
+        final boolean allowed = email != null
+            && (!repository.isLinkedToAnyRecord(id) || repository.isDeletableInDraftInfosourceByPublicUser(id, email));
+        if (!allowed) {
+            throw new ForbiddenException();
+        }
+        deleteFromDiskAndDatabase(id);
+    }
+
+    @Transactional
     public void deleteFromDiskAndDatabase(UUID id) throws ServiceException {
         deleteFromDisk(id);
         repository.deleteById(id);
@@ -257,6 +280,16 @@ public class AttachmentService {
             .orElseGet(ArrayList::new);
     }
 
+    public ResponseEntity<byte[]> getFile(UUID id, Authentication authentication) throws ServiceException {
+        if (!isProOrFunctionalAdmin(authentication)) {
+            final String email = authentication != null ? authentication.getName() : null;
+            if (email == null || !repository.isOwnedByPublicUser(id, email)) {
+                throw new ForbiddenException();
+            }
+        }
+        return getFile(id);
+    }
+
     public ResponseEntity<byte[]> getFile(UUID id) throws ServiceException {
         final Attachment attachment = repository.findById(id).orElseThrow(() -> new ServiceException("Attachment with id " + id + " does not exists."));
         final File attachmentFile = Path.of(pingProperties.getUploadFolder(), attachment.getIdentifier(), attachment.getFilename()).toFile();
@@ -269,11 +302,45 @@ public class AttachmentService {
             throw new ServiceException(errorMsg);
         }
 
+        final String safeFilename = FilenameUtils.getName(attachment.getFilename()).replaceAll("[\r\n\"]", "_");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Expose-Headers", "filename");
-        headers.add("filename", attachment.getFilename());
-        headers.add("Content-Type", attachment.getType());
+        headers.add("filename", safeFilename);
+        headers.add("Content-Disposition", "attachment; filename=\"" + safeFilename + "\"");
+        headers.add("X-Content-Type-Options", "nosniff");
+        headers.add("Content-Type", sanitizeDownloadContentType(attachment.getType(), safeFilename));
         return (new ResponseEntity<>(fileContentAsByteArray, headers, HttpStatus.OK));
+    }
+
+    static String sanitizeDownloadContentType(String contentType, String filename) {
+        final String lowerType = contentType != null ? contentType.toLowerCase() : "";
+        final String lowerName = filename != null ? filename.toLowerCase() : "";
+        if (lowerType.isBlank()
+            || lowerType.contains("svg")
+            || lowerType.contains("html")
+            || lowerType.contains("xml")
+            || lowerType.contains("javascript")
+            || lowerName.endsWith(".svg")
+            || lowerName.endsWith(".html")
+            || lowerName.endsWith(".htm")
+            || lowerName.endsWith(".xml")) {
+            return "application/octet-stream";
+        }
+        return contentType;
+    }
+
+    private static boolean isFunctionalAdmin(Authentication authentication) {
+        return authentication != null && authentication.getAuthorities().stream()
+            .anyMatch(a -> "functional-admin".equals(a.getAuthority()));
+    }
+
+    private static boolean isServiceUser(Authentication authentication) {
+        return authentication != null && authentication.getAuthorities().stream()
+            .anyMatch(a -> "service-user".equals(a.getAuthority()));
+    }
+
+    private static boolean isProOrFunctionalAdmin(Authentication authentication) {
+        return isFunctionalAdmin(authentication) || isServiceUser(authentication);
     }
 
     public Attachment clone(Attachment attachment) throws ServiceException {

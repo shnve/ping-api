@@ -15,6 +15,7 @@ WorkingDirectory=/home/pisac/pisac_dev/ping-api
 #    a INFO/WARN con propiedades de sistema, que tienen prioridad sobre application.yml y el .env
 ExecStart=/usr/bin/java \
   -Xms6g -Xmx6g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 \
+  -XX:-UseBASE64Intrinsics \
   -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/DATA/pisac/dumps \
   -Dspring.jpa.show-sql=false \
   -Dlogging.level.fr.shom.ping=INFO \

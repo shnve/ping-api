@@ -19,6 +19,7 @@ import fr.shom.ping.model.dto.AuthenticatedFunctionalAdminDto;
 import fr.shom.ping.model.dto.AuthenticatedProUserDto;
 import fr.shom.ping.model.dto.AuthenticatedServiceUserDto;
 import fr.shom.ping.model.dto.CreateProUserDto;
+import fr.shom.ping.model.dto.CreateServiceUserDto;
 import fr.shom.ping.model.dto.ProUserEditDto;
 import fr.shom.ping.model.dto.ProUserSearchDto;
 import fr.shom.ping.model.enums.MaritimeServiceType;
@@ -238,8 +239,16 @@ public class ProUserService extends AbstractProUserService {
         ProUser proUser = proUserRepository.findById(id).orElseThrow(NotFoundException::new);
         ProUser currentProUser = proUserRepository.findOneByEmail(email).orElseThrow(BadRequestException::new);
 
-        if (currentProUser.getRole() == SERVICE_USER && !currentProUser.getEmail().equals(email)) {
-            throw new ForbiddenException();
+        if (currentProUser.getRole() == SERVICE_USER) {
+            if (!proUser.getEmail().equals(email) || proUserDto.getRole() != proUser.getRole()) {
+                throw new ForbiddenException();
+            }
+            if (proUser instanceof ServiceUser existingServiceUser && proUserDto instanceof CreateServiceUserDto serviceDto) {
+                if (!existingServiceUser.getService().getId().equals(serviceDto.getServiceId())
+                        || existingServiceUser.getMainRole() != serviceDto.getServiceRole()) {
+                    throw new ForbiddenException();
+                }
+            }
         }
 
         final boolean emailChanged = !proUser.getEmail().equals(proUserDto.getEmail());

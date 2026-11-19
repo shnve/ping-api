@@ -57,7 +57,7 @@ public class WarningAdminController {
     private final WarningAdminService service;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('service-user')")
     public ResponseEntity<PagedModel<EntityModel<WarningAdminTableDto>>> getAllBySearchCriteria(
         @Valid WarningAdminSearchCriteria searchCriteria,
         Pageable pageable,

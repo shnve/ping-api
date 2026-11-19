@@ -31,15 +31,24 @@ public class ClamAvService {
             clamavClient.ping();
         } catch (Exception clamavException) {
             log.error("Unreachable ClamAv server instance: " + properties.getHost() + ":" + properties.getPort(), clamavException);
-            return false;
+            if (properties.isFailOpen()) {
+                return false;
+            }
+            throw new ServiceException("clamav.detection.failure");
         }
         // according to file size threshold, launch sync analysis
         //    C:/tmp -> /mnt/c/tmp
         final String fileWithFixedPath = file.replace(properties.getClamavReplacedPath(), properties.getClamavReplacementPath());
         final File analyzedFile = new File(StringUtils.cleanPath(fileWithFixedPath));
         if (analyzedFile.length() > 1024L * 1024L * properties.getSyncAnalysisThreshold()) {
-            log.info("File size exceeds threshold, analysis will be executed later: " + fileWithFixedPath);
-            return false;
+            if (properties.isFailOpen()) {
+                log.warn("File size exceeds sync threshold ({} MB), allowed because fail-open=true: {}",
+                    properties.getSyncAnalysisThreshold(), fileWithFixedPath);
+                return false;
+            }
+            log.error("File size exceeds ClamAV sync threshold ({} MB) and fail-open=false: {}",
+                properties.getSyncAnalysisThreshold(), fileWithFixedPath);
+            throw new ServiceException("clamav.detection.failure");
         }
         ScanResult scanResult;
         try (FileInputStream analyzedFileInputStream = new FileInputStream(analyzedFile)) {

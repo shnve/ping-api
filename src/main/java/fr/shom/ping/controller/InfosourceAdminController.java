@@ -68,7 +68,7 @@ public class InfosourceAdminController {
     private final InfosourceAdminService service;
 
     @GetMapping(value = "/for-creation-map")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('service-user')")
     @Operation(summary = "Get geometries for all infosources", tags = "Infosource (Service User)")
     @Parameter(name = "Authorization", description = "Access Token", required = true,
         example = "Bearer access_token")

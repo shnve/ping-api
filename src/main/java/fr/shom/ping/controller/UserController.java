@@ -111,8 +111,14 @@ public class UserController {
     @GetMapping("/secured-api/users/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Find user by id", tags = "User (Public)")
-    public PublicUserDto findById(@PathVariable UUID id) {
-        return findPublicUserById(id);
+    public PublicUserDto findById(@PathVariable UUID id, Authentication authentication) {
+        final PublicUserDto user = findPublicUserById(id);
+        final boolean isFunctionalAdmin = authentication.getAuthorities().stream()
+            .anyMatch(a -> "functional-admin".equals(a.getAuthority()));
+        if (!isFunctionalAdmin && !user.getEmail().equalsIgnoreCase(authentication.getName())) {
+            throw new ForbiddenException();
+        }
+        return user;
     }
 
     @PostMapping("/secured-api/users/enable")

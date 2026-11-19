@@ -177,7 +177,6 @@ ping:
     - pdf
     - txt
     - xml
-    - svg
     - jpg
     - png
     - gif
@@ -248,7 +247,8 @@ ping:
   clamav:
     host: localhost
     port: 4310
-    sync-analysis-threshold: 45
+    sync-analysis-threshold: ${PING_CLAMAV_SYNC_THRESHOLD:50}
+    fail-open: ${PING_CLAMAV_FAIL_OPEN:false}
     clamav-replaced-path: ${ping.root-folder}
     clamav-replacement-path: ${ping.root-folder}
 

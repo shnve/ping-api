@@ -46,6 +46,8 @@ services:
       - KC_HEALTH_ENABLED=true
       # Tema de inicio de sesión: URL del portal para «Volver al portal»
       - PISAC_PORTAL_URL=${PING_PORTAL_URL:?Defina PING_PORTAL_URL en .env}
+      # Mitigacion CVE-2026-114938 (Java4Shell) mientras OpenJDK del contenedor sea < 21.0.13.1
+      - JAVA_OPTS_APPEND=-XX:-UseBASE64Intrinsics
     ports: !override
       # Solo accesible desde el propio servidor (Nginx); no se publica en la red
       - "127.0.0.1:8180:8080"

@@ -17,6 +17,7 @@ public class ClamAvProperties {
     private String host;
     private Integer port;
     private Integer syncAnalysisThreshold;
+    private boolean failOpen;
     private String clamavReplacedPath;
     private String clamavReplacementPath;
 }
