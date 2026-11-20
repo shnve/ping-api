@@ -22,7 +22,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIR
 @Schema(name = "Secom GetResponseObject search criteria")
 public class SecomGetResponseObjectSearchCriteria {
 
-    @Schema(description = "Optional object ID (UUID). Leave empty to retrieve all published objects in the series, or obtain a valid ID from /v1/object/summary.", requiredMode = NOT_REQUIRED)
+    @Schema(description = "Optional object ID (UUID). Leave empty to retrieve all published objects in the series.", requiredMode = NOT_REQUIRED)
     private UUID dataReference;
 
     @Schema(description = "Type of container", requiredMode = NOT_REQUIRED, example = "1")

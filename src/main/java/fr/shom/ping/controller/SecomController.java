@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.secom.core.models.CapabilityResponseObject;
 import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,7 +85,13 @@ public class SecomController {
     // /secom/advertencia_local_ve_es/v1/object?dataReference=98514269-7b05-4623-ad29-b2875ec049a3&containerType=1&dataProductType=S124&productVersion=2.0.0&page=0&pageSize=10
     // /secom/advertencia_local_ve_es/v1/object?containerType=1&dataProductType=S124&productVersion=2.0.0&page=0&pageSize=10
     @GetMapping(value = "/{serviceInstanceId}/v1/object", produces = APPLICATION_JSON)
-    @Operation(summary = "Obtain S-124 navigation warning data from service instance", tags = "Secom")
+    @Operation(
+        summary = "Obtain S-124 navigation warning data from service instance",
+        description = "All query parameters are optional. This service instance offers data with containerType=1 and dataProductType=S124. " +
+            "Leave dataReference empty to retrieve all published navigational warnings in the series. If used, dataReference is the UUID " +
+            "of a navigational warning (e.g. 45c70257-318a-49e6-b789-3218e1316b59 in https://pisac.shn.gob.ve/avurnav-notice/45c70257-318a-49e6-b789-3218e1316b59).",
+        tags = "Secom"
+    )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "totalItem indicates the number of navigational warnings in force that the service instance should " +
             "normally return. A responseText is used when navigational warning data is missing in the response."),
@@ -93,13 +100,8 @@ public class SecomController {
         @ApiResponse(responseCode = "403", description = "Not authorized to access requested information", content = @Content())
     })
     @Parameter(name = "serviceInstanceId", description = "ID of the service instance", example = "advertencia_local_ve_es", required = true)
-    @Parameter(name = "searchCriteria", description = "Search criteria are optional (use {} if no criterion). With regard to the criteria laid down in the " +
-        "SECOM standard, this service instance only offers data with \"containerType\": 1, \"dataProductType\": \"S124\". It does not process information " +
-        "input productVersion, geometry, unlocode, validFrom, validTo. If used, the dataReference of a navigational warning is the string " +
-        "45c70257-318a-49e6-b789-3218e1316b59 in the example: https://<PISAC portal>/avurnav-notice/45c70257-318a-49e6-b789-3218e1316b59 where" +
-        " the URL is the link in the PISAC portal to share the navigational warning.", required = false)
     public GetResponseObjectDto getResponseObject(@PathVariable @NoHtml String serviceInstanceId,
-        @ModelAttribute("searchCriteria") @Validated SecomGetResponseObjectSearchCriteria searchCriteria,
+        @ParameterObject @ModelAttribute("searchCriteria") @Validated SecomGetResponseObjectSearchCriteria searchCriteria,
         HttpServletRequest request) {
 
         checkParameters(searchCriteria, request);
