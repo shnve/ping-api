@@ -94,8 +94,7 @@ import static fr.shom.ping.utils.GpxUtil.convertCoordinatesFromEpsg3857To4326;
 import static fr.shom.ping.utils.S100Util.getLanguageCode;
 import static fr.shom.ping.utils.S124Util.INTERNATIONAL_LANGUAGE;
 import static fr.shom.ping.utils.S124Util.formatNWPartId;
-import static fr.shom.ping.utils.S124Util.formatNWPreambleGmlId;
-import static fr.shom.ping.utils.S124Util.formatNWPreambleId;
+import static fr.shom.ping.utils.S124Util.formatNameOfSeries;
 import static fr.shom.ping.utils.XmlUtil.prettyPrintByTransformer;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
@@ -164,8 +163,8 @@ public final class S124v2Util {
 
     public S124v2DataSetDto mapWarningToS124DataSet(String lang, Warning warning, String fileIdentifier) {
         final S124v2DataSetDto dataSet = new S124v2DataSetDto();
-        // Add Preamble
-        final String preambleId = formatNWPreambleId(warning) + "." + getLanguageCode(lang);
+        // Add Preamble (PISAC: usa el nombre de la serie en el idioma del dataset para gml:id y xlink:href)
+        final String preambleId = formatNWPreambleIdByLanguageCode(lang, warning);
 
         // add S100:DatasetIdentificationInformation
         dataSet.setIdentificationInformation(
@@ -282,6 +281,8 @@ public final class S124v2Util {
 
     private List<S124v2WarningInformation.S124Information> buildInformations(Map<String, String> informationByLangMap) {
         return informationByLangMap.entrySet().stream()
+            // PISAC: en S-124 (ES y EN) las coordenadas no van en <S124:text> porque ya viajan en <S124:geometry>
+            .map(entry -> Map.entry(entry.getKey(), S124TextSanitizer.stripCoordinates(entry.getValue())))
             .filter(entry -> StringUtils.isNotBlank(entry.getValue()))
             .map(entry -> S124v2WarningInformation.S124Information.builder()
                 .language(getLanguageCode(entry.getKey()))
@@ -394,9 +395,17 @@ public final class S124v2Util {
         return instant.truncatedTo(ChronoUnit.SECONDS);
     }
 
+    static String formatWarningIdByLanguage(String lang, Warning warning) {
+        return formatNameOfSeries(getNameOfSeriesByLanguage(lang, warning)) + "." + warning.getWarningNumber() + "." + warning.getYear();
+    }
+
+    static String formatNWPreambleIdByLanguageCode(String lang, Warning warning) {
+        return "NW." + formatWarningIdByLanguage(lang, warning) + "." + getLanguageCode(lang);
+    }
+
     @NotNull
-    private static String formatNWPreambleGmlIdByLanguageCode(String lang, Warning warning) {
-        return formatNWPreambleGmlId(warning) + "." + getLanguageCode(lang);
+    static String formatNWPreambleGmlIdByLanguageCode(String lang, Warning warning) {
+        return "PR." + formatWarningIdByLanguage(lang, warning) + "." + getLanguageCode(lang);
     }
 
     private S124v2MessageSeriesIdentifierDto buildMessageSeriesIdentifier(String lang, Warning warning) {

@@ -71,7 +71,7 @@ public final class S124Util {
     private static S124DataSetDto mapWarningToS124DataSet(String lang, Warning warning) {
         S124DataSetDto dataSet = new S124DataSetDto();
         // Add Preamble
-        final String preambleId = formatNWPreambleId(warning);
+        final String preambleId = formatNWPreambleId(lang, warning);
         dataSet.getImember().add(S124MemberDto.builder()
             .preamble(buildPreamble(lang, warning, preambleId))
             .build());
@@ -96,12 +96,14 @@ public final class S124Util {
         } else if (informationByDefaultLanguage.isPresent()) {
             information = informationByDefaultLanguage.get().getText();
         }
+        // PISAC: en S-124 (ES y EN) las coordenadas no van en el texto porque ya viajan en la geometría
+        information = S124TextSanitizer.stripCoordinates(information);
 
         String partId = formatNWPartId(preambleId, part.getPosition());
-        dataSet.getImember().add(buildFeaturePart(warning, part, information, partId));
+        dataSet.getImember().add(buildFeaturePart(lang, warning, part, information, partId));
     }
 
-    private static S124MemberDto buildFeaturePart(Warning warning, FeaturePart part, String information, String partId) {
+    private static S124MemberDto buildFeaturePart(String lang, Warning warning, FeaturePart part, String information, String partId) {
         return S124MemberDto.builder()
             .part(S124NWPartDto.builder()
                 .gmlId(partId)
@@ -124,7 +126,7 @@ public final class S124Util {
                     .information(information)
                     .build())
                 .header(S124NWPartDto.S124PreambleLink.builder()
-                    .href("#" + formatNWPreambleGmlId(warning))
+                    .href("#" + formatNWPreambleGmlId(lang, warning))
                     .build())
                 .build())
             .build();
@@ -132,9 +134,9 @@ public final class S124Util {
 
     private static S124NWPreambleDto buildPreamble(String lang, Warning warning, String preambleId) {
         return S124NWPreambleDto.builder()
-            .gmlId(formatNWPreambleGmlId(warning))
+            .gmlId(formatNWPreambleGmlId(lang, warning))
             .id(preambleId)
-            .messageSeriesIdentifier(buildMessageSeriesIdentifier(warning))
+            .messageSeriesIdentifier(buildMessageSeriesIdentifier(lang, warning))
             .publicationDate(warning.getPublicationTime())
             .generalAreas(buildGeneralAreas(warning))
             .localities(buildLocalities(lang, warning))
@@ -152,8 +154,12 @@ public final class S124Util {
     }
 
     private static S124MessageSeriesIdentifierDto buildMessageSeriesIdentifier(Warning warning) {
+        return buildMessageSeriesIdentifier(DEFAULT_LANGUAGE, warning);
+    }
+
+    private static S124MessageSeriesIdentifierDto buildMessageSeriesIdentifier(String lang, Warning warning) {
         return S124MessageSeriesIdentifierDto.builder()
-            .nameOfSeries(warning.getNameOfSeries())
+            .nameOfSeries(S124v2Util.getNameOfSeriesByLanguage(lang, warning))
             .warningNumber(warning.getWarningNumber())
             .warningType(fromSerieTypeAndWarningHazardTypeGeneral(warning.getSerie().getType(), warning.getWarningHazardTypeGeneral()))
             .year(warning.getYear())
@@ -240,11 +246,19 @@ public final class S124Util {
     }
 
     public static String formatNWPreambleGmlId(Warning warning) {
-        return "PR." + formatWarningId(warning);
+        return formatNWPreambleGmlId(DEFAULT_LANGUAGE, warning);
+    }
+
+    public static String formatNWPreambleGmlId(String lang, Warning warning) {
+        return "PR." + formatWarningId(lang, warning);
     }
 
     public static String formatNWPreambleId(Warning warning) {
-        return "NW." + formatWarningId(warning);
+        return formatNWPreambleId(DEFAULT_LANGUAGE, warning);
+    }
+
+    public static String formatNWPreambleId(String lang, Warning warning) {
+        return "NW." + formatWarningId(lang, warning);
     }
 
     public static String formatNWPartId(String preambleId, Integer position) {
@@ -252,11 +266,15 @@ public final class S124Util {
     }
 
     public static String formatWarningId(Warning warning) {
-        return formatNameOfSeries(warning.getNameOfSeries()) + "." + warning.getWarningNumber() + "." + warning.getYear();
+        return formatWarningId(DEFAULT_LANGUAGE, warning);
+    }
+
+    public static String formatWarningId(String lang, Warning warning) {
+        return formatNameOfSeries(S124v2Util.getNameOfSeriesByLanguage(lang, warning)) + "." + warning.getWarningNumber() + "." + warning.getYear();
     }
 
     public static String formatNameOfSeries(String nameOfSeries) {
-        return nameOfSeries.toUpperCase().replace(" ", "_");
+        return nameOfSeries.trim().toUpperCase().replaceAll("\\s+", "_");
     }
 
     public static S124ExchangeSetDto buildS124ExchangeSetDtoFromInForceWarnings(List<Warning> warnings) {

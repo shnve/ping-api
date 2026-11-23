@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static fr.shom.ping.service.S124Service.VERSION_1;
 import static fr.shom.ping.service.S124Service.VERSION_2;
 import static fr.shom.ping.utils.S124Util.DEFAULT_LANGUAGE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -31,7 +30,7 @@ public class S124Controller {
     @GetMapping(value = "/{version}/Get_NW_Messages", produces = APPLICATION_XML_VALUE)
     @Operation(summary = "Obtener advertencias náuticas vigentes en formato S-124 (XML)")
     public AbstractS124ExchangeSetBaseDto getNwMessages(
-        @Parameter(description = "Versión de la API S-124", schema = @Schema(allowableValues = {"v1", "v2"}, example = "v2"))
+        @Parameter(description = "Versión de la API S-124 (OHI S-124 2.0.0)", schema = @Schema(allowableValues = {"v2"}, example = "v2"))
         @PathVariable String version,
         @Parameter(description = "Nombre de la serie (opcional; vacío devuelve todas las series)", example = "ADVERTENCIA LOCAL VE")
         @RequestParam(required = false) String nameOfSeries,
@@ -50,7 +49,7 @@ public class S124Controller {
     @GetMapping(value = "{version}/Get_NW_Message", produces = APPLICATION_XML_VALUE)
     @Operation(summary = "Obtener una advertencia náutica específica en formato S-124 (XML)")
     public AbstractS124ExchangeSetBaseDto getNwMessage(
-        @Parameter(description = "Versión de la API S-124", schema = @Schema(allowableValues = {"v1", "v2"}, example = "v2"))
+        @Parameter(description = "Versión de la API S-124 (OHI S-124 2.0.0)", schema = @Schema(allowableValues = {"v2"}, example = "v2"))
         @PathVariable String version,
         @Parameter(description = "Nombre de la serie", example = "ADVERTENCIA LOCAL VE")
         @RequestParam(required = false) String nameOfSeries,
@@ -67,7 +66,7 @@ public class S124Controller {
     @GetMapping(value = "{version}/Get_in-force_NW_MessageIdentifiers", produces = APPLICATION_XML_VALUE)
     @Operation(summary = "Listar identificadores de advertencias náuticas vigentes en S-124 (XML)")
     public AbstractS124ExchangeSetBaseDto getInForceNwMessageIdentifiers(
-        @Parameter(description = "Versión de la API S-124", schema = @Schema(allowableValues = {"v1", "v2"}, example = "v2"))
+        @Parameter(description = "Versión de la API S-124 (OHI S-124 2.0.0)", schema = @Schema(allowableValues = {"v2"}, example = "v2"))
         @PathVariable String version,
         @Parameter(description = "Nombre de la serie (opcional; vacío devuelve todas las series)", example = "ADVERTENCIA LOCAL VE")
         @RequestParam(required = false) String nameOfSeries) {
@@ -76,7 +75,8 @@ public class S124Controller {
     }
 
     public static void checkIfversionIsSupported(String version) {
-        if (!List.of(VERSION_1, VERSION_2).contains(version)) {
+        // PISAC: solo se publica la versión 2 (OHI S-124 2.0.0)
+        if (!VERSION_2.equals(version)) {
             throw new NotFoundException("Unknown version : " + version);
         }
     }

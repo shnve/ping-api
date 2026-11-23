@@ -184,8 +184,21 @@ public final class TelexUtil {
             // Coordenadas escritas a mano (ej. 10°18'44.54"N) -> formato S-53 con 2 decimales
             .map(CoordinateTextNormalizer::normalize)
             .findFirst();
-        if (information.isPresent()) {
-            final String formattedInformation = isIndentRequired ? indentMultilineText(information.get(), SPACES_FOR_FEATURE_INDENT) : information.get();
+        final StringBuilder informationBuilder = new StringBuilder();
+        information.filter(StringUtils::isNotBlank).ifPresent(informationBuilder::append);
+        // PISAC: las coordenadas siempre acompañan al mensaje en TELEX (sin duplicarlas si ya están en el texto)
+        if (!S124TextSanitizer.containsCoordinates(informationBuilder.toString()) && !featurePart.getGeometries().isEmpty()) {
+            final String formattedGeometries = S124TextSanitizer.formatGeometriesForText(featurePart.getGeometries(), internationalLanguage);
+            if (StringUtils.isNotBlank(formattedGeometries)) {
+                if (!informationBuilder.isEmpty()) {
+                    informationBuilder.append(TELEX_LINE_SEPARATOR);
+                }
+                informationBuilder.append(formattedGeometries);
+            }
+        }
+        if (!informationBuilder.isEmpty()) {
+            final String text = informationBuilder.toString();
+            final String formattedInformation = isIndentRequired ? indentMultilineText(text, SPACES_FOR_FEATURE_INDENT) : text;
             sbFeature.append(noContentPreviouslyAdded && formattedInformation.startsWith(" ") ? formattedInformation.substring(SPACES_FOR_FEATURE_INDENT) : formattedInformation);
         }
 
