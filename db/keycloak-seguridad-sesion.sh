@@ -30,7 +30,8 @@ PASSWORD_POLICY='length(10) and upperCase(1) and lowerCase(1) and digits(1) and 
 VERIFY_EMAIL_LIFESPAN=86400        # 24 h
 RESET_CREDENTIALS_LIFESPAN=1800    # 30 min
 
-"${KCADM[@]}" config credentials --server http://localhost:8080 --realm master --user "$KC_ADMIN" --password "$KC_ADMIN_PASSWORD"
+KC_SERVER_URL="${KC_SERVER_URL:-http://localhost:8080/auth}"
+"${KCADM[@]}" config credentials --server "$KC_SERVER_URL" --realm master --user "$KC_ADMIN" --password "$KC_ADMIN_PASSWORD"
 
 for REALM in ping-pro ping-public; do
   if [ "$REALM" = "ping-pro" ]; then IDLE=600; MAX=28800; else IDLE=1800; MAX=43200; fi

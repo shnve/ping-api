@@ -4,9 +4,12 @@ After=network.target docker.service
 Wants=docker.service
 
 [Service]
-# Usuario y rutas del servidor de desarrollo (ajustar en producción si cambian)
+# Usuario y rutas del servidor de desarrollo.
+# En producción usar un usuario de sistema dedicado sin sudo (ej. User=pisac, miembro del grupo docker)
+# y ajustar WorkingDirectory y la ruta del .jar a /home/pisac/pisac_prod/ping-api.
 User=root1
 WorkingDirectory=/home/pisac/pisac_dev/ping-api
+NoNewPrivileges=true
 
 # Paso 2 de recursos (Ajuste_Recursos_Servidores_PISAC.md §4):
 #  - heap fijo de 6 GB (subidas de hasta 500 MB y levantamientos de hasta 10 GB) con G1
@@ -17,6 +20,8 @@ ExecStart=/usr/bin/java \
   -Xms6g -Xmx6g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 \
   -XX:-UseBASE64Intrinsics \
   -Dserver.address=127.0.0.1 \
+  -Dserver.error.include-message=never \
+  -Dmanagement.info.env.enabled=false \
   -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/DATA/pisac/dumps \
   -Dspring.jpa.show-sql=false \
   -Dlogging.level.fr.shom.ping=INFO \
