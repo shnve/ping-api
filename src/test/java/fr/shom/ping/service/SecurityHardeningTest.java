@@ -11,17 +11,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import fr.shom.ping.exception.ForbiddenException;
+import fr.shom.ping.exception.KeycloakUserCreationException;
 import fr.shom.ping.exception.ServiceException;
 import fr.shom.ping.model.FunctionalAdmin;
 import fr.shom.ping.model.MaritimeService;
 import fr.shom.ping.model.ServiceUser;
 import fr.shom.ping.model.ServiceUserRole;
 import fr.shom.ping.model.dto.CreateFunctionalAdminDto;
+import fr.shom.ping.model.dto.CreatePublicUserDto;
 import fr.shom.ping.model.dto.CreateServiceUserDto;
 import fr.shom.ping.model.dto.CartographyUploadResponse;
+import fr.shom.ping.model.enums.UserCreationErrorMessage;
 import fr.shom.ping.properties.ClamAvProperties;
 import fr.shom.ping.repository.AttachmentRepository;
 import fr.shom.ping.repository.ProUserRepository;
+import fr.shom.ping.repository.UserRepository;
 import fr.shom.ping.utils.XmlUtil;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -189,5 +193,35 @@ class SecurityHardeningTest {
         when(repo.hasServiceUserWriteRole("visitante@shn.gob.ve")).thenReturn(true);
         assertThatThrownBy(() -> service.deleteFromDiskAndDatabase(attachmentId, serviceUserAuth))
             .isInstanceOf(ForbiddenException.class);
+    }
+
+    @Test
+    void publicUserRegistrationReturnsNeutralSuccessOnDuplicateEmail() throws ServiceException {
+        KeycloakService keycloakService = mock(KeycloakService.class);
+        UserRepository userRepository = mock(UserRepository.class);
+        AreaService areaService = mock(AreaService.class);
+        UserService userService = new UserService(keycloakService, userRepository, areaService);
+
+        CreatePublicUserDto dto = CreatePublicUserDto.builder()
+            .email("existente@ejemplo.com")
+            .password("ClaveFuerte#2026")
+            .proAccount(false)
+            .build();
+
+        // Checklist 1.4: correo existente no lanza error ni crea registro duplicado
+        when(keycloakService.createUser(dto))
+            .thenThrow(new KeycloakUserCreationException(UserCreationErrorMessage.USER_ALREADY_EXISTS));
+        BindingResult brDuplicate = new org.springframework.validation.BeanPropertyBindingResult(dto, "user");
+        userService.create(dto, brDuplicate);
+        assertThat(brDuplicate.hasErrors()).isFalse();
+        Mockito.verify(userRepository, Mockito.never()).save(any());
+
+        // Error de política de contraseña sí debe reportarse normalmente
+        Mockito.doThrow(new KeycloakUserCreationException(UserCreationErrorMessage.PASSWORD_POLICY_NOT_MET))
+            .when(keycloakService).createUser(dto);
+        BindingResult brWeakPass = new org.springframework.validation.BeanPropertyBindingResult(dto, "user");
+        assertThatThrownBy(() -> userService.create(dto, brWeakPass))
+            .isInstanceOf(ServiceException.class);
+        assertThat(brWeakPass.hasFieldErrors("password")).isTrue();
     }
 }

@@ -9,6 +9,7 @@ import fr.shom.ping.model.QPublicUser;
 import fr.shom.ping.model.dto.AuthenticatedPublicUserDto;
 import fr.shom.ping.model.dto.CreatePublicUserDto;
 import fr.shom.ping.model.dto.EditPublicUserDto;
+import fr.shom.ping.model.enums.UserCreationErrorMessage;
 import fr.shom.ping.repository.UserRepository;
 import io.micrometer.core.instrument.util.StringUtils;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import fr.shom.ping.utils.InfosourceUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import static fr.shom.ping.model.enums.UserCreationErrorMessage.USER_ALREADY_EXISTS;
+import static fr.shom.ping.model.enums.UserCreationErrorMessage.USER_ALREADY_EXISTS_WITH_EMAIL;
 import static fr.shom.ping.model.enums.UserStatus.DELETED;
 import static fr.shom.ping.model.enums.UserStatus.DISABLED;
 import static fr.shom.ping.model.enums.UserStatus.ENABLED;
@@ -32,6 +36,7 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     public static final String USER_MODEL = "user";
     private final KeycloakService keycloakService;
@@ -47,6 +52,11 @@ public class UserService {
         this.checkOrganizationForProAccount(user.isProAccount(), user.getOrganization(), bindingResult);
 
         UUID createdKeycloakUserId = createKeycloakUser(user, bindingResult);
+        if (createdKeycloakUserId == null) {
+            // PISAC (Checklist 1.4 — anti-enumeración): si el correo ya existe en Keycloak, no revelar su existencia
+            // ni duplicar el registro local; responder de forma neutra con éxito.
+            return;
+        }
 
         String identifier = InfosourceUtil.generateIdentifierFromEmail(user.getEmail());
         long existingEmails = repository.countAllExistingUsersWithEmail(user.getEmail());
@@ -66,7 +76,7 @@ public class UserService {
      *
      * @param user          create public user dto
      * @param bindingResult validation binding results
-     * @return newly created keycloak user ID
+     * @return newly created keycloak user ID, or {@code null} if the email already exists (anti-enumeration)
      * @throws ServiceException if binding result contains errors
      */
     private UUID createKeycloakUser(CreatePublicUserDto user, BindingResult bindingResult) throws ServiceException {
@@ -74,7 +84,12 @@ public class UserService {
         try {
             createdKeycloakUserId = keycloakService.createUser(user);
         } catch (KeycloakUserCreationException exception) {
-            bindingResult.addError(new FieldError(USER_MODEL, exception.getError().getField(), exception.getError().getI18n()));
+            UserCreationErrorMessage error = exception.getError();
+            if (error == USER_ALREADY_EXISTS || error == USER_ALREADY_EXISTS_WITH_EMAIL) {
+                log.info("Registro público omitido (anti-enumeración): cuenta ya existente en Keycloak");
+                return null;
+            }
+            bindingResult.addError(new FieldError(USER_MODEL, error.getField(), error.getI18n()));
         }
 
         if (bindingResult.hasErrors()) {
