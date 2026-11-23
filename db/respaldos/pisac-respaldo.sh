@@ -7,8 +7,9 @@
 #   archivos/   PING_ROOT_FOLDER (adjuntos, S-124 generados, GPX, NAVTEX...) y cartografía (db/geotiff)
 #   volumenes/  Keycloak (con H2 en start-dev se detiene ~20 s para una copia consistente) y GeoServer
 #   config/     .env de ping-api y db, unidad systemd de ping-api, Nginx y esta configuración (contiene secretos)
-#   MANIFIESTO.txt y SHA256SUMS
+#   MANIFIESTO.txt y SHA256SUMS (en claro para auditoría e integridad; el resto se cifra con age si está configurado)
 #
+# Cifrado en reposo/tránsito: age (asimétrico con llave pública en el servidor; llave privada custodiada fuera).
 # Retención: diarios, semanales (domingo) y mensuales (día 1), con enlaces duros (sin duplicar espacio).
 # Copia fuera del servidor: rsync por SSH si DESTINO_REMOTO está definido en /etc/pisac-respaldo.conf.
 #
@@ -31,13 +32,45 @@ MIN_LIBRE_GB="${MIN_LIBRE_GB:-20}"
 CONTENEDOR_DB="${CONTENEDOR_DB:-ping_api_db}"
 CONTENEDOR_KC="${CONTENEDOR_KC:-ping_keycloak}"
 CONTENEDOR_GS="${CONTENEDOR_GS:-geoserver_local}"
-KC_DETENER="${KC_DETENER:-auto}"          # auto: solo si Keycloak corre con start-dev (H2) · si · no
-DESTINO_REMOTO="${DESTINO_REMOTO:-}"      # p. ej. respaldos@10.0.0.50:/srv/respaldos/pisac-dev
+KC_DETENER="${KC_DETENER:-auto}"                  # auto: solo si Keycloak corre con start-dev (H2) · si · no
+AGE_RECIPIENT="${AGE_RECIPIENT:-}"                # llave pública age1... (vacío = sin cifrar)
+AGE_RECIPIENTS_FILE="${AGE_RECIPIENTS_FILE:-}"    # archivo con una o más llaves públicas age1...
+DESTINO_REMOTO="${DESTINO_REMOTO:-}"              # p. ej. respaldos@10.0.0.50:/srv/respaldos/pisac-dev
 SSH_CLAVE="${SSH_CLAVE:-/root/.ssh/pisac_respaldo}"
 
 INICIO=$(date +%s)
 log() { echo "[$(date '+%F %T')] $*"; }
 trap 'log "ERROR en la línea $LINENO: $BASH_COMMAND"' ERR
+
+# Validar configuración de cifrado age antes de iniciar
+AGE_ARGS=()
+EXT_CIFRADO=""
+if [[ -n "$AGE_RECIPIENT" ]]; then
+  AGE_ARGS+=(-r "$AGE_RECIPIENT")
+fi
+if [[ -n "$AGE_RECIPIENTS_FILE" ]]; then
+  if [[ ! -r "$AGE_RECIPIENTS_FILE" ]]; then
+    log "ERROR: AGE_RECIPIENTS_FILE no existe o no es legible: $AGE_RECIPIENTS_FILE"
+    exit 1
+  fi
+  AGE_ARGS+=(-R "$AGE_RECIPIENTS_FILE")
+fi
+if (( ${#AGE_ARGS[@]} > 0 )); then
+  if ! command -v age >/dev/null 2>&1; then
+    log "ERROR: cifrado configurado (AGE_RECIPIENT/AGE_RECIPIENTS_FILE) pero 'age' no está instalado (sudo apt install -y age)."
+    exit 1
+  fi
+  EXT_CIFRADO=".age"
+fi
+
+# Cifra un archivo en sitio con age (si está configurado) y elimina el original sin cifrar
+cifrar_si_activo() {
+  local archivo="$1"
+  if (( ${#AGE_ARGS[@]} > 0 )); then
+    age "${AGE_ARGS[@]}" -o "${archivo}.age" "$archivo"
+    rm -f "$archivo"
+  fi
+}
 
 # Un solo respaldo a la vez
 exec 9>/run/pisac-respaldo.lock
@@ -63,6 +96,11 @@ volumen_de() {
 
 # ---------------------------------------------------------------------------------------------
 log "=== Respaldo PISAC en $(hostname) ==="
+if (( ${#AGE_ARGS[@]} > 0 )); then
+  log "Cifrado en reposo: ACTIVO (age / ChaCha20-Poly1305)"
+else
+  log "AVISO: respaldo SIN cifrado (defina AGE_RECIPIENT o AGE_RECIPIENTS_FILE en $CONF para producción)."
+fi
 mkdir -p "$RESPALDO_DIR"/{diario,semanal,mensual}
 chmod 700 "$RESPALDO_DIR"
 
@@ -86,13 +124,15 @@ PGUSUARIO=$(valor_env "$DB_ENV" POSTGRES_USER); PGUSUARIO="${PGUSUARIO:-ping-api
 # --- 1. PostgreSQL -----------------------------------------------------------------------------
 log "1/5 PostgreSQL ($CONTENEDOR_DB, usuario $PGUSUARIO)"
 docker exec "$CONTENEDOR_DB" pg_dumpall -U "$PGUSUARIO" --globals-only | gzip > "$DEST/postgres/globales.sql.gz"
+cifrar_si_activo "$DEST/postgres/globales.sql.gz"
 mapfile -t BASES < <(docker exec "$CONTENEDOR_DB" psql -U "$PGUSUARIO" -d postgres -Atc \
   "SELECT datname FROM pg_database WHERE NOT datistemplate AND datname <> 'postgres' ORDER BY 1")
 for base in "${BASES[@]}"; do
   docker exec "$CONTENEDOR_DB" pg_dump -U "$PGUSUARIO" -Fc -d "$base" > "$DEST/postgres/$base.dump"
-  # Verificación: el volcado debe poder leerse completo
+  # Verificación: el volcado debe poder leerse completo ANTES de cifrarlo
   docker exec -i "$CONTENEDOR_DB" pg_restore -l < "$DEST/postgres/$base.dump" > /dev/null
-  log "  $base: $(du -h "$DEST/postgres/$base.dump" | cut -f1)"
+  cifrar_si_activo "$DEST/postgres/$base.dump"
+  log "  $base: $(du -h "$DEST/postgres/$base.dump${EXT_CIFRADO}" | cut -f1)"
 done
 
 # --- 2. Archivos de ping-api y cartografía -----------------------------------------------------
@@ -100,7 +140,8 @@ log "2/5 Archivos"
 ROOT_FOLDER=$(valor_env "$API_ENV" PING_ROOT_FOLDER)
 if [[ -n "$ROOT_FOLDER" && -d "$ROOT_FOLDER" ]]; then
   tar_seguro -C / -czf "$DEST/archivos/ping-api-datos.tar.gz" "${ROOT_FOLDER#/}"
-  log "  $ROOT_FOLDER: $(du -h "$DEST/archivos/ping-api-datos.tar.gz" | cut -f1)"
+  cifrar_si_activo "$DEST/archivos/ping-api-datos.tar.gz"
+  log "  $ROOT_FOLDER: $(du -h "$DEST/archivos/ping-api-datos.tar.gz${EXT_CIFRADO}" | cut -f1)"
 else
   log "  ERROR: PING_ROOT_FOLDER no está definido en $API_ENV o la carpeta no existe."
   exit 1
@@ -108,7 +149,8 @@ fi
 GEOTIFF="$PISAC_DIR/ping-api/db/geotiff"
 if [[ -d "$GEOTIFF" ]]; then
   tar_seguro -C "$(dirname "$GEOTIFF")" -czf "$DEST/archivos/geotiff.tar.gz" geotiff
-  log "  cartografía: $(du -h "$DEST/archivos/geotiff.tar.gz" | cut -f1)"
+  cifrar_si_activo "$DEST/archivos/geotiff.tar.gz"
+  log "  cartografía: $(du -h "$DEST/archivos/geotiff.tar.gz${EXT_CIFRADO}" | cut -f1)"
 fi
 
 # --- 3. Volúmenes de Docker --------------------------------------------------------------------
@@ -132,14 +174,16 @@ if KC_VOL=$(volumen_de "$CONTENEDOR_KC" /opt/keycloak/data) && [[ -n "$KC_VOL" ]
   else
     tar_seguro -C "$KC_VOL" -czf "$DEST/volumenes/keycloak_data.tar.gz" .
   fi
-  log "  keycloak_data: $(du -h "$DEST/volumenes/keycloak_data.tar.gz" | cut -f1)"
+  cifrar_si_activo "$DEST/volumenes/keycloak_data.tar.gz"
+  log "  keycloak_data: $(du -h "$DEST/volumenes/keycloak_data.tar.gz${EXT_CIFRADO}" | cut -f1)"
 else
   log "  aviso: no se encontró el volumen de Keycloak"
 fi
 if GS_VOL=$(volumen_de "$CONTENEDOR_GS" /opt/geoserver/data_dir) && [[ -n "$GS_VOL" ]]; then
   # Se excluye la caché de teselas: se regenera sola
   tar_seguro -C "$GS_VOL" --exclude='./gwc' -czf "$DEST/volumenes/geoserver_data.tar.gz" .
-  log "  geoserver_data: $(du -h "$DEST/volumenes/geoserver_data.tar.gz" | cut -f1)"
+  cifrar_si_activo "$DEST/volumenes/geoserver_data.tar.gz"
+  log "  geoserver_data: $(du -h "$DEST/volumenes/geoserver_data.tar.gz${EXT_CIFRADO}" | cut -f1)"
 else
   log "  aviso: no se encontró el volumen de GeoServer"
 fi
@@ -158,12 +202,21 @@ if [[ "$KEYSTORE" == /* && -f "$KEYSTORE" ]]; then
   CONFIG+=("${KEYSTORE#/}")
   log "  almacén de certificados: $KEYSTORE"
 fi
+if [[ -n "$AGE_RECIPIENTS_FILE" && -f "$AGE_RECIPIENTS_FILE" ]]; then
+  CONFIG+=("${AGE_RECIPIENTS_FILE#/}")
+fi
 tar_seguro -C / -czf "$DEST/config/config.tar.gz" "${CONFIG[@]}"
+cifrar_si_activo "$DEST/config/config.tar.gz"
 
 # --- 5. Manifiesto, sumas de verificación y rotación -------------------------------------------
 log "5/5 Manifiesto y rotación"
+CIFRADO_DESC="ninguno"
+if (( ${#AGE_ARGS[@]} > 0 )); then
+  CIFRADO_DESC="age (ChaCha20-Poly1305)"
+fi
 {
   echo "Respaldo PISAC $FECHA en $(hostname)"
+  echo "Cifrado: $CIFRADO_DESC"
   echo "ping-api: $(git -C "$PISAC_DIR/ping-api" rev-parse --short HEAD 2>/dev/null || echo '?') ($(git -C "$PISAC_DIR/ping-api" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?'))"
   echo "ping-web: $(git -C "$PISAC_DIR/ping-web" rev-parse --short HEAD 2>/dev/null || echo '?') ($(git -C "$PISAC_DIR/ping-web" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?'))"
   echo "Bases: ${BASES[*]}"

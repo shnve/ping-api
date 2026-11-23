@@ -23,6 +23,15 @@ CONTENEDOR_GS=geoserver_local
 # Detener Keycloak durante la copia de su volumen: auto (solo con start-dev / H2), si, no
 KC_DETENER=auto
 
+# Cifrado asimétrico con age (ChaCha20-Poly1305) de todos los archivos del respaldo salvo MANIFIESTO.txt y SHA256SUMS.
+# Instalar solo la llave PÚBLICA en el servidor; custodiar la llave PRIVADA fuera del servidor (bóveda TI).
+# Se puede indicar una llave directa (AGE_RECIPIENT) y/o un archivo con una o más llaves (AGE_RECIPIENTS_FILE).
+# Vacío = sin cifrado (en producción es obligatorio configurar al menos una de las dos variables).
+# AGE_RECIPIENT=age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# AGE_RECIPIENTS_FILE=/etc/pisac-respaldo-age.pub
+AGE_RECIPIENT=
+AGE_RECIPIENTS_FILE=
+
 # Copia fuera del servidor por rsync + SSH (vacío = sin copia externa; el respaldo avisa en el log)
 # DESTINO_REMOTO=respaldos@10.0.0.50:/srv/respaldos/pisac-dev
 # SSH_CLAVE=/root/.ssh/pisac_respaldo
