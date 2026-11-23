@@ -17,6 +17,7 @@ MIN_LIBRE_GB=20
 
 # Nombres de los contenedores
 CONTENEDOR_DB=ping_api_db
+CONTENEDOR_KC_DB=ping_keycloak_db
 CONTENEDOR_KC=ping_keycloak
 CONTENEDOR_GS=geoserver_local
 

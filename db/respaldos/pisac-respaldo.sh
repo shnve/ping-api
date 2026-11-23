@@ -30,6 +30,7 @@ RETENER_SEMANALES="${RETENER_SEMANALES:-8}"
 RETENER_MENSUALES="${RETENER_MENSUALES:-12}"
 MIN_LIBRE_GB="${MIN_LIBRE_GB:-20}"
 CONTENEDOR_DB="${CONTENEDOR_DB:-ping_api_db}"
+CONTENEDOR_KC_DB="${CONTENEDOR_KC_DB:-ping_keycloak_db}"
 CONTENEDOR_KC="${CONTENEDOR_KC:-ping_keycloak}"
 CONTENEDOR_GS="${CONTENEDOR_GS:-geoserver_local}"
 KC_DETENER="${KC_DETENER:-auto}"                  # auto: solo si Keycloak corre con start-dev (H2) · si · no
@@ -134,6 +135,15 @@ for base in "${BASES[@]}"; do
   cifrar_si_activo "$DEST/postgres/$base.dump"
   log "  $base: $(du -h "$DEST/postgres/$base.dump${EXT_CIFRADO}" | cut -f1)"
 done
+# Base de datos dedicada de Keycloak (PostgreSQL 16 en docker-compose.keycloak-prod.yml)
+if docker inspect -f '{{.State.Running}}' "$CONTENEDOR_KC_DB" 2>/dev/null | grep -qx true; then
+  KC_PGUSUARIO=$(valor_env "$DB_ENV" KEYCLOAK_DB_USER); KC_PGUSUARIO="${KC_PGUSUARIO:-keycloak}"
+  docker exec "$CONTENEDOR_KC_DB" pg_dump -U "$KC_PGUSUARIO" -Fc -d keycloak > "$DEST/postgres/keycloak.dump"
+  docker exec -i "$CONTENEDOR_KC_DB" pg_restore -l < "$DEST/postgres/keycloak.dump" > /dev/null
+  cifrar_si_activo "$DEST/postgres/keycloak.dump"
+  BASES+=("keycloak($CONTENEDOR_KC_DB)")
+  log "  keycloak ($CONTENEDOR_KC_DB): $(du -h "$DEST/postgres/keycloak.dump${EXT_CIFRADO}" | cut -f1)"
+fi
 
 # --- 2. Archivos de ping-api y cartografía -----------------------------------------------------
 log "2/5 Archivos"

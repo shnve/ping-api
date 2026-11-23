@@ -15,7 +15,8 @@
 #     envenenamiento de enlaces por cabecera Host).
 #   - Detrás de Nginx con HTTPS: Keycloak escucha HTTP solo en 127.0.0.1 (no accesible desde la red) y
 #     confía en las cabeceras X-Forwarded-* que pone Nginx.
-#   - Base de datos PostgreSQL (la H2 de start-dev no es apta para producción).
+#   - Base de datos PostgreSQL 16 dedicada (`ping_keycloak_db`, postgres:16-alpine): Keycloak 26.8.0 exige
+#     PostgreSQL >= 14 (ping_api_db usa postgis:13-3.1) y además aísla las identidades de la BD operativa.
 #
 # Variables nuevas en db/.env (ver .env.example):
 #   KEYCLOAK_PUBLIC_URL   URL pública con HTTPS, p. ej. https://pisac.shn.gob.ve/auth
@@ -23,18 +24,41 @@
 #   KEYCLOAK_DB_PASSWORD  su contraseña
 # =============================================================================================
 services:
+  keycloak_db:
+    image: postgres:16-alpine
+    container_name: ping_keycloak_db
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    mem_limit: 1g
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=${KEYCLOAK_DB_USER:?Defina KEYCLOAK_DB_USER en .env}
+      - POSTGRES_PASSWORD=${KEYCLOAK_DB_PASSWORD:?Defina KEYCLOAK_DB_PASSWORD en .env}
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
   keycloak:
     command: start
     restart: unless-stopped
     depends_on:
-      - db
+      keycloak_db:
+        condition: service_healthy
     environment:
       # Administrador inicial (solo se usa si la base de datos está vacía)
       - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_ADMIN:-admin}
       - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:?Defina KEYCLOAK_ADMIN_PASSWORD en .env}
-      # Base de datos
+      # Base de datos dedicada (PostgreSQL 16, red interna Docker sin puerto publicado en host)
       - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://db:5432/keycloak
+      - KC_DB_URL=jdbc:postgresql://keycloak_db:5432/keycloak
       - KC_DB_USERNAME=${KEYCLOAK_DB_USER:?Defina KEYCLOAK_DB_USER en .env}
       - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:?Defina KEYCLOAK_DB_PASSWORD en .env}
       # Dirección pública fija (HTTPS) y ruta /auth detrás de Nginx
@@ -51,3 +75,6 @@ services:
     ports: !override
       # Solo accesible desde el propio servidor (Nginx); no se publica en la red
       - "127.0.0.1:8180:8080"
+
+volumes:
+  keycloak_postgres_data:
