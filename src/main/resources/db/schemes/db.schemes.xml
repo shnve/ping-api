@@ -83,4 +83,5 @@
     <include file="classpath:db/data/db.data-shn-shom-rename.xml" />
     <include file="classpath:db/data/db.data-shn-remove-french.xml" />
     <include file="classpath:db/data/db.data-shn-cgu.xml" />
+    <include file="classpath:db/data/db.data-shn-accueil.xml" />
 </databaseChangeLog>

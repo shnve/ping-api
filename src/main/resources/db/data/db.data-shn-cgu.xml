@@ -18,12 +18,12 @@ VALUES (gen_random_uuid(),
         'Términos y condiciones de uso y datos personales',
         'Terms of use and personal data',
         'cgu', true,
-        convert_to($es$<p>Versión del 19 de noviembre de 2026. Estos términos regulan el uso de la <strong>Plataforma de Información de Seguridad Acuática (PISAC)</strong> y explican cómo se tratan los datos personales de sus usuarios. La versión en español es la de referencia.</p>
+        convert_to($es$<p>Versión del 24 de noviembre de 2026. Estos términos regulan el uso de la <strong>Plataforma de Información de Seguridad Acuática (PISAC)</strong> y explican cómo se tratan los datos personales de sus usuarios. La versión en español es la de referencia.</p>
 <h2>1. Aceptación y actualización de los términos</h2>
 <p>Al usar PISAC, el usuario declara conocer y acepta expresamente estos términos y condiciones de uso. Al crear una cuenta, la aceptación se registra de forma explícita.</p>
 <p>El SHN puede modificar o completar estos términos en cualquier momento. La fecha de la versión vigente figura al inicio de esta página; se recomienda consultarla con regularidad.</p>
 <h2>2. Qué es PISAC</h2>
-<p>PISAC es el sistema institucional del <strong>Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN)</strong> de la República Bolivariana de Venezuela para producir, publicar y difundir información.</p>
+<p>PISAC es el sistema piloto institucional del <strong>Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN)</strong> de la República Bolivariana de Venezuela para la producción, publicación y difusión de advertencias náuticas y avisos a los navegantes en los espacios acuáticos bajo jurisdicción nacional, el cual inicia su fase de pruebas y validación pre-operacional.</p>
 <p>Comprende un portal público, un acceso institucional para los organismos que producen o reciben información náutica y servicios de datos accesibles por internet. Implementa la especificación de producto <strong>IHO S-124</strong> (advertencias de navegación) de la Organización Hidrográfica Internacional.</p>
 <h2>3. Limitación de responsabilidad</h2>
 <p>El SHN procura mantener la plataforma disponible de forma continua, pero no puede garantizarlo ni asumir responsabilidad por interrupciones del servicio o por la falta temporal de información.</p>
@@ -96,12 +96,12 @@ VALUES (gen_random_uuid(),
 <li><strong>SOLAS:</strong> Convenio Internacional para la Seguridad de la Vida Humana en el Mar.</li>
 <li><strong>XML:</strong> Extensible Markup Language.</li>
 </ul>$es$, 'UTF8'),
-        convert_to($en$<p>Version dated 19 November 2026. These terms govern the use of the <strong>Aquatic Safety Information Platform (PISAC)</strong> and explain how its users' personal data is processed. The Spanish version shall prevail.</p>
+        convert_to($en$<p>Version dated 24 November 2026. These terms govern the use of the <strong>Aquatic Safety Information Platform (PISAC)</strong> and explain how its users' personal data is processed. The Spanish version shall prevail.</p>
 <h2>1. Acceptance and updates</h2>
 <p>By using PISAC, users acknowledge and expressly accept these terms of use. When an account is created, acceptance is recorded explicitly.</p>
 <p>The SHN may amend or supplement these terms at any time. The date of the current version is shown at the top of this page; please check it regularly.</p>
 <h2>2. What PISAC is</h2>
-<p>PISAC is the institutional system of the <strong>Hydrography, Oceanography, Meteorology and Nautical Charting Service (SHN)</strong> of the Bolivarian Republic of Venezuela for producing, publishing and disseminating information.</p>
+<p>PISAC is the institutional pilot system of the <strong>Hydrography, Oceanography, Meteorology and Nautical Charting Service (SHN)</strong> of the Bolivarian Republic of Venezuela for the production, publication and dissemination of navigational warnings and notices to mariners in the aquatic spaces under national jurisdiction, which is beginning its pre-operational testing and validation phase.</p>
 <p>It comprises a public portal, institutional access for the agencies that produce or receive nautical information, and data services available over the Internet. It implements the International Hydrographic Organization's <strong>IHO S-124</strong> product specification (navigational warnings).</p>
 <h2>3. Limitation of liability</h2>
 <p>The SHN endeavours to keep the platform continuously available but cannot guarantee it, nor be held liable for service interruptions or the temporary unavailability of information.</p>

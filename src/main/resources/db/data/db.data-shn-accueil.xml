@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!--
+        PISAC: mensaje de bienvenida de la portada (página estática 'accueil', ES/EN).
+        runOnChange: la sentencia es idempotente (inserta o actualiza la fila 'accueil'); solo se vuelve a aplicar si
+        cambia este archivo, permitiendo editar luego la página desde Administración → Páginas estáticas sin que un
+        reinicio la sobrescriba.
+    -->
+    <changeSet id="DB.Data.SHN.Accueil.Welcome" author="SHN" runOnChange="true">
+        <sql splitStatements="false"><![CDATA[
+INSERT INTO static_page (id, title, international_title, "path", "locked", content, international_content)
+VALUES (gen_random_uuid(),
+        'Bienvenido a la Plataforma de Información de Seguridad Acuática',
+        'Welcome to the Aquatic Safety Information Platform',
+        'accueil', true,
+        convert_to($es$<p><strong>PISAC</strong> es el sistema piloto institucional del <strong>SHN</strong> de la República Bolivariana de Venezuela para la producción, publicación y difusión de <strong>advertencias náuticas y avisos a los navegantes</strong> en los espacios acuáticos bajo jurisdicción nacional, el cual inicia su fase de pruebas y validación pre-operacional.</p>
+<p>La plataforma forma parte de la transición del SHN al marco S-100 de la <strong>Organización Hidrográfica Internacional (OHI / IHO)</strong>. Implementa la especificación de producto <strong>IHO S-124 (Navigational Warnings)</strong>.</p>$es$, 'UTF8'),
+        convert_to($en$<p><strong>PISAC</strong> is the institutional pilot system of the <strong>SHN</strong> of the Bolivarian Republic of Venezuela for the production, publication and dissemination of <strong>navigational warnings and notices to mariners</strong> in the aquatic spaces under national jurisdiction, which is beginning its pre-operational testing and validation phase.</p>
+<p>The platform is part of the SHN's transition to the S-100 framework of the <strong>International Hydrographic Organization (IHO)</strong>. It implements the <strong>IHO S-124 (Navigational Warnings)</strong> product specification.</p>$en$, 'UTF8'))
+ON CONFLICT ON CONSTRAINT static_page_path_unique_constraint DO UPDATE SET
+    title = EXCLUDED.title,
+    international_title = EXCLUDED.international_title,
+    "locked" = true,
+    content = EXCLUDED.content,
+    international_content = EXCLUDED.international_content;
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>
