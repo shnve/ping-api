@@ -69,9 +69,11 @@ public class S124Controller {
         @Parameter(description = "Versión de la API S-124 (OHI S-124 2.0.0)", schema = @Schema(allowableValues = {"v2"}, example = "v2"))
         @PathVariable String version,
         @Parameter(description = "Nombre de la serie (opcional; vacío devuelve todas las series)", example = "ADVERTENCIA LOCAL VE")
-        @RequestParam(required = false) String nameOfSeries) {
+        @RequestParam(required = false) String nameOfSeries,
+        @Parameter(description = "Idioma de los identificadores de serie", schema = @Schema(allowableValues = {"es", "en"}, defaultValue = "es"))
+        @RequestParam(defaultValue = DEFAULT_LANGUAGE) String lang) {
         checkIfversionIsSupported(version);
-        return service.getInForceNwMessageIdentifiers(version, nameOfSeries);
+        return service.getInForceNwMessageIdentifiers(version, nameOfSeries, lang);
     }
 
     public static void checkIfversionIsSupported(String version) {

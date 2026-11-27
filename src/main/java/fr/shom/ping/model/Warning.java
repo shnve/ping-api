@@ -23,6 +23,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -198,7 +199,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
                     @ColumnResult(name = "reference_year", type = Integer.class),
                     @ColumnResult(name = "status", type = String.class),
                     @ColumnResult(name = "entity", type = String.class),
-                    @ColumnResult(name = "folder", type = String.class)
+                    @ColumnResult(name = "folder", type = String.class),
+                    @ColumnResult(name = "cancellation_requested", type = Boolean.class)
                 })
         }
     )
@@ -419,6 +421,26 @@ public class Warning implements Serializable {
     @Schema(description = "Maritime Service OHI producer code")
     @Column(name = "maritime_service_iho_producer_code")
     private String maritimeServiceihoProducerCode;
+
+    @ManyToOne
+    @JoinColumn(name = "approval_requested_by_id")
+    private ProUser approvalRequestedBy;
+
+    private Instant approvalRequestedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by_id")
+    private ProUser approvedBy;
+
+    private Instant approvedAt;
+
+    private String rejectionComment;
+
+    @Default
+    @Column(nullable = false)
+    private Boolean cancellationRequested = false;
+
+    private String cancellationRequestComment;
 
     public Warning(WarningCreateDto dto, Serie serie, SortedSet<GeneralArea> generalAreaList, List<WarningLocalityNames> localityList,
         Set<WarningAttachment> attachmentList, Set<WarningReference> warningReferenceList, SortedSet<FeaturePart> featurePartList) {

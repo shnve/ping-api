@@ -6,20 +6,29 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.shom.ping.PingApiTranslationsRegistry;
 import fr.shom.ping.controller.S124Controller;
 import fr.shom.ping.exception.NotFoundException;
+import fr.shom.ping.exception.S124Exception;
 import fr.shom.ping.model.Feature;
 import fr.shom.ping.model.FeaturePart;
 import fr.shom.ping.model.LocalizedText;
 import fr.shom.ping.model.MaritimeService;
 import fr.shom.ping.model.Serie;
 import fr.shom.ping.model.Warning;
+import fr.shom.ping.model.dto.AbstractS124ExchangeSetBaseDto;
 import fr.shom.ping.model.dto.S124v2DataSetDto;
 import fr.shom.ping.model.enums.SerieType;
 import fr.shom.ping.model.enums.WarningHazardTypeDetails;
 import fr.shom.ping.model.enums.WarningHazardTypeGeneral;
+import fr.shom.ping.model.enums.WarningStatus;
+import fr.shom.ping.repository.SerieRepository;
+import fr.shom.ping.repository.WarningRepository;
+import fr.shom.ping.service.S124Service;
+import fr.shom.ping.service.email.PisacEmailTemplate;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
@@ -225,5 +234,70 @@ class S124GenerationAndSanitizerTest {
         assertThatCode(() -> S124Controller.checkIfversionIsSupported("v2")).doesNotThrowAnyException();
         assertThatThrownBy(() -> S124Controller.checkIfversionIsSupported("v1"))
             .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void getInForceNwMessageIdentifiersWithoutSeriesReturnsAllPublishedS124Warnings() throws Exception {
+        WarningRepository warningRepo = Mockito.mock(WarningRepository.class);
+        SerieRepository serieRepo = Mockito.mock(SerieRepository.class);
+        S124v2Util s124v2Util = newS124v2Util();
+        S124Service s124Service = new S124Service(warningRepo, serieRepo, s124v2Util);
+        S124Controller controller = new S124Controller(s124Service);
+
+        Warning localWarning = buildSampleWarningWithPolygon("Boya apagada.", "Buoy unlit.");
+        localWarning.setStatus(WarningStatus.PUBLISHED);
+        localWarning.setCountry("VE");
+
+        Serie coastalSerie = Serie.builder()
+            .name("ADVERTENCIA COSTERA VE")
+            .internationalName("COASTAL WARNING VE")
+            .type(SerieType.COASTAL_NAVIGATIONAL_WARNING)
+            .maritimeService(localWarning.getSerie().getMaritimeService())
+            .mandatoryLanguages(Set.of("es", "en"))
+            .optionalLanguages(Set.of())
+            .build();
+        Warning coastalWarning = buildSampleWarningWithPolygon("Faro apagado.", "Light unlit.");
+        coastalWarning.setSerie(coastalSerie);
+        coastalWarning.setNameOfSeries("ADVERTENCIA COSTERA VE");
+        coastalWarning.setWarningNumber(5);
+        coastalWarning.setYear(2026);
+        coastalWarning.setStatus(WarningStatus.PUBLISHED);
+        coastalWarning.setCountry("VE");
+
+        when(serieRepo.findAll()).thenReturn(List.of(localWarning.getSerie(), coastalSerie));
+        when(warningRepo.findByStatus(WarningStatus.PUBLISHED)).thenReturn(List.of(localWarning, coastalWarning));
+
+        XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        AbstractS124ExchangeSetBaseDto resultEs = controller.getInForceNwMessageIdentifiers("v2", null, "es");
+        String xmlEs = xmlMapper.writeValueAsString(resultEs);
+        assertThat(xmlEs)
+            .contains("<S124:nameOfSeries>ADVERTENCIA COSTERA VE</S124:nameOfSeries>")
+            .contains("<S124:nameOfSeries>ADVERTENCIA LOCAL VE</S124:nameOfSeries>")
+            .contains("<S124:noMessageOnHand>false</S124:noMessageOnHand>");
+
+        AbstractS124ExchangeSetBaseDto resultEn = controller.getInForceNwMessageIdentifiers("v2", "", "en");
+        String xmlEn = xmlMapper.writeValueAsString(resultEn);
+        assertThat(xmlEn)
+            .contains("<S124:nameOfSeries>COASTAL WARNING VE</S124:nameOfSeries>")
+            .contains("<S124:nameOfSeries>LOCAL WARNING VE</S124:nameOfSeries>");
+
+        when(serieRepo.findOneByNameIgnoreCase("UNKNOWN")).thenReturn(Optional.empty());
+        when(serieRepo.findOneByInternationalNameIgnoreCase("UNKNOWN")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> controller.getInForceNwMessageIdentifiers("v2", "UNKNOWN", "es"))
+            .isInstanceOf(S124Exception.class);
+    }
+
+    @Test
+    void emailTemplateUsesUpdatedInstitutionalContactEmail() {
+        PisacEmailTemplate template = new PisacEmailTemplate();
+        String safe = template.sanitizeContent("<p>Prueba</p>");
+        assertThat(template.renderHtml("Aviso", safe, false))
+            .contains("mailto:shnayunav@shn.gob.ve")
+            .doesNotContain("shnser@shn.gob.ve");
+        assertThat(template.renderText("Aviso", safe))
+            .contains("shnayunav@shn.gob.ve")
+            .doesNotContain("shnser@shn.gob.ve");
     }
 }

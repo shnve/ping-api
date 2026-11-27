@@ -14,6 +14,7 @@ import fr.shom.ping.model.Survey;
 import fr.shom.ping.model.Warning;
 import fr.shom.ping.model.dto.NotificationDto;
 import fr.shom.ping.model.enums.NotificationType;
+import fr.shom.ping.model.enums.ServiceRole;
 import fr.shom.ping.repository.NotificationRepository;
 import fr.shom.ping.repository.ServiceUserRepository;
 import jakarta.persistence.EntityManager;
@@ -118,6 +119,34 @@ public class NotificationAdminService extends AbstractNotificationService {
                 .build());
         }
         return repository.saveAll(notifications);
+    }
+
+    @Transactional
+    public List<Notification> createForWarningApprovers(String title, MaritimeService service, Warning warning) {
+        final List<ServiceUser> approvers = serviceUserRepository.findAllEnabledByServiceIdAndRole(service.getId(), ServiceRole.SERVICE_APPROVER);
+        final List<Notification> notifications = new ArrayList<>();
+        for (ServiceUser approver : approvers) {
+            notifications.add(Notification.builder()
+                .title(title)
+                .type(NotificationType.WARNING_APPROVAL_REQUESTED)
+                .serviceUser(approver)
+                .warning(warning)
+                .service(service)
+                .build());
+        }
+        return repository.saveAll(notifications);
+    }
+
+    @Transactional
+    public Notification createForWarningRequester(String title, NotificationType type, ServiceUser requester, MaritimeService service, Warning warning) {
+        final Notification notification = Notification.builder()
+            .title(title)
+            .type(type)
+            .serviceUser(requester)
+            .warning(warning)
+            .service(service)
+            .build();
+        return repository.save(notification);
     }
 
     @Transactional

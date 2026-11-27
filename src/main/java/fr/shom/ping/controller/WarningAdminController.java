@@ -9,6 +9,7 @@ import fr.shom.ping.model.dto.MaritimeEntityConcernedDto;
 import fr.shom.ping.model.dto.WarningAdminDetailDto;
 import fr.shom.ping.model.dto.WarningAdminEditDto;
 import fr.shom.ping.model.dto.WarningAdminTableDto;
+import fr.shom.ping.model.dto.WarningApprovalDecisionDto;
 import fr.shom.ping.model.dto.WarningCreateDto;
 import fr.shom.ping.model.dto.WarningMaritimeEntityReferenceDto;
 import fr.shom.ping.model.dto.WarningReferenceAsPublicReferenceDto;
@@ -128,6 +129,24 @@ public class WarningAdminController {
         service.publish(id, principal.getName());
     }
 
+    @PutMapping("/{id}/request-approval")
+    @PreAuthorize("hasAuthority('service-user')")
+    public void requestApproval(@PathVariable UUID id, Principal principal) {
+        service.requestApproval(id, principal.getName());
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAuthority('service-user')")
+    public void approve(@PathVariable UUID id, Principal principal) throws ServiceException {
+        service.approve(id, principal.getName());
+    }
+
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAuthority('service-user')")
+    public void reject(@PathVariable UUID id, @RequestBody @Valid WarningApprovalDecisionDto dto, Principal principal) {
+        service.reject(id, dto != null ? dto.getComment() : null, principal.getName());
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('service-user')")
     @ResponseStatus(NO_CONTENT)
@@ -137,8 +156,10 @@ public class WarningAdminController {
 
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('service-user')")
-    public UUID cancel(@PathVariable UUID id, Principal principal) throws ServiceException {
-        return service.cancel(id, principal.getName());
+    public UUID cancel(@PathVariable UUID id,
+        @RequestBody(required = false) WarningApprovalDecisionDto dto,
+        Principal principal) throws ServiceException {
+        return service.requestCancellation(id, dto != null ? dto.getComment() : null, principal.getName());
     }
 
     @PutMapping("/{id}/clone")

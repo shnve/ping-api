@@ -72,4 +72,7 @@ public class WarningAdminTableDto extends WarningTableViewDto {
     @Default
     @Schema(description = "Folders of current warning")
     private Set<String> folders = new HashSet<>();
+
+    @Schema(description = "Whether direct cancellation approval is pending")
+    private boolean cancellationRequested;
 }

@@ -56,7 +56,7 @@ public interface WarningRepository extends JpaRepository<Warning, UUID>, Queryds
     void updateStatusByWarningIds(WarningStatus status, List<UUID> ids);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Warning w SET w.status = fr.shom.ping.model.enums.WarningStatus.CANCELLED, w.cancellationDate = :now, w.lastUpdate = :now WHERE w.id IN :id")
+    @Query("UPDATE Warning w SET w.status = fr.shom.ping.model.enums.WarningStatus.CANCELLED, w.cancellationRequested = false, w.cancellationDate = :now, w.lastUpdate = :now WHERE w.id IN :id")
     void autoCancel(List<UUID> id, Instant now);
 
     @Query("SELECT CASE WHEN count(w.id) > 0 " +

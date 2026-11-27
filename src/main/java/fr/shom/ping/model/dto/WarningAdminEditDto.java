@@ -49,4 +49,6 @@ public class WarningAdminEditDto extends AbstractWarningAdminDto {
     private Set<AttachmentAdminDetailsDto> attachmentFiles = new HashSet<>();
 
     private String serieName;
+
+    private String rejectionComment;
 }

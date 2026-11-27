@@ -59,7 +59,7 @@ public class PisacEmailTemplate {
     private static final String LINK = "#1F7FA6";
     private static final String FONT = "'Source Sans 3','Segoe UI',Roboto,Arial,Helvetica,sans-serif";
 
-    private static final String CONTACT_EMAIL = "shnser@shn.gob.ve";
+    private static final String CONTACT_EMAIL = "shnayunav@shn.gob.ve";
 
     /** Política estricta para el contenido variable de los correos. */
     private static final PolicyFactory EMAIL_CONTENT_POLICY = new HtmlPolicyBuilder()

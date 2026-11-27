@@ -25,6 +25,7 @@ import lombok.experimental.SuperBuilder;
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.shom.ping.model.enums.ProUserRole.SERVICE_USER;
 import static fr.shom.ping.model.enums.ServiceRole.SERVICE_ADMIN;
+import static fr.shom.ping.model.enums.ServiceRole.SERVICE_APPROVER;
 import static fr.shom.ping.model.enums.ServiceRole.SERVICE_OPERATOR;
 import static fr.shom.ping.model.enums.ServiceRole.SERVICE_VISITOR;
 import static jakarta.persistence.FetchType.EAGER;
@@ -101,6 +102,10 @@ public class ServiceUser extends ProUser {
 
     public List<UUID> getServiceIdsWithOperatorRole() {
         return getServiceIdsByServiceRole(SERVICE_OPERATOR);
+    }
+
+    public List<UUID> getServiceIdsWithApproverRole() {
+        return getServiceIdsByServiceRole(SERVICE_APPROVER);
     }
 
     public List<UUID> getServiceIdsWithVisitorRole() {

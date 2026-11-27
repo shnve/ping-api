@@ -33,6 +33,7 @@ import static fr.shom.ping.model.enums.WarningState.DAY_OF_PUBLICATION;
 import static fr.shom.ping.model.enums.WarningState.OUTDATED;
 import static fr.shom.ping.model.enums.WarningState.TO_REVIEW;
 import static fr.shom.ping.model.enums.WarningStatus.CANCELLED;
+import static fr.shom.ping.model.enums.WarningStatus.PENDING_APPROVAL;
 import static fr.shom.ping.utils.SchemaUtil.AFFECTED_AREA_TABLE;
 import static fr.shom.ping.utils.SchemaUtil.FEATURE_PART_TABLE;
 import static fr.shom.ping.utils.SchemaUtil.FIXED_DATE_RANGE_TABLE;
@@ -135,6 +136,9 @@ public final class WarningAdminTableUtil {
                 orderProperty = "w.cancellation_date";
                 direction = DESC;
                 orderByDate = "";
+                break;
+            case PENDING_APPROVAL:
+                orderByDate += "w.last_update DESC";
                 break;
             case DRAFT:
             case MODEL:
@@ -249,7 +253,8 @@ public final class WarningAdminTableUtil {
             "reference_year, " +
             "w.status, me.name as entity, " +
             "(CASE WHEN fo.number IS NOT NULL THEN " +
-            "CONCAT(fo.number,'/',RIGHT(CAST(EXTRACT(YEAR FROM fo.creation_date) AS VARCHAR), 2),' - ',msf.name) ELSE CONCAT(fo.number,'') END) as folder\n");
+            "CONCAT(fo.number,'/',RIGHT(CAST(EXTRACT(YEAR FROM fo.creation_date) AS VARCHAR), 2),' - ',msf.name) ELSE CONCAT(fo.number,'') END) as folder, " +
+            "w.cancellation_requested\n");
         sql.append("WHERE w.id IN (:warningIds)\n");
         sql.append(orderBy);
 
@@ -335,6 +340,7 @@ public final class WarningAdminTableUtil {
             .reviewDate(tuple.getReviewDate())
             .internalComment(tuple.getInternalComment())
             .status(tuple.getStatus())
+            .cancellationRequested(tuple.isCancellationRequested())
             .build();
 
         if (tuple.getStatus() != CANCELLED) {
@@ -378,7 +384,11 @@ public final class WarningAdminTableUtil {
         }
 
         if (!isEmpty(searchCriteria.getStatus())) {
-            queryStringBuilder.append("AND w.status = :status\n");
+            if (searchCriteria.getStatus() == PENDING_APPROVAL) {
+                queryStringBuilder.append("AND (w.status = :status OR (w.status = 'PUBLISHED' AND w.cancellation_requested = TRUE))\n");
+            } else {
+                queryStringBuilder.append("AND w.status = :status\n");
+            }
         }
 
         if (searchCriteria.getToBeDone() != null) {

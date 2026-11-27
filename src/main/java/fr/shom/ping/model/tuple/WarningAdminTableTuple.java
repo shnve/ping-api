@@ -56,13 +56,14 @@ public class WarningAdminTableTuple implements Serializable {
     private WarningStatus status;
     private String entity;
     private String folder;
+    private boolean cancellationRequested;
 
     public WarningAdminTableTuple(UUID id, String nameOfSeries, Integer warningNumber, Integer year, String modelName, UUID generalAreaId, UUID subAreaId,
         Integer generalAreaPosition, String generalAreaName, String generalAreaInternationalName, UUID localityId, UUID localityParentId, Integer localityPosition,
         String localityName, String localityInternationalName, String warningHazardTypeGeneral, String warningHazardTypeDetail, Instant creationDate,
         Instant lastUpdate, LocalDate estimatedPublicationDate, Instant publicationDate, Instant cancellationDate, LocalDate endOfBroadcastDate,
         LocalDate reviewDate, String internalComment, Integer warningStateOrder, String referenceNameOfSeries, Integer referenceWarningNumber,
-        Integer referenceYear, String status, String entity, String folder) {
+        Integer referenceYear, String status, String entity, String folder, Boolean cancellationRequested) {
         this.id = id;
         this.nameOfSeries = nameOfSeries;
         this.warningNumber = warningNumber;
@@ -97,5 +98,6 @@ public class WarningAdminTableTuple implements Serializable {
         this.status = WarningStatus.valueOf(status);
         this.entity = entity;
         this.folder = folder;
+        this.cancellationRequested = Boolean.TRUE.equals(cancellationRequested);
     }
 }

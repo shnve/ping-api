@@ -23,6 +23,9 @@ public interface ServiceUserRepository extends JpaRepository<ServiceUser, UUID> 
     @Query("SELECT DISTINCT u FROM ServiceUser u INNER JOIN u.roles r WHERE r.serviceId = :serviceId")
     List<ServiceUser> findAllWithRoleOnService(UUID serviceId);
 
+    @Query("SELECT DISTINCT u FROM ServiceUser u INNER JOIN u.roles r WHERE r.serviceId = :serviceId AND r.serviceRole = :role AND u.status = fr.shom.ping.model.enums.UserStatus.ENABLED")
+    List<ServiceUser> findAllEnabledByServiceIdAndRole(UUID serviceId, ServiceRole role);
+
     @Query("SELECT DISTINCT u FROM ServiceUser u INNER JOIN u.roles r WHERE r.serviceId IN :serviceIds")
     Set<ServiceUser> findAllWithRoleOnServices(List<UUID> serviceIds);
 

@@ -351,8 +351,12 @@ public final class S124v2Util {
     }
 
     private S124v2NWReferencesDto buildReferences(List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode) {
+        return buildReferences(DEFAULT_LANGUAGE, warnings, referenceCategoryCode);
+    }
+
+    private S124v2NWReferencesDto buildReferences(String lang, List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode) {
         final String referencesGmlId = referenceCategoryCode.getLabel();
-        return buildNWReferencesDto(DEFAULT_LANGUAGE, warnings, referenceCategoryCode, referencesGmlId);
+        return buildNWReferencesDto(lang, warnings, referenceCategoryCode, referencesGmlId);
     }
 
     private S124v2NWReferencesDto buildNWReferencesDto(String lang, List<Warning> warnings, S124ReferenceCategoryCode referenceCategoryCode,
@@ -606,17 +610,21 @@ public final class S124v2Util {
     }
 
     public S124V2ExchangeSetDto buildS124ExchangeSetDtoFromInForceWarnings(List<Warning> warnings) {
+        return buildS124ExchangeSetDtoFromInForceWarnings(warnings, DEFAULT_LANGUAGE);
+    }
+
+    public S124V2ExchangeSetDto buildS124ExchangeSetDtoFromInForceWarnings(List<Warning> warnings, String lang) {
         return S124V2ExchangeSetDto.builder()
-            .dataSet(singletonList(mapInForceWarningToS124DataSet(warnings)))
+            .dataSet(singletonList(mapInForceWarningToS124DataSet(warnings, lang)))
             .build();
     }
 
-    private S124v2DataSetDto mapInForceWarningToS124DataSet(List<Warning> warnings) {
+    private S124v2DataSetDto mapInForceWarningToS124DataSet(List<Warning> warnings, String lang) {
         final S124v2DataSetDto dataSet = new S124v2DataSetDto();
         // Add References
         dataSet.getImember().add(
             S124v2MemberDto.builder()
-                .references(singletonList(buildReferences(warnings, S124ReferenceCategoryCode.IN_FORCE)))
+                .references(singletonList(buildReferences(lang, warnings, S124ReferenceCategoryCode.IN_FORCE)))
                 .build()
         );
         return dataSet;

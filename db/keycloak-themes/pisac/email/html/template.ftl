@@ -72,7 +72,7 @@
             <p style="margin:0 0 12px 0;font-size:11px;color:#64748B;">La plataforma PISAC presenta una selecci&oacute;n de decretos mar&iacute;timos. Para mayor informaci&oacute;n consultar las publicaciones de las organismos competentes.</p>
             <p style="margin:0;padding-top:10px;border-top:1px dashed #CBD5E1;font-size:11px;color:#64748B;">
                 No responda ni reenv&iacute;e correos a esta cuenta: es una cuenta no monitoreada.
-                Para cualquier consulta, escriba a <a href="mailto:shnser@shn.gob.ve" style="color:#1F7FA6;font-weight:600;text-decoration:none;">shnser@shn.gob.ve</a>.
+                Para cualquier consulta, escriba a <a href="mailto:shnayunav@shn.gob.ve" style="color:#1F7FA6;font-weight:600;text-decoration:none;">shnayunav@shn.gob.ve</a>.
             </p>
         </td>
     </tr>

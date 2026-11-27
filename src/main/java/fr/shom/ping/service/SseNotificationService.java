@@ -194,6 +194,46 @@ public class SseNotificationService {
         }
     }
 
+    public void sendWarningApprovalRequestedNotification(Warning warning, boolean cancellationRequest, String comment) {
+        final MaritimeService service = warning.getSerie().getMaritimeService();
+        final String label = formatWarningApprovalTitle(warning);
+        final String title = (cancellationRequest ? "Cancelación por aprobar: " : "Publicación por aprobar: ") + label;
+        final List<Notification> notifications = notificationAdminService.createForWarningApprovers(title, service, warning);
+        for (Notification notification : notifications) {
+            final ServiceUser approver = notification.getServiceUser();
+            sendNotification(approver.getId().toString(), new NotificationDto(notification));
+            emailNotificationService.sendWarningApprovalRequestedEmail(warning, cancellationRequest, comment, approver.getEmail());
+        }
+    }
+
+    public void sendWarningApprovalDecisionNotification(Warning warning, ServiceUser requester, boolean approved, boolean wasCancellation, String comment) {
+        if (requester == null) {
+            return;
+        }
+        final MaritimeService service = warning.getSerie().getMaritimeService();
+        final String label = formatWarningApprovalTitle(warning);
+        final NotificationType type = approved ? NotificationType.WARNING_APPROVED : NotificationType.WARNING_REJECTED;
+        final String title;
+        if (approved) {
+            title = (wasCancellation ? "Cancelación aprobada: " : "Publicación aprobada: ") + label;
+        } else {
+            final String suffix = (comment != null && !comment.isBlank()) ? " — " + comment : "";
+            title = (wasCancellation ? "Cancelación rechazada: " : "Devuelto para corrección: ") + label + suffix;
+        }
+        final Notification notification = notificationAdminService.createForWarningRequester(title, type, requester, service, warning);
+        sendNotification(requester.getId().toString(), new NotificationDto(notification));
+        emailNotificationService.sendWarningApprovalDecisionEmail(warning, approved, wasCancellation, comment, requester.getEmail());
+    }
+
+    private static String formatWarningApprovalTitle(Warning warning) {
+        if (warning.getWarningNumber() != null && warning.getYear() != null) {
+            String yearStr = warning.getYear().toString();
+            String shortYear = yearStr.length() >= 2 ? yearStr.substring(yearStr.length() - 2) : yearStr;
+            return warning.getNameOfSeries() + " " + warning.getWarningNumber() + "/" + shortYear;
+        }
+        return warning.getNameOfSeries();
+    }
+
     public void sendSurveyNotification(Survey survey, NotificationType type) {
         final Survey surveyFromDatabase = surveyRepository.findById(survey.getId()).orElseThrow(NotFoundException::new);
         final List<Notification> notifications = notificationAdminService.createSurveyNotificationsForUsers(type, surveyFromDatabase);

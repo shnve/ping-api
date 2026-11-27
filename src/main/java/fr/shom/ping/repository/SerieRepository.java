@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface SerieRepository extends JpaRepository<Serie, UUID> {
     Optional<Serie> findOneByNameIgnoreCase(String name);
 
+    Optional<Serie> findOneByInternationalNameIgnoreCase(String internationalName);
+
     List<Serie> findAllByMaritimeServiceIdIn(List<UUID> serviceIds);
 
     @Query(

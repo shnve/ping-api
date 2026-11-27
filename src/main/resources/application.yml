@@ -20,6 +20,7 @@ springdoc:
   paths-to-exclude: /admin-api/**
   swagger-ui:
     path: /swagger-ui
+    urls-primary-name: PISAC - Servicios de datos (S-124 / SECOM)
 
 ping:
   portal-url: ${PING_PORTAL_URL:http://localhost:4200}
@@ -32,7 +33,7 @@ ping:
     name: "Servicio de Hidrografía, Oceanografía, Meteorología y Cartografiado Náutico (SHN Venezuela)"
     address: "Playa Grande, La Guaira"
     country: Venezuela
-    electronic-mail-address: ${SHN_CONTACT_EMAIL:}
+    electronic-mail-address: ${SHN_CONTACT_EMAIL:shnayunav@shn.gob.ve}
     function: information
     linkage: ${ping.portal-url}
     resource-name: PISAC - Plataforma de información de seguridad acuática

@@ -150,6 +150,7 @@ public class WarningToWarningAdminDetailDtoMapper implements Function<Warning, W
         warningAdminEditDto.setCancellationTime(warning.getCancellationDate());
         warningAdminEditDto.setAddCancellationTimeToTelex(warning.isAddCancellationTimeToTelex());
         warningAdminEditDto.setInternalComment(warning.getInternalComment());
+        warningAdminEditDto.setRejectionComment(warning.getRejectionComment());
         warningAdminEditDto.setBathy(warning.getIsBathy());
 
         warningAdminEditDto.setLastUpdate(warning.getLastUpdate());

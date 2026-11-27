@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.schemes-shn-approval.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="DB.Schemes.SHN.Warning-approval-workflow" author="pisac">
+        <addColumn tableName="warning">
+            <column name="approval_requested_by_id" type="${id.type}"/>
+            <column name="approval_requested_at" type="${timestamp.type}"/>
+            <column name="approved_by_id" type="${id.type}"/>
+            <column name="approved_at" type="${timestamp.type}"/>
+            <column name="rejection_comment" type="${clob.type}"/>
+            <column name="cancellation_requested" type="${boolean.type}" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cancellation_request_comment" type="${clob.type}"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="warning"
+            baseColumnNames="approval_requested_by_id"
+            referencedTableName="pro_user"
+            referencedColumnNames="id"
+            constraintName="fk_warning_approval_requested_by"/>
+
+        <addForeignKeyConstraint
+            baseTableName="warning"
+            baseColumnNames="approved_by_id"
+            referencedTableName="pro_user"
+            referencedColumnNames="id"
+            constraintName="fk_warning_approved_by"/>
+    </changeSet>
+</databaseChangeLog>

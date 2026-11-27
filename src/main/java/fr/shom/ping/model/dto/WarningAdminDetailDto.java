@@ -33,6 +33,7 @@ import static fr.shom.ping.model.enums.WarningReferenceCategoryEnum.IN_FORCE;
 import static fr.shom.ping.model.enums.WarningReferenceCategoryEnum.REPLACEMENT;
 import static fr.shom.ping.model.enums.WarningReferenceCategoryEnum.SOURCE_REFERENCE;
 import static fr.shom.ping.model.enums.WarningStatus.DRAFT;
+import static fr.shom.ping.model.enums.WarningStatus.PENDING_APPROVAL;
 import static fr.shom.ping.utils.WarningUtil.checkIfAtLeastInformationOrDetailsIsFilledForEachPart;
 import static fr.shom.ping.utils.WarningUtil.checkIfAtLeastOneMandatoryLanguageIsMissing;
 import static java.util.stream.Collectors.toCollection;
@@ -85,6 +86,22 @@ public class WarningAdminDetailDto extends AbstractWarningDetailDto {
     private LastUpdateUserDto lastUpdateUser = new LastUpdateUserDto();
 
     private boolean canBePublished;
+
+    private boolean canRequestApproval;
+
+    private boolean cancellationRequested;
+
+    private String cancellationRequestComment;
+
+    private String rejectionComment;
+
+    private LastUpdateUserDto approvalRequestedBy;
+
+    private Instant approvalRequestedAt;
+
+    private LastUpdateUserDto approvedBy;
+
+    private Instant approvedAt;
 
     @Default
     private Set<MaritimeEntityDto> maritimeEntities = new HashSet<>();
@@ -146,12 +163,30 @@ public class WarningAdminDetailDto extends AbstractWarningDetailDto {
             atLeastOneMandatoryLanguageIsMissing = checkIfAtLeastOneMandatoryLanguageIsMissing(warning);
         }
 
-        canBePublished = warning.getStatus() == DRAFT
-            && isNotEmpty(warning.getFeatureParts())
+        boolean readyForPublication = isNotEmpty(warning.getFeatureParts())
             && atLeastInformationOrDetailsIsFilledForEachPart
             && !atLeastOneMandatoryLanguageIsMissing
             && isNotEmpty(warning.getGeneralAreas())
             && NavtexUtil.isConfigValid(warning.getNavtexConfig(), navtexSource);
+
+        canRequestApproval = warning.getStatus() == DRAFT && readyForPublication;
+        canBePublished = warning.getStatus() == PENDING_APPROVAL && readyForPublication;
+
+        cancellationRequested = Boolean.TRUE.equals(warning.getCancellationRequested());
+        cancellationRequestComment = warning.getCancellationRequestComment();
+        rejectionComment = warning.getRejectionComment();
+        approvalRequestedAt = warning.getApprovalRequestedAt();
+        approvedAt = warning.getApprovedAt();
+        if (warning.getApprovalRequestedBy() != null) {
+            approvalRequestedBy = new LastUpdateUserDto();
+            approvalRequestedBy.setFirstname(warning.getApprovalRequestedBy().getFirstname());
+            approvalRequestedBy.setLastname(warning.getApprovalRequestedBy().getLastname());
+        }
+        if (warning.getApprovedBy() != null) {
+            approvedBy = new LastUpdateUserDto();
+            approvedBy.setFirstname(warning.getApprovedBy().getFirstname());
+            approvedBy.setLastname(warning.getApprovedBy().getLastname());
+        }
 
         folders = warning.getNotions().stream()
             .map(Notion::getFolder)
@@ -160,7 +195,7 @@ public class WarningAdminDetailDto extends AbstractWarningDetailDto {
             .sorted()
             .collect(toCollection(TreeSet::new));
 
-        forceToReview = warning.getForceToReview();
+        forceToReview = false;
 
         warningReferencesAsPublicsReferences = warning.getWarningsPublicsReferences().stream()
             .map(WarningReferenceAsPublicReferenceDto::fromWarningPublicReference)

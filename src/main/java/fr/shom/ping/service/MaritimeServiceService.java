@@ -140,6 +140,12 @@ public class MaritimeServiceService {
                 return;
             }
 
+            final List<UUID> serviceIdsWithApproverRole = serviceUser.getServiceIdsWithApproverRole();
+            if (isNotEmpty(serviceIdsWithApproverRole)) {
+                assignToAnotherServiceAsMainService(id, serviceIdsWithApproverRole, serviceUser);
+                return;
+            }
+
             final List<UUID> serviceIdsWithVisitorRole = serviceUser.getServiceIdsWithVisitorRole();
             if (isNotEmpty(serviceIdsWithVisitorRole)) {
                 assignToAnotherServiceAsMainService(id, serviceIdsWithVisitorRole, serviceUser);

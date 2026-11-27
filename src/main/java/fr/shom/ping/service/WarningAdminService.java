@@ -86,6 +86,7 @@ import static fr.shom.ping.model.enums.GlobalWarningType.NOTICE;
 import static fr.shom.ping.model.enums.GlobalWarningType.NOTICE_TP;
 import static fr.shom.ping.model.enums.SerieType.LOCAL_NAVIGATIONAL_WARNING;
 import static fr.shom.ping.model.enums.ServiceRole.SERVICE_ADMIN;
+import static fr.shom.ping.model.enums.ServiceRole.SERVICE_APPROVER;
 import static fr.shom.ping.model.enums.ServiceRole.SERVICE_OPERATOR;
 import static fr.shom.ping.model.enums.UserStatus.ENABLED;
 import static fr.shom.ping.model.enums.WarningHazardTypeGeneral.IN_FORCE_BULLETIN;
@@ -96,6 +97,7 @@ import static fr.shom.ping.model.enums.WarningReferenceCategoryEnum.SOURCE_REFER
 import static fr.shom.ping.model.enums.WarningStatus.CANCELLED;
 import static fr.shom.ping.model.enums.WarningStatus.DRAFT;
 import static fr.shom.ping.model.enums.WarningStatus.MODEL;
+import static fr.shom.ping.model.enums.WarningStatus.PENDING_APPROVAL;
 import static fr.shom.ping.model.enums.WarningStatus.PUBLISHED;
 import static fr.shom.ping.model.mapper.WarningToWarningAdminDetailDtoMapper.getReferencesByCategory;
 import static fr.shom.ping.utils.UserUtil.checkServiceUserHasNoRequiredRoleOnSerieService;
@@ -983,15 +985,112 @@ public class WarningAdminService {
     }
 
     @Transactional
-    public void publish(UUID id, String username) throws ServiceException {
+    public void requestApproval(UUID id, String username) {
         Warning warning = repository.findById(id).orElseThrow(NotFoundException::new);
         Serie serie = warning.getSerie();
         ProUser proUser = checkAndGetProUser(username, serie);
+        if (proUser.getStatus() != ENABLED) {
+            throw new ForbiddenException("Current user is not enabled");
+        }
 
         if (warning.getStatus() != DRAFT) {
             throw new BadRequestException("Current warning status is invalid");
         }
 
+        validateWarningReadyForPublication(warning, serie);
+
+        Instant now = now();
+        warning.setStatus(PENDING_APPROVAL);
+        warning.setApprovalRequestedBy(proUser);
+        warning.setApprovalRequestedAt(now);
+        warning.setRejectionComment(null);
+        warning.setForceToReview(false);
+        warning.setLastUpdate(now);
+        warning.setLastUpdateUser(proUser);
+
+        Warning savedWarning = repository.save(warning);
+        sseNotificationService.sendWarningApprovalRequestedNotification(savedWarning, false, null);
+    }
+
+    @Transactional
+    public void approve(UUID id, String username) throws ServiceException {
+        Warning warning = repository.findById(id).orElseThrow(NotFoundException::new);
+        Serie serie = warning.getSerie();
+        ServiceUser approver = checkAndGetApprover(username, serie);
+        ServiceUser requester = warning.getApprovalRequestedBy() instanceof ServiceUser su ? su : null;
+
+        if (warning.getStatus() == PENDING_APPROVAL) {
+            validateWarningReadyForPublication(warning, serie);
+            Instant now = now();
+            warning.setApprovedBy(approver);
+            warning.setApprovedAt(now);
+            warning.setRejectionComment(null);
+            warning.setForceToReview(false);
+            executePublish(warning, serie, approver, now);
+            sseNotificationService.sendWarningApprovalDecisionNotification(warning, requester, true, false, null);
+            return;
+        }
+
+        if (warning.getStatus() == PUBLISHED && Boolean.TRUE.equals(warning.getCancellationRequested())) {
+            Instant now = now();
+            warning.setCancellationRequested(false);
+            warning.setApprovedBy(approver);
+            warning.setApprovedAt(now);
+            warning.setRejectionComment(null);
+            Warning cancelledWarning = executeCancel(warning, approver, now);
+            sseNotificationService.sendWarningApprovalDecisionNotification(cancelledWarning, requester, true, true, null);
+            return;
+        }
+
+        throw new BadRequestException("Warning has no pending approval request");
+    }
+
+    @Transactional
+    public void reject(UUID id, String comment, String username) {
+        if (!hasText(comment)) {
+            throw new BadRequestException("Rejection comment is mandatory");
+        }
+        Warning warning = repository.findById(id).orElseThrow(NotFoundException::new);
+        Serie serie = warning.getSerie();
+        ServiceUser approver = checkAndGetApprover(username, serie);
+        ServiceUser requester = warning.getApprovalRequestedBy() instanceof ServiceUser su ? su : null;
+        String sanitizedComment = comment.trim();
+        Instant now = now();
+
+        if (warning.getStatus() == PENDING_APPROVAL) {
+            warning.setStatus(DRAFT);
+            warning.setRejectionComment(sanitizedComment);
+            warning.setLastUpdate(now);
+            warning.setLastUpdateUser(approver);
+            Warning saved = repository.save(warning);
+            sseNotificationService.sendWarningApprovalDecisionNotification(saved, requester, false, false, sanitizedComment);
+            return;
+        }
+
+        if (warning.getStatus() == PUBLISHED && Boolean.TRUE.equals(warning.getCancellationRequested())) {
+            warning.setCancellationRequested(false);
+            warning.setCancellationRequestComment(null);
+            warning.setRejectionComment(sanitizedComment);
+            warning.setLastUpdate(now);
+            warning.setLastUpdateUser(approver);
+            Warning saved = repository.save(warning);
+            sseNotificationService.sendWarningApprovalDecisionNotification(saved, requester, false, true, sanitizedComment);
+            return;
+        }
+
+        throw new BadRequestException("Warning has no pending approval request");
+    }
+
+    /**
+     * PISAC: la publicación directa sin visto bueno no aplica; delega en {@link #approve(UUID, String)},
+     * que exige estado {@code PENDING_APPROVAL} y rol {@code SERVICE_APPROVER}.
+     */
+    @Transactional
+    public void publish(UUID id, String username) throws ServiceException {
+        approve(id, username);
+    }
+
+    private void validateWarningReadyForPublication(Warning warning, Serie serie) {
         if (isEmpty(warning.getFeatureParts())) {
             throw new BadRequestException("Warning should have at least one feature part");
         }
@@ -1017,7 +1116,9 @@ public class WarningAdminService {
         if (!NavtexUtil.isConfigValid(warning.getNavtexConfig(), serie.getNavtexSource())) {
             throw new BadRequestException("Warning should have valid NAVTEX configuration");
         }
+    }
 
+    private void executePublish(Warning warning, Serie serie, ProUser proUser, Instant now) throws ServiceException {
         // set "IN_FORCE" warning reference if warning hazard type general is IN_FORCE_BULLETIN
         if (IN_FORCE_BULLETIN.equals(warning.getWarningHazardTypeGeneral())) {
             List<Warning> inForceWarnings = repository.findAllByStatusAndSerie(PUBLISHED, warning.getSerie());
@@ -1030,7 +1131,6 @@ public class WarningAdminService {
             );
         }
 
-        Instant now = now();
         warning.setLastUpdate(now);
         warning.setPublicationTime(now);
         warning.setLastUpdateUser(proUser);
@@ -1164,17 +1264,58 @@ public class WarningAdminService {
         return proUser;
     }
 
+    private ServiceUser checkAndGetApprover(String username, Serie serie) {
+        ProUser proUser = proUserService.findByEmail(username);
+        if (proUser == null || proUser.getStatus() != ENABLED || !(proUser instanceof ServiceUser serviceUser)) {
+            throw new ForbiddenException();
+        }
+
+        UUID serviceId = serie.getMaritimeService().getId();
+        boolean isApprover = serviceUser.getRoles().stream()
+            .anyMatch(role -> role.getServiceId().equals(serviceId) && role.getServiceRole() == SERVICE_APPROVER);
+        if (!isApprover) {
+            throw new ForbiddenException("User has no SERVICE_APPROVER role for serviceId " + serviceId);
+        }
+        return serviceUser;
+    }
+
     @Transactional
     public UUID cancel(UUID id, String username) throws ServiceException {
+        return requestCancellation(id, null, username);
+    }
+
+    @Transactional
+    public UUID requestCancellation(UUID id, String comment, String username) {
         final Warning warning = repository.findById(id).orElseThrow(NotFoundException::new);
         final Serie serie = warning.getSerie();
         ProUser proUser = checkAndGetProUser(username, serie);
+        if (proUser.getStatus() != ENABLED) {
+            throw new ForbiddenException("Current user is not enabled");
+        }
 
         if (warning.getStatus() != PUBLISHED) {
             throw new BadRequestException("Current warning status is invalid");
         }
 
+        if (Boolean.TRUE.equals(warning.getCancellationRequested())) {
+            throw new BadRequestException("Cancellation approval is already pending");
+        }
+
         final Instant now = now();
+        warning.setCancellationRequested(true);
+        warning.setCancellationRequestComment(hasText(comment) ? comment.trim() : null);
+        warning.setApprovalRequestedBy(proUser);
+        warning.setApprovalRequestedAt(now);
+        warning.setRejectionComment(null);
+        warning.setLastUpdate(now);
+        warning.setLastUpdateUser(proUser);
+
+        final Warning savedWarning = repository.save(warning);
+        sseNotificationService.sendWarningApprovalRequestedNotification(savedWarning, true, savedWarning.getCancellationRequestComment());
+        return savedWarning.getId();
+    }
+
+    private Warning executeCancel(Warning warning, ProUser proUser, Instant now) throws ServiceException {
         warning.setLastUpdate(now);
         warning.setCancellationDate(now);
         warning.setLastUpdateUser(proUser);
@@ -1192,7 +1333,7 @@ public class WarningAdminService {
             throw new ServiceException("Failed to generate NAVTEX cancellation file", e);
         }
 
-        return savedWarning.getId();
+        return savedWarning;
     }
 
     @Transactional

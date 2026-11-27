@@ -72,7 +72,7 @@ public class EmailNotificationService {
         "</p>" +
         "<div style=\"margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-size: 11px; color: #94a3b8;\">" +
         "No responda o reenv&iacute;e correos a esta cuenta. Esta es una cuenta no monitoreada.<br/>" +
-        "Para cualquier consulta adicional, por favor enviar un correo electr&oacute;nico a <a href=\"mailto:shnser@shn.gob.ve\" style=\"color: #0066cc; text-decoration: none;\">shnser@shn.gob.ve</a>" +
+        "Para cualquier consulta adicional, por favor enviar un correo electr&oacute;nico a <a href=\"mailto:shnayunav@shn.gob.ve\" style=\"color: #0066cc; text-decoration: none;\">shnayunav@shn.gob.ve</a>" +
         "</div>" +
         "</div>";
 
@@ -298,5 +298,79 @@ public class EmailNotificationService {
                 .body(xssSanitizerService.sanitize(body)) // PISAC (F5.3.7): cabecera y firma las pone SmtpEmailService (PisacEmailTemplate)
                 .build()
         );
+    }
+
+    public void sendWarningApprovalRequestedEmail(Warning warning, boolean cancellationRequest, String comment, String email) {
+        if (StringUtils.isBlank(email) || !EmailValidator.getInstance().isValid(email)) {
+            return;
+        }
+        final String warningLabel = formatWarningLabel(warning);
+        final String accessLink = emailNotificationProperties.getEmailFrontLinkRoot()
+            + "/administration/warnings/tables?tab=PENDING_APPROVAL";
+        final String actionLabel = cancellationRequest ? "cancelaci&oacute;n" : "publicaci&oacute;n";
+        final String subject = (cancellationRequest ? "Solicitud de visto bueno (cancelación): " : "Solicitud de visto bueno (publicación): ")
+            + warningLabel;
+
+        final StringBuilder body = new StringBuilder("Se ha solicitado visto bueno para la ")
+            .append(actionLabel)
+            .append(" del aviso / advertencia ")
+            .append("<strong>").append(warningLabel).append("</strong>.")
+            .append(EMAIL_LINE_SEPARATOR);
+        if (StringUtils.isNotBlank(comment)) {
+            body.append("Observaci&oacute;n: ")
+                .append(xssSanitizerService.sanitize(comment))
+                .append(EMAIL_LINE_SEPARATOR);
+        }
+        body.append(A_HREF).append(accessLink).append("\">Revisar solicitudes pendientes de visto bueno</a>");
+
+        sendEmailNotification(email, subject, body.toString());
+    }
+
+    public void sendWarningApprovalDecisionEmail(Warning warning, boolean approved, boolean wasCancellation, String comment, String email) {
+        if (StringUtils.isBlank(email) || !EmailValidator.getInstance().isValid(email)) {
+            return;
+        }
+        final String warningLabel = formatWarningLabel(warning);
+        final String targetTab = approved ? (wasCancellation ? "CANCELLED" : "PUBLISHED") : (wasCancellation ? "PUBLISHED" : "DRAFT");
+        final String accessLink = emailNotificationProperties.getEmailFrontLinkRoot()
+            + "/administration/warnings/tables?tab=" + targetTab;
+
+        final String subject;
+        final StringBuilder body = new StringBuilder();
+        if (approved) {
+            subject = (wasCancellation ? "Visto bueno otorgado (cancelado): " : "Visto bueno otorgado (publicado): ") + warningLabel;
+            body.append("Se ha otorgado el visto bueno y se ha ")
+                .append(wasCancellation ? "cancelado" : "publicado")
+                .append(" el aviso / advertencia <strong>")
+                .append(warningLabel)
+                .append("</strong>.")
+                .append(EMAIL_LINE_SEPARATOR);
+        } else {
+            subject = (wasCancellation ? "Solicitud de cancelación rechazada: " : "Devuelto para corrección: ") + warningLabel;
+            body.append(wasCancellation
+                ? "La solicitud de cancelaci&oacute;n del aviso / advertencia <strong>"
+                : "El borrador del aviso / advertencia <strong>")
+                .append(warningLabel)
+                .append(wasCancellation ? "</strong> fue rechazada." : "</strong> fue devuelto para correcci&oacute;n.")
+                .append(EMAIL_LINE_SEPARATOR);
+            if (StringUtils.isNotBlank(comment)) {
+                body.append("Observaciones del aprobador: ")
+                    .append(xssSanitizerService.sanitize(comment))
+                    .append(EMAIL_LINE_SEPARATOR);
+            }
+        }
+        body.append(A_HREF).append(accessLink).append("\">Abrir tablas de avisos y advertencias</a>");
+
+        sendEmailNotification(email, subject, body.toString());
+    }
+
+    private static String formatWarningLabel(Warning warning) {
+        if (warning.getWarningNumber() != null && warning.getYear() != null) {
+            String shortYear = warning.getYear().toString().length() >= 2
+                ? warning.getYear().toString().substring(warning.getYear().toString().length() - 2)
+                : warning.getYear().toString();
+            return warning.getNameOfSeries() + " " + warning.getWarningNumber() + "/" + shortYear;
+        }
+        return warning.getNameOfSeries() + " (borrador)";
     }
 }

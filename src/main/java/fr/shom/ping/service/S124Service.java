@@ -10,6 +10,7 @@ import fr.shom.ping.utils.S124Util;
 import fr.shom.ping.utils.S124v2Util;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -37,13 +38,22 @@ public class S124Service {
     public static final String VERSION_1 = "v1";
     public static final String VERSION_2 = "v2";
 
-    public AbstractS124ExchangeSetBaseDto findByNameOfSeries(String version, String nameOfSeries, String lang) {
-        Serie serie = getSerie(nameOfSeries, lang);
+    private static final Comparator<Warning> WARNING_ORDER = Comparator
+        .comparing(Warning::getNameOfSeries, Comparator.nullsLast(String::compareToIgnoreCase))
+        .thenComparing(Warning::getYear, Comparator.nullsLast(Integer::compareTo))
+        .thenComparing(Warning::getWarningNumber, Comparator.nullsLast(Integer::compareTo));
 
-        List<Warning> warnings = repository.findAll(
-            warning.serie.eq(serie)
-                .and(warning.status.eq(PUBLISHED))
-        );
+    public AbstractS124ExchangeSetBaseDto findByNameOfSeries(String version, String nameOfSeries, String lang) {
+        final List<Warning> warnings;
+        if (!hasText(nameOfSeries)) {
+            warnings = getPublishedWarningsByLanguage(lang);
+        } else {
+            Serie serie = getSerie(nameOfSeries, lang);
+            warnings = repository.findAll(
+                warning.serie.eq(serie)
+                    .and(warning.status.eq(PUBLISHED))
+            ).stream().sorted(WARNING_ORDER).toList();
+        }
 
         if (VERSION_1.equals(version)) {
             return S124Util.buildS124ExchangeSetDtoFromWarnings(warnings, lang);
@@ -75,12 +85,17 @@ public class S124Service {
     }
 
     public AbstractS124ExchangeSetBaseDto getInForceNwMessageIdentifiers(String version, String nameOfSeries) {
-        final List<Warning> warnings = getPublishedWarnings(nameOfSeries);
+        return getInForceNwMessageIdentifiers(version, nameOfSeries, S124Util.DEFAULT_LANGUAGE);
+    }
+
+    public AbstractS124ExchangeSetBaseDto getInForceNwMessageIdentifiers(String version, String nameOfSeries, String lang) {
+        validateLanguageWhenNoSerieSpecified(nameOfSeries, lang);
+        final List<Warning> warnings = getPublishedWarnings(nameOfSeries, lang);
 
         if (VERSION_1.equals(version)) {
             return S124Util.buildS124ExchangeSetDtoFromInForceWarnings(warnings);
         } else {
-            return s124v2Util.buildS124ExchangeSetDtoFromInForceWarnings(warnings);
+            return s124v2Util.buildS124ExchangeSetDtoFromInForceWarnings(warnings, lang);
         }
     }
 
@@ -89,15 +104,13 @@ public class S124Service {
             throw new S124Exception("nameOfSeries is missing");
         }
 
-        Optional<Serie> optionalSerie = serieRepository.findOneByNameIgnoreCase(nameOfSeries);
+        Optional<Serie> optionalSerie = findSerieByName(nameOfSeries);
         if (optionalSerie.isEmpty()) {
             throw new S124Exception("nameOfSeries is unknown");
         }
 
         Serie serie = optionalSerie.get();
-        if (Stream.of(serie.getMandatoryLanguages(), serie.getOptionalLanguages())
-            .flatMap(Collection::stream)
-            .noneMatch(serieLanguage -> serieLanguage.equals(lang))) {
+        if (!isLanguageSupportedBySerie(serie, lang)) {
             throw new S124Exception("lang is not available for this nameOfSeries");
         }
         return serie;
@@ -154,19 +167,69 @@ public class S124Service {
     }
 
     public List<Warning> getPublishedWarnings(String nameOfSeries) {
+        return getPublishedWarnings(nameOfSeries, null);
+    }
+
+    public List<Warning> getPublishedWarnings(String nameOfSeries, String lang) {
         if (!hasText(nameOfSeries)) {
-            throw new S124Exception("nameOfSeries is missing");
+            return repository.findByStatus(PUBLISHED).stream()
+                .filter(w -> !hasText(lang) || (w.getSerie() != null && isLanguageSupportedBySerie(w.getSerie(), lang)))
+                .sorted(WARNING_ORDER)
+                .toList();
         }
 
-        final Optional<Serie> optionalSerie = serieRepository.findOneByNameIgnoreCase(nameOfSeries);
+        final Optional<Serie> optionalSerie = findSerieByName(nameOfSeries);
         if (optionalSerie.isEmpty()) {
             throw new S124Exception("nameOfSeries is unknown");
         }
 
         final Serie serie = optionalSerie.get();
+        if (hasText(lang) && !isLanguageSupportedBySerie(serie, lang)) {
+            throw new S124Exception("lang is not available for this nameOfSeries");
+        }
         return repository.findAll(
             warning.serie.eq(serie)
                 .and(warning.status.eq(PUBLISHED))
-        );
+        ).stream().sorted(WARNING_ORDER).toList();
+    }
+
+    private List<Warning> getPublishedWarningsByLanguage(String lang) {
+        if (!hasText(lang)) {
+            throw new S124Exception("lang is not available");
+        }
+        final List<Serie> allSeries = serieRepository.findAll();
+        if (!allSeries.isEmpty() && allSeries.stream().noneMatch(s -> isLanguageSupportedBySerie(s, lang))) {
+            throw new S124Exception("lang is not available");
+        } else if (allSeries.isEmpty() && !S124Util.DEFAULT_LANGUAGE.equals(lang) && !S124Util.INTERNATIONAL_LANGUAGE.equals(lang)) {
+            throw new S124Exception("lang is not available");
+        }
+        return repository.findByStatus(PUBLISHED).stream()
+            .filter(w -> w.getSerie() != null && isLanguageSupportedBySerie(w.getSerie(), lang))
+            .sorted(WARNING_ORDER)
+            .toList();
+    }
+
+    private void validateLanguageWhenNoSerieSpecified(String nameOfSeries, String lang) {
+        if (!hasText(nameOfSeries) && hasText(lang)) {
+            final List<Serie> allSeries = serieRepository.findAll();
+            if (!allSeries.isEmpty() && allSeries.stream().noneMatch(s -> isLanguageSupportedBySerie(s, lang))) {
+                throw new S124Exception("lang is not available");
+            } else if (allSeries.isEmpty() && !S124Util.DEFAULT_LANGUAGE.equals(lang) && !S124Util.INTERNATIONAL_LANGUAGE.equals(lang)) {
+                throw new S124Exception("lang is not available");
+            }
+        }
+    }
+
+    private Optional<Serie> findSerieByName(String nameOfSeries) {
+        final String trimmed = nameOfSeries.trim();
+        return serieRepository.findOneByNameIgnoreCase(trimmed)
+            .or(() -> serieRepository.findOneByInternationalNameIgnoreCase(trimmed));
+    }
+
+    private static boolean isLanguageSupportedBySerie(Serie serie, String lang) {
+        return Stream.of(serie.getMandatoryLanguages(), serie.getOptionalLanguages())
+            .filter(java.util.Objects::nonNull)
+            .flatMap(Collection::stream)
+            .anyMatch(serieLanguage -> serieLanguage.equalsIgnoreCase(lang));
     }
 }
