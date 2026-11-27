@@ -5,17 +5,23 @@ import fr.shom.ping.model.dto.CartographyUploadResponse;
 import fr.shom.ping.model.dto.CartographyValidationResult;
 import fr.shom.ping.properties.CartographyProperties;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +48,10 @@ public class CartographyService {
     private static final List<String> VALID_BANDS = List.of(
             "banda1", "banda2", "banda3", "banda4", "banda5", "banda6"
     );
+
+    /** Caché liviana en memoria (~2-4 KB) de extensiones [banda, minLon, minLat, maxLon, maxLat] por carta. */
+    private volatile List<Number[]> cachedBandExtents = null;
+    private volatile long bandExtentsFallbackRetryAtMs = 0L;
 
     /** Carta recibida y guardada en disco, lista para procesarse (de inmediato o en segundo plano). */
     public static class PreparedUpload {
@@ -306,6 +316,7 @@ public class CartographyService {
 
             long totalTimeMs = System.currentTimeMillis() - startTime;
             boolean published = publish == null || publish.isSuccess();
+            invalidateBandExtentsCache();
             String message;
             if (publish == null) {
                 message = "Archivo convertido a COG EPSG:3395. No se solicitó publicar en GeoServer.";
@@ -364,7 +375,9 @@ public class CartographyService {
         if ("banda1".equals(cleanBand) || "banda2".equals(cleanBand)) {
             List<Path> rasters = Files.exists(bandDir) ? listRasters(bandDir) : new ArrayList<>();
             String singleFileName = rasters.isEmpty() ? null : rasters.get(0).getFileName().toString();
-            return geoserverSyncService.resyncSingleChart(cleanBand, singleFileName);
+            GeoserverSyncService.PublishResult singleResult = geoserverSyncService.resyncSingleChart(cleanBand, singleFileName);
+            invalidateBandExtentsCache();
+            return singleResult;
         }
 
         List<String> files = new ArrayList<>();
@@ -382,7 +395,190 @@ public class CartographyService {
                 writeIndexerProperties(bandDir, cleanBand);
             }
         }
-        return geoserverSyncService.resyncMosaic(cleanBand, files);
+        GeoserverSyncService.PublishResult mosaicResult = geoserverSyncService.resyncMosaic(cleanBand, files);
+        invalidateBandExtentsCache();
+        return mosaicResult;
+    }
+
+    /**
+     * Invalida el índice en memoria de extensiones por banda cuando se sube, reemplaza o recarga una carta.
+     */
+    public void invalidateBandExtentsCache() {
+        this.cachedBandExtents = null;
+        this.bandExtentsFallbackRetryAtMs = 0L;
+    }
+
+    /**
+     * Devuelve el índice liviano en memoria de cobertura por banda ({@code [banda, minLon, minLat, maxLon, maxLat]}),
+     * ordenado de mayor detalle (banda 6) a menor (banda 2). Se calcula una sola vez y solo se refresca al cambiar cartas.
+     */
+    public List<Number[]> getBandExtents() {
+        List<Number[]> current = this.cachedBandExtents;
+        long now = System.currentTimeMillis();
+        if (current != null && (this.bandExtentsFallbackRetryAtMs == 0L || now < this.bandExtentsFallbackRetryAtMs)) {
+            return current;
+        }
+        synchronized (this) {
+            current = this.cachedBandExtents;
+            now = System.currentTimeMillis();
+            if (current != null && (this.bandExtentsFallbackRetryAtMs == 0L || now < this.bandExtentsFallbackRetryAtMs)) {
+                return current;
+            }
+            List<Number[]> extents = geoserverSyncService.fetchPublishedBandExtents();
+            boolean fromGeoserver = extents != null && !extents.isEmpty();
+            if (!fromGeoserver) {
+                extents = readBandExtentsFromDiskHeaders();
+            }
+            List<Number[]> sorted = new ArrayList<>(extents);
+            sorted.sort(Comparator.comparingInt((Number[] e) -> e[0].intValue()).reversed());
+            List<Number[]> immutable = Collections.unmodifiableList(sorted);
+            this.cachedBandExtents = immutable;
+            this.bandExtentsFallbackRetryAtMs = fromGeoserver ? 0L : (now + 60_000L);
+            return immutable;
+        }
+    }
+
+    /**
+     * Respaldo instantáneo (~5 ms sin subprocesos GDAL): lee los encabezados IFD GeoTIFF de los archivos COG locales
+     * (bandas 2 a 6) en caso de que GeoServer aún esté iniciando o no responda temporalmente.
+     */
+    private List<Number[]> readBandExtentsFromDiskHeaders() {
+        List<Number[]> list = new ArrayList<>();
+        for (int bandNum = 2; bandNum <= 6; bandNum++) {
+            Path bandDir = resolveStorageBandDir("banda" + bandNum);
+            if (!Files.isDirectory(bandDir)) {
+                continue;
+            }
+            for (Path tif : listRasters(bandDir)) {
+                String lower = tif.getFileName().toString().toLowerCase();
+                if (lower.equals("georeferenced_cog.tif") || lower.equals("georeferenced_carta_cog.tif")) {
+                    continue;
+                }
+                double[] bbox = readCogTiffWgs84Extent(tif);
+                if (bbox != null) {
+                    list.add(new Number[]{
+                            bandNum,
+                            Math.round(bbox[0] * 100000.0) / 100000.0,
+                            Math.round(bbox[1] * 100000.0) / 100000.0,
+                            Math.round(bbox[2] * 100000.0) / 100000.0,
+                            Math.round(bbox[3] * 100000.0) / 100000.0
+                    });
+                }
+            }
+        }
+        return list;
+    }
+
+    /** Extrae [minLon, minLat, maxLon, maxLat] leyendo sólo los primeros 64 KB del encabezado GeoTIFF (EPSG:3395 / 4326). */
+    private double[] readCogTiffWgs84Extent(Path tifPath) {
+        try (FileChannel ch = FileChannel.open(tifPath, StandardOpenOption.READ)) {
+            int toRead = (int) Math.min(65536L, ch.size());
+            if (toRead < 16) {
+                return null;
+            }
+            ByteBuffer buf = ByteBuffer.allocate(toRead);
+            while (buf.hasRemaining() && ch.read(buf) > 0) {
+                // fill header buffer
+            }
+            buf.flip();
+            int limit = buf.limit();
+            byte b0 = buf.get(0);
+            byte b1 = buf.get(1);
+            if (b0 == 'I' && b1 == 'I') {
+                buf.order(ByteOrder.LITTLE_ENDIAN);
+            } else if (b0 == 'M' && b1 == 'M') {
+                buf.order(ByteOrder.BIG_ENDIAN);
+            } else {
+                return null;
+            }
+
+            int version = Short.toUnsignedInt(buf.getShort(2));
+            long width = 0;
+            long height = 0;
+            double[] scale = null;
+            double[] tiepoint = null;
+
+            if (version == 42) {
+                long ifdOff = Integer.toUnsignedLong(buf.getInt(4));
+                if (ifdOff + 2 > limit) {
+                    return null;
+                }
+                int entryCount = Short.toUnsignedInt(buf.getShort((int) ifdOff));
+                for (int i = 0; i < entryCount; i++) {
+                    int pos = (int) ifdOff + 2 + i * 12;
+                    if (pos + 12 > limit) {
+                        break;
+                    }
+                    int tag = Short.toUnsignedInt(buf.getShort(pos));
+                    int type = Short.toUnsignedInt(buf.getShort(pos + 2));
+                    long count = Integer.toUnsignedLong(buf.getInt(pos + 4));
+                    long valOff = Integer.toUnsignedLong(buf.getInt(pos + 8));
+                    if (tag == 256) {
+                        width = (type == 3) ? Short.toUnsignedInt(buf.getShort(pos + 8)) : valOff;
+                    } else if (tag == 257) {
+                        height = (type == 3) ? Short.toUnsignedInt(buf.getShort(pos + 8)) : valOff;
+                    } else if (tag == 33550 && count >= 2 && valOff + count * 8 <= limit) {
+                        scale = new double[]{buf.getDouble((int) valOff), buf.getDouble((int) valOff + 8)};
+                    } else if (tag == 33922 && count >= 6 && valOff + count * 8 <= limit) {
+                        tiepoint = new double[]{
+                                buf.getDouble((int) valOff), buf.getDouble((int) valOff + 8), buf.getDouble((int) valOff + 16),
+                                buf.getDouble((int) valOff + 24), buf.getDouble((int) valOff + 32), buf.getDouble((int) valOff + 40)
+                        };
+                    }
+                }
+            } else if (version == 43 && limit >= 24) {
+                long ifdOff = buf.getLong(8);
+                if (ifdOff <= 0 || ifdOff + 8 > limit) {
+                    return null;
+                }
+                long entryCount = buf.getLong((int) ifdOff);
+                for (int i = 0; i < entryCount && i < 256; i++) {
+                    int pos = (int) ifdOff + 8 + i * 20;
+                    if (pos + 20 > limit) {
+                        break;
+                    }
+                    int tag = Short.toUnsignedInt(buf.getShort(pos));
+                    int type = Short.toUnsignedInt(buf.getShort(pos + 2));
+                    long count = buf.getLong(pos + 4);
+                    long valOff = buf.getLong(pos + 12);
+                    if (tag == 256) {
+                        width = (type == 3) ? Short.toUnsignedInt(buf.getShort(pos + 12))
+                                : (type == 4 ? Integer.toUnsignedLong(buf.getInt(pos + 12)) : valOff);
+                    } else if (tag == 257) {
+                        height = (type == 3) ? Short.toUnsignedInt(buf.getShort(pos + 12))
+                                : (type == 4 ? Integer.toUnsignedLong(buf.getInt(pos + 12)) : valOff);
+                    } else if (tag == 33550 && count >= 2 && valOff > 0 && valOff + count * 8 <= limit) {
+                        scale = new double[]{buf.getDouble((int) valOff), buf.getDouble((int) valOff + 8)};
+                    } else if (tag == 33922 && count >= 6 && valOff > 0 && valOff + count * 8 <= limit) {
+                        tiepoint = new double[]{
+                                buf.getDouble((int) valOff), buf.getDouble((int) valOff + 8), buf.getDouble((int) valOff + 16),
+                                buf.getDouble((int) valOff + 24), buf.getDouble((int) valOff + 32), buf.getDouble((int) valOff + 40)
+                        };
+                    }
+                }
+            }
+
+            if (width <= 0 || height <= 0 || scale == null || tiepoint == null) {
+                return null;
+            }
+            double minX = tiepoint[3] - tiepoint[0] * scale[0];
+            double maxY = tiepoint[4] + tiepoint[1] * scale[1];
+            double maxX = minX + width * scale[0];
+            double minY = maxY - height * scale[1];
+
+            if (Math.abs(minX) <= 180.0 && Math.abs(maxX) <= 180.0 && Math.abs(minY) <= 90.0 && Math.abs(maxY) <= 90.0) {
+                return (minX < maxX && minY < maxY) ? new double[]{minX, minY, maxX, maxY} : null;
+            }
+            double[] sw = GeoserverSyncService.mercator3395ToLonLat(minX, minY);
+            double[] ne = GeoserverSyncService.mercator3395ToLonLat(maxX, maxY);
+            if (sw[0] >= -180.0 && ne[0] <= 180.0 && sw[0] < ne[0] && sw[1] >= -90.0 && ne[1] <= 90.0 && sw[1] < ne[1]) {
+                return new double[]{sw[0], sw[1], ne[0], ne[1]};
+            }
+            return null;
+        } catch (Exception e) {
+            log.debug("No se pudo extraer extensión rápida del encabezado TIFF {}: {}", tifPath.getFileName(), e.getMessage());
+            return null;
+        }
     }
 
     /**

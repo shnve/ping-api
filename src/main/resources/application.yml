@@ -287,6 +287,7 @@ ping:
     geoserver-password: ${GEOSERVER_PASSWORD:CHANGE_ME}
     geoserver-workspace: ${GEOSERVER_WORKSPACE:pisac_shn}
     geoserver-layer-group: ${GEOSERVER_LAYER_GROUP:cartografia_ve}
+    geoserver-pdf-layer-group: ${GEOSERVER_PDF_LAYER_GROUP:cartografia_ve_pdf}
     docker-image: ${GDAL_DOCKER_IMAGE:ghcr.io/osgeo/gdal:ubuntu-full-latest}
     pdf-dpi: ${CARTOGRAPHY_PDF_DPI:300}
 

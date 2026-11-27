@@ -62,6 +62,13 @@ public class CartographyProperties {
     private String geoserverLayerGroup = "cartografia_ve";
 
     /**
+     * Nombre del grupo de capas dedicado a impresión/exportación PDF en GeoServer.
+     * Apila las mismas bandas con estilos de umbral ampliado (estilo_pdf_bandaN) sin tocar GeoWebCache.
+     */
+    @Builder.Default
+    private String geoserverPdfLayerGroup = "cartografia_ve_pdf";
+
+    /**
      * Imagen Docker de GDAL a utilizar en caso de no disponer de GDAL nativo en el sistema.
      */
     @Builder.Default
@@ -92,5 +99,18 @@ public class CartographyProperties {
             "banda4", 90000,
             "banda5", 25000,
             "banda6", 4000
+    ));
+
+    /**
+     * Escala máxima de visibilidad por banda para impresión estática PDF (estilo_pdf_bandaN).
+     * Umbrales holgados para que siempre prevalezca la carta de mayor detalle en la zona del aviso
+     * sin que una carta portuaria se vuelva un punto ilegible en vistas oceánicas.
+     */
+    @Builder.Default
+    private Map<String, Integer> pdfBandMaxScale = new HashMap<>(Map.of(
+            "banda3", 1500000,
+            "banda4", 350000,
+            "banda5", 90000,
+            "banda6", 25000
     ));
 }

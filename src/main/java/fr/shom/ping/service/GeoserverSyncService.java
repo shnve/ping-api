@@ -16,12 +16,17 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 /**
@@ -52,6 +57,12 @@ public class GeoserverSyncService {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
+
+    private static final double WGS84_A = 6378137.0;
+    private static final double WGS84_E = 0.0818191908426215;
+
+    /** Indica si ya se verificó/creó el grupo de impresión PDF (cartografia_ve_pdf) en la sesión actual. */
+    private volatile boolean pdfGroupVerified = false;
 
     /** Resultado de una publicación en GeoServer, con el motivo legible en caso de fallo. */
     @Getter
@@ -104,6 +115,84 @@ public class GeoserverSyncService {
     // =====================================================================================
     // API pública
     // =====================================================================================
+
+    /**
+     * Al arrancar la aplicación, asegura en segundo plano que existan los estilos estilo_pdf_bandaN y el
+     * grupo cartografia_ve_pdf sin tocar estilos interactivos ni vaciar la caché de GeoWebCache.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void ensurePdfGroupOnStartup() {
+        CompletableFuture.runAsync(() -> {
+            try {
+                ensurePdfLayerGroupIfNeeded();
+            } catch (Exception e) {
+                log.debug("[GeoServer] Verificación inicial del grupo PDF diferida: {}", e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Asegura que el grupo de impresión {@code cartografia_ve_pdf} y sus estilos {@code estilo_pdf_bandaN}
+     * existan y reflejen las bandas activas del grupo principal {@code cartografia_ve}.
+     */
+    public synchronized boolean ensurePdfLayerGroupIfNeeded() {
+        if (pdfGroupVerified) {
+            return true;
+        }
+        PublishResult silentResult = new PublishResult();
+        boolean ok = syncPdfGroupFromMainGroup(workspace(), silentResult);
+        if (ok) {
+            pdfGroupVerified = true;
+        }
+        return ok;
+    }
+
+    /**
+     * Obtiene las extensiones geográficas (WGS84) de todas las cartas publicadas en GeoServer (bandas 2 a 6).
+     * Devuelve {@code null} si GeoServer no está disponible para permitir respaldo local desde encabezados COG.
+     */
+    public List<Number[]> fetchPublishedBandExtents() {
+        String ws = workspace();
+        // Aprovechar para asegurar cartografia_ve_pdf si GeoServer tardó más que ping-api en iniciar
+        if (!pdfGroupVerified) {
+            ensurePdfLayerGroupIfNeeded();
+        }
+        JsonNode wsCheck = getJson("/rest/workspaces/" + ws + ".json");
+        if (wsCheck == null) {
+            return null;
+        }
+
+        List<Number[]> extents = new ArrayList<>();
+        // Banda 2: cobertura única GeoTIFF
+        Bounds b2 = coverageBounds(ws, "banda2");
+        if (b2 != null && isValidLonLatBounds(b2.minx(), b2.miny(), b2.maxx(), b2.maxy())) {
+            extents.add(new Number[]{2, round5(b2.minx()), round5(b2.miny()), round5(b2.maxx()), round5(b2.maxy())});
+        }
+
+        // Bandas 3 a 6: gránulos individuales de cada ImageMosaic
+        for (int bandNum = 3; bandNum <= 6; bandNum++) {
+            String band = "banda" + bandNum;
+            List<String> coverages = listCoverageNames(ws, band);
+            if (coverages.isEmpty()) {
+                continue;
+            }
+            JsonNode root = getJson(storePath(ws, band) + "/coverages/" + coverages.get(0) + "/index/granules.json?limit=10000");
+            if (root == null || !root.path("features").isArray()) {
+                continue;
+            }
+            for (JsonNode feature : root.path("features")) {
+                String loc = feature.path("properties").path("location").asText("").toLowerCase(Locale.ROOT);
+                if (loc.contains("georeferenced_cog") || loc.contains("georeferenced_carta_cog")) {
+                    continue;
+                }
+                double[] bbox = extractWgs84BboxFromGranuleGeometry(feature.path("geometry"));
+                if (bbox != null && isValidLonLatBounds(bbox[0], bbox[1], bbox[2], bbox[3])) {
+                    extents.add(new Number[]{bandNum, round5(bbox[0]), round5(bbox[1]), round5(bbox[2]), round5(bbox[3])});
+                }
+            }
+        }
+        return extents;
+    }
 
     /**
      * Banda 1 / Banda 2 (GeoTIFF de carta única): apunta el almacén al nuevo archivo, o lo crea.
@@ -319,9 +408,9 @@ public class GeoserverSyncService {
         return true;
     }
 
-    /** Estilo, estilo por defecto, grupo y caché de teselas. */
+    /** Estilo, estilo por defecto, grupo interactivo, grupo de impresión PDF y caché de teselas. */
     private void finishPublication(String ws, String band, PublishResult result) {
-        String style = ensureStyle(ws, band, result);
+        String style = ensureStyle(ws, band, "estilo_" + band, properties.getBandMaxScale(), result);
         if (style != null) {
             Resp r = call("PUT", "/rest/layers/" + ws + ":" + band,
                     "<layer><defaultStyle><name>" + style + "</name><workspace>" + ws + "</workspace></defaultStyle>"
@@ -330,19 +419,19 @@ public class GeoserverSyncService {
             result.step("Estilo por defecto " + style + " en " + band + ": " + r.status());
         }
         ensureInGroup(ws, band, style, result);
+        pdfGroupVerified = syncPdfGroupFromMainGroup(ws, result);
         truncateGwc(ws, band);
     }
 
     /**
-     * Devuelve el nombre del estilo de la banda, creándolo si no existe con la escala configurada.
+     * Devuelve el nombre del estilo solicitado para la banda, creándolo si no existe con la escala configurada.
      * Nunca asigna un estilo inexistente (un layer.xml con estilo inexistente se descarta al recargar).
      */
-    private String ensureStyle(String ws, String band, PublishResult result) {
-        String style = "estilo_" + band;
+    private String ensureStyle(String ws, String band, String style, Map<String, Integer> scaleMap, PublishResult result) {
         if (getJson("/rest/workspaces/" + ws + "/styles/" + style + ".json") != null) {
             return style;
         }
-        Integer maxScale = properties.getBandMaxScale() != null ? properties.getBandMaxScale().get(band) : null;
+        Integer maxScale = scaleMap != null ? scaleMap.get(band) : null;
         String scaleRule = maxScale != null && maxScale > 0
                 ? "<!-- Visible desde 1:" + maxScale + " hacia adentro; no se apaga al acercarse -->"
                 + "<MaxScaleDenominator>" + maxScale + "</MaxScaleDenominator>"
@@ -361,6 +450,43 @@ public class GeoserverSyncService {
         }
         result.step("Estilo " + style + " creado" + (maxScale != null ? " (visible desde 1:" + maxScale + ")" : ""));
         return style;
+    }
+
+    /**
+     * Sincroniza el grupo dedicado de impresión PDF ({@code cartografia_ve_pdf}) a partir del orden de capas del
+     * grupo principal ({@code cartografia_ve}), asignando {@code estilo_pdf_bandaN} y sin invalidar GeoWebCache.
+     */
+    private boolean syncPdfGroupFromMainGroup(String ws, PublishResult result) {
+        List<String[]> mainEntries = readGroupEntries(ws, group());
+        if (mainEntries == null || mainEntries.isEmpty()) {
+            return false;
+        }
+        List<String[]> desiredPdfEntries = new ArrayList<>();
+        for (String[] entry : mainEntries) {
+            String layerName = entry[0];
+            String band = extractBandName(layerName);
+            String pdfStyle = band != null
+                    ? ensureStyle(ws, band, "estilo_pdf_" + band, properties.getPdfBandMaxScale(), result)
+                    : null;
+            String qualifiedStyle = pdfStyle != null ? ws + ":" + pdfStyle : (entry.length > 1 ? entry[1] : "");
+            desiredPdfEntries.add(new String[]{layerName, qualifiedStyle});
+        }
+
+        String pdfGroupName = pdfGroup();
+        List<String[]> existingPdfEntries = readGroupEntries(ws, pdfGroupName);
+        if (entriesEqual(existingPdfEntries, desiredPdfEntries)) {
+            return true;
+        }
+
+        Resp r = existingPdfEntries == null
+                ? createGroupEntries(ws, pdfGroupName, desiredPdfEntries)
+                : writeGroupEntries(ws, pdfGroupName, desiredPdfEntries);
+        if (r.ok()) {
+            result.step("Grupo de impresión PDF " + pdfGroupName + " actualizado (" + desiredPdfEntries.size() + " capas)");
+            return true;
+        }
+        result.step("No se pudo actualizar el grupo PDF " + pdfGroupName + " (" + r.status() + "): " + r.shortBody());
+        return false;
     }
 
     /** Agrega la capa al grupo en orden de banda (banda menor abajo). No hace nada si ya está. */
@@ -421,6 +547,7 @@ public class GeoserverSyncService {
             return true;
         }
         Resp r = writeGroupEntries(ws, groupBefore);
+        syncPdfGroupFromMainGroup(ws, result);
         truncateGwc(ws, group());
         result.fail("La capa " + band + " impedía dibujar el grupo " + group()
                 + "; se restauró el grupo anterior para no afectar el mapa (" + r.status() + ").");
@@ -431,9 +558,14 @@ public class GeoserverSyncService {
     // Grupo de capas
     // =====================================================================================
 
-    /** Lee las capas del grupo como pares [capa, estilo]. Devuelve null si el grupo no existe. */
+    /** Lee las capas del grupo principal como pares [capa, estilo]. Devuelve null si el grupo no existe. */
     private List<String[]> readGroupEntries(String ws) {
-        JsonNode root = getJson("/rest/workspaces/" + ws + "/layergroups/" + group() + ".json");
+        return readGroupEntries(ws, group());
+    }
+
+    /** Lee las capas de un grupo como pares [capa, estilo]. Devuelve null si el grupo no existe. */
+    private List<String[]> readGroupEntries(String ws, String groupName) {
+        JsonNode root = getJson("/rest/workspaces/" + ws + "/layergroups/" + groupName + ".json");
         if (root == null) {
             return null;
         }
@@ -456,7 +588,25 @@ public class GeoserverSyncService {
     }
 
     private Resp writeGroupEntries(String ws, List<String[]> entries) {
-        StringBuilder xml = new StringBuilder("<layerGroup><name>").append(group()).append("</name><publishables>");
+        return writeGroupEntries(ws, group(), entries);
+    }
+
+    private Resp writeGroupEntries(String ws, String groupName, List<String[]> entries) {
+        String xml = buildLayerGroupXml(ws, groupName, entries, false);
+        return call("PUT", "/rest/workspaces/" + ws + "/layergroups/" + groupName, xml, "application/xml");
+    }
+
+    private Resp createGroupEntries(String ws, String groupName, List<String[]> entries) {
+        String xml = buildLayerGroupXml(ws, groupName, entries, true);
+        return call("POST", "/rest/workspaces/" + ws + "/layergroups", xml, "application/xml");
+    }
+
+    private String buildLayerGroupXml(String ws, String groupName, List<String[]> entries, boolean includeBounds) {
+        StringBuilder xml = new StringBuilder("<layerGroup><name>").append(groupName).append("</name>");
+        if (includeBounds) {
+            xml.append("<mode>SINGLE</mode><workspace><name>").append(ws).append("</name></workspace>");
+        }
+        xml.append("<publishables>");
         for (String[] e : entries) {
             xml.append("<published type=\"layer\"><name>").append(e[0]).append("</name></published>");
         }
@@ -464,8 +614,26 @@ public class GeoserverSyncService {
         for (String[] e : entries) {
             xml.append(e[1] == null || e[1].isEmpty() ? "<style/>" : "<style><name>" + e[1] + "</name></style>");
         }
-        xml.append("</styles></layerGroup>");
-        return call("PUT", "/rest/workspaces/" + ws + "/layergroups/" + group(), xml.toString(), "application/xml");
+        xml.append("</styles>");
+        if (includeBounds) {
+            xml.append("<bounds><minx>-77.0</minx><maxx>-54.0</maxx><miny>0.0</miny><maxy>22.0</maxy><crs>EPSG:4326</crs></bounds>");
+        }
+        xml.append("</layerGroup>");
+        return xml.toString();
+    }
+
+    private static boolean entriesEqual(List<String[]> a, List<String[]> b) {
+        if (a == null || b == null || a.size() != b.size()) {
+            return false;
+        }
+        for (int i = 0; i < a.size(); i++) {
+            String[] ea = a.get(i);
+            String[] eb = b.get(i);
+            if (!Objects.equals(ea[0], eb[0]) || !Objects.equals(ea[1], eb[1])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // =====================================================================================
@@ -664,6 +832,77 @@ public class GeoserverSyncService {
         return m.find() ? Integer.parseInt(m.group(1)) : -1;
     }
 
+    private static String extractBandName(String layerName) {
+        int n = bandNumber(layerName);
+        return n >= 1 ? "banda" + n : null;
+    }
+
+    private static double[] extractWgs84BboxFromGranuleGeometry(JsonNode geom) {
+        if (geom == null || geom.isMissingNode() || geom.isNull()) {
+            return null;
+        }
+        double[] minMax = new double[]{
+                Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+                Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY
+        };
+        collectCoordinateEnvelope(geom.path("coordinates"), minMax);
+        if (!Double.isFinite(minMax[0]) || !Double.isFinite(minMax[1])
+                || !Double.isFinite(minMax[2]) || !Double.isFinite(minMax[3])) {
+            return null;
+        }
+        if (Math.abs(minMax[0]) <= 180.0 && Math.abs(minMax[2]) <= 180.0
+                && Math.abs(minMax[1]) <= 90.0 && Math.abs(minMax[3]) <= 90.0) {
+            return minMax;
+        }
+        // Gránulos almacenados en EPSG:3395 (WGS 84 / World Mercator)
+        double[] sw = mercator3395ToLonLat(minMax[0], minMax[1]);
+        double[] ne = mercator3395ToLonLat(minMax[2], minMax[3]);
+        return new double[]{sw[0], sw[1], ne[0], ne[1]};
+    }
+
+    private static void collectCoordinateEnvelope(JsonNode node, double[] minMax) {
+        if (node == null || !node.isArray() || node.isEmpty()) {
+            return;
+        }
+        if (node.get(0).isNumber() && node.size() >= 2) {
+            double x = node.get(0).asDouble(Double.NaN);
+            double y = node.get(1).asDouble(Double.NaN);
+            if (Double.isFinite(x) && Double.isFinite(y)) {
+                minMax[0] = Math.min(minMax[0], x);
+                minMax[1] = Math.min(minMax[1], y);
+                minMax[2] = Math.max(minMax[2], x);
+                minMax[3] = Math.max(minMax[3], y);
+            }
+            return;
+        }
+        for (JsonNode child : node) {
+            collectCoordinateEnvelope(child, minMax);
+        }
+    }
+
+    /** Conversión exacta de EPSG:3395 (WGS 84 / World Mercator elipsoidal) a grados WGS84 [lon, lat]. */
+    public static double[] mercator3395ToLonLat(double x, double y) {
+        double lon = Math.toDegrees(x / WGS84_A);
+        double ts = Math.exp(-y / WGS84_A);
+        double phi = (Math.PI / 2.0) - 2.0 * Math.atan(ts);
+        for (int i = 0; i < 10; i++) {
+            double con = WGS84_E * Math.sin(phi);
+            phi = (Math.PI / 2.0) - 2.0 * Math.atan(ts * Math.pow((1.0 - con) / (1.0 + con), WGS84_E / 2.0));
+        }
+        return new double[]{lon, Math.toDegrees(phi)};
+    }
+
+    private static boolean isValidLonLatBounds(double minLon, double minLat, double maxLon, double maxLat) {
+        return Double.isFinite(minLon) && Double.isFinite(minLat)
+                && Double.isFinite(maxLon) && Double.isFinite(maxLat)
+                && minLon >= -180.0 && maxLon <= 180.0 && minLon < maxLon
+                && minLat >= -90.0 && maxLat <= 90.0 && minLat < maxLat;
+    }
+
+    private static double round5(double val) {
+        return Math.round(val * 100000.0) / 100000.0;
+    }
+
     private static String bandTitle(String band) {
         return switch (band) {
             case "banda1" -> "Banda 1 - Overview";
@@ -688,6 +927,11 @@ public class GeoserverSyncService {
     private String group() {
         String g = properties.getGeoserverLayerGroup();
         return g == null || g.isBlank() ? "cartografia_ve" : g.trim();
+    }
+
+    private String pdfGroup() {
+        String g = properties.getGeoserverPdfLayerGroup();
+        return g == null || g.isBlank() ? "cartografia_ve_pdf" : g.trim();
     }
 
     private String authHeader() {
