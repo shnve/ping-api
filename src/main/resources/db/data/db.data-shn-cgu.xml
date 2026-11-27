@@ -40,7 +40,7 @@ VALUES (gen_random_uuid(),
 <p>Las advertencias y avisos se organizan en <strong>series</strong> (por ejemplo, ADVERTENCIA COSTERA VE o ADVERTENCIA LOCAL VE). En PISAC se usa la sigla <strong>AN</strong> para referirse en conjunto a advertencias y avisos.</p>
 <h2>5. Portal público sin cuenta</h2>
 <p>El portal público es de libre acceso y no requiere una cuenta de usuario.</p>
-<p><strong>5.1 Consulta de advertencias y avisos.</strong> El portal muestra los AN en vigor publicados por el SHN, sobre el mapa o en la tabla de cada serie. La consulta se actualiza de forma continua y refleja en tiempo real las publicaciones y cancelaciones, que pueden ocurrir en cualquier momento.</p>
+<p><strong>5.1 Consulta de advertencias y avisos.</strong> El portal muestra los AN en vigencia publicados por el SHN, sobre el mapa o en la tabla de cada serie. La consulta se actualiza de forma continua y refleja en tiempo real las publicaciones y cancelaciones, que pueden ocurrir en cualquier momento.</p>
 <p><strong>5.2 Consulta de regulaciones.</strong> El portal muestra sobre el mapa base las zonas reguladas por las autoridades competentes, con un resumen informativo y, cuando existe, el acceso a la publicación oficial. La publicación oficial de cada autoridad sigue siendo el único medio completo y vinculante: PISAC la complementa, pero no la sustituye.</p>
 <p><strong>5.3 Descargas.</strong> Desde el detalle de un AN pueden descargarse, según el caso, su versión en PDF y su paquete de datos S-124.</p>
 <h2>6. Portal público con cuenta de usuario</h2>

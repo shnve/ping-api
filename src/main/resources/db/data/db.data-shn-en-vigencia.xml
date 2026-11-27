@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!--
+        Sustitución del término «en vigor» por «en vigencia» en los catálogos en español.
+        Se aplica como changeset incremental con runOnChange="true" para conservar intactos los
+        checksums de db.data-shn-remove-french.xml y db.data-shn-s124-spanish-v2.xml ya ejecutados.
+    -->
+    <changeSet id="DB.Data.SHN.Terminology.En_Vigencia" author="SHN" runOnChange="true">
+        <update tableName="warning_reference_category">
+            <column name="translation" value="en vigencia"/>
+            <where>enum_name = 'IN_FORCE'</where>
+        </update>
+        <update tableName="warning_hazard_type_details">
+            <column name="translation" value="Zona de Control de Hielo En Vigencia o Desactivada"/>
+            <where>enum_name = 'ICE_CONTROL_ZONE'</where>
+        </update>
+        <update tableName="warning_hazard_type_general">
+            <column name="translation" value="Boletín en Vigencia"/>
+            <where>enum_name = 'IN_FORCE_BULLETIN'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -85,4 +85,5 @@
     <include file="classpath:db/data/db.data-shn-cgu.xml" />
     <include file="classpath:db/data/db.data-shn-accueil.xml" />
     <include file="classpath:db/schemes/db.schemes-shn-approval.xml" />
+    <include file="classpath:db/data/db.data-shn-en-vigencia.xml" />
 </databaseChangeLog>

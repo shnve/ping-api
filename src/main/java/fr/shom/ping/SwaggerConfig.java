@@ -200,7 +200,7 @@ public class SwaggerConfig {
                 : "Listar identificadores de advertencias náuticas vigentes en S-124 (XML)");
             op.setDescription(english
                 ? "Returns MRN references and identifiers of currently in-force navigational warnings. The nameOfSeries parameter is optional; omit it to list all S-124 series."
-                : "Devuelve las referencias MRN e identificadores de las advertencias náuticas actualmente en vigor. El parámetro nameOfSeries es opcional; si se omite, lista todas las series S-124.");
+                : "Devuelve las referencias MRN e identificadores de las advertencias náuticas actualmente en vigencia. El parámetro nameOfSeries es opcional; si se omite, lista todas las series S-124.");
         } else if (path.endsWith("/v1/ping")) {
             op.setSummary(english
                 ? "Check if the SECOM service instance is available"
